@@ -1,0 +1,38 @@
+{
+  "name": "foundryvtt-json-journal",
+  "title": "foundryvtt-json-journal",
+  "description": "",
+  "version": "0.0.0",
+  "author": "EthanJWright",
+  "authors": [
+    {
+      "name": "EthanJWright",
+      "email": "ewright326@gmail.com",
+      "discord": "GabenMessiah (Ethan)#0551"
+    }
+  ],
+  "minimumCoreVersion": "0.8.8",
+  "compatibleCoreVersion": "0.8.8",
+  "scripts": [],
+  "esmodules": ["module/foundryvtt-json-journal.js"],
+  "styles": ["styles/foundryvtt-json-journal.css"],
+  "packs": [],
+  "dependencies": [],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "socket": false,
+  "url": "",
+  "manifest": "",
+  "download": "https://host/path/to/0.0.0.zip",
+  "license": "",
+  "readme": "",
+  "bugs": "",
+  "changelog": "",
+  "system": [],
+  "library": false
+}
