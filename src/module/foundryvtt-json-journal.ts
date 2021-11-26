@@ -55,58 +55,11 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
   <i class="fas fa-atlas"></i> Import JSON Journal
 </button>`;
   html.find(`.header-actions`).first().append(button);
-  const dialogOptions = {
-    jQuery: false,
-    width: 400,
-    top: window.innerHeight - window.innerHeight + 20,
-    left: window.innerWidth - 710,
-    classes: ['dialog', 'dialog--dice-calculator'],
-  };
-
   html.find('#pdfButton').on('click', async (e) => {
     e.preventDefault();
     // const template = 'modules/foundryvtt-json-journal/templates/importForm.html';
     const form = new importJSONForm({});
-    console.log(`render called!`);
     form.render(true);
-
-    /* renderTemplate(template, {
-      DocumentField: {
-        type: 'string',
-        required: true,
-        validate: (contents: String) => {
-          console.log(`document field: ${contents}`);
-          return true;
-        },
-      },
-    }).then((dlg) => {
-      console.log(`DLG: ${JSON.stringify(dlg, null, 2)}`);
-      new Dialog(
-        {
-          title: 'Pick JSON file',
-          content: dlg,
-          default: 'cancel',
-          buttons: {
-            okay: {
-              label: 'Okay',
-              callback: (data) => {
-                console.log(`Hello -- ${JSON.stringify(data, null, 2)}`);
-              },
-            },
-            cancel: {
-              label: 'Cancel',
-              callback: () => {
-                console.log(`Bye!`);
-              },
-            },
-          },
-          close: (data: HTMLElement | JQuery<HTMLElement>) => {
-            console.log(`Data: ${JSON.stringify(data, null, 2)}`);
-          },
-        },
-        dialogOptions,
-      ).render(true);
-    }); */
   });
 });
 
