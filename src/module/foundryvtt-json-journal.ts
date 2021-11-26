@@ -1,6 +1,114 @@
-// Import TypeScript modules
 import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
+
+function getRootName(fullFileName: string) {
+  // get file name from full path
+  const fileName = fullFileName.split('/').pop() || fullFileName;
+  // remove extension
+  const name = fileName.split('.').shift() || fileName;
+  // convert _ to space
+  const rootName = name.replace(/_/g, ' ');
+  // Capitalize first letter
+  return rootName.charAt(0).toUpperCase() + rootName.slice(1);
+}
+
+async function processInputJSON(fullFileName: string) {
+  const response = await fetch(fullFileName);
+  if (!response.ok) {
+    console.log(`Error reading ${fullFileName}`);
+    return;
+  }
+  const data = await response.text();
+  const json = JSON.parse(data) as JsonData[];
+  const name = getRootName(fullFileName);
+  buildFromJson(name, json);
+}
+
+interface HTMLImportData {
+  jsonfile: string;
+}
+
+class importJSONForm extends FormApplication {
+  async _updateObject(event: Event, formData?: object): Promise<unknown> {
+    if (!formData || formData === {}) return;
+    const data = formData as HTMLImportData;
+    processInputJSON(data.jsonfile);
+    return;
+  }
+
+  static get defaultOptions() {
+    return mergeObject(super.defaultOptions, {
+      jQuery: false,
+      width: 400,
+      top: window.innerHeight - window.innerHeight + 20,
+      left: window.innerWidth - 710,
+      template: 'modules/foundryvtt-json-journal/templates/importForm.html',
+    });
+  }
+}
+
+Hooks.on('renderSidebarTab', (settings: Settings) => {
+  if (settings.id != 'journal') return;
+  const html = settings.element;
+  if (html.find('#pdfButton').length !== 0) return;
+  const button = `<button id="pdfButton" style="flex-basis: auto;">
+  <i class="fas fa-atlas"></i> Import JSON Journal
+</button>`;
+  html.find(`.header-actions`).first().append(button);
+  const dialogOptions = {
+    jQuery: false,
+    width: 400,
+    top: window.innerHeight - window.innerHeight + 20,
+    left: window.innerWidth - 710,
+    classes: ['dialog', 'dialog--dice-calculator'],
+  };
+
+  html.find('#pdfButton').on('click', async (e) => {
+    e.preventDefault();
+    // const template = 'modules/foundryvtt-json-journal/templates/importForm.html';
+    const form = new importJSONForm({});
+    console.log(`render called!`);
+    form.render(true);
+
+    /* renderTemplate(template, {
+      DocumentField: {
+        type: 'string',
+        required: true,
+        validate: (contents: String) => {
+          console.log(`document field: ${contents}`);
+          return true;
+        },
+      },
+    }).then((dlg) => {
+      console.log(`DLG: ${JSON.stringify(dlg, null, 2)}`);
+      new Dialog(
+        {
+          title: 'Pick JSON file',
+          content: dlg,
+          default: 'cancel',
+          buttons: {
+            okay: {
+              label: 'Okay',
+              callback: (data) => {
+                console.log(`Hello -- ${JSON.stringify(data, null, 2)}`);
+              },
+            },
+            cancel: {
+              label: 'Cancel',
+              callback: () => {
+                console.log(`Bye!`);
+              },
+            },
+          },
+          close: (data: HTMLElement | JQuery<HTMLElement>) => {
+            console.log(`Data: ${JSON.stringify(data, null, 2)}`);
+          },
+        },
+        dialogOptions,
+      ).render(true);
+    }); */
+  });
+});
 
 // Initialize module
 Hooks.once('init', async () => {
@@ -78,31 +186,19 @@ async function createFoldersRecursive(node: JsonData, parentFolder: StoredDocume
   }
 }
 
-async function buildFromJson(data: JsonData[]) {
+async function buildFromJson(name: string, data: JsonData[]) {
   console.log(`${data[0]['value']}`);
   const folder = await Folder.create({
-    name: 'Blue Alley',
+    name: name,
     type: 'JournalEntry',
   });
   data.forEach(async (section: JsonData) => {
     await createFoldersRecursive(section, folder);
   });
-  console.log(`Finished generating Blue Alley Journals...`);
+  console.log(`Finished generating ${name} Journals...`);
 }
 
 // When ready
 Hooks.once('ready', async () => {
   // Do anything once the module is ready
-  console.log(`Creating a new Journal Entry!`);
-  const fullFileName = 'blue_alley.json';
-  const response = await fetch(fullFileName);
-  if (!response.ok) {
-    console.log(`Error reading ${fullFileName}`);
-    return;
-  }
-  const data = await response.text();
-  const json = JSON.parse(data) as JsonData[];
-  buildFromJson(json);
 });
-
-// Add any additional hooks if necessary
