@@ -82,31 +82,52 @@ Hooks.once('setup', async () => {
   // Set things up
 });
 
+interface Note {
+  value: string;
+  tag: string;
+}
+
 interface JsonData {
   value: string;
   tag: string;
-  notes: Array<string>;
+  notes: Array<Note>;
   children: Array<JsonData>;
   sortValue?: number;
 }
 
-async function createFoldersRecursive(node: JsonData, parentFolder: StoredDocument<Folder> | undefined) {
-  let folder = parentFolder;
+const collission_tracker: Record<string, number> = {};
+async function createFoldersRecursive(
+  node: JsonData,
+  rootFolder: StoredDocument<Folder>,
+  currentFolder: StoredDocument<Folder> | undefined,
+) {
+  let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
+  // if node.value in collission_tracker, then we have a collision
+  collission_tracker[node.value] = collission_tracker[node.value] ?? 0;
+  collission_tracker[node.value]++;
+  let name = `${node.value}`;
+  // convert %20 to space
+  name = name.replace(/%20/g, ' ');
+
   if (node.children.length > 0) {
-    folder = await Folder.create({
-      name: node.value,
-      type: 'JournalEntry',
-      parent: parentFolder?.data?._id ?? null,
-      sorting: 'm',
-    });
+    const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
+    console.log(`Creating folder with parent : ${currentFolder?.data?.name ?? rootFolder.data.name}`);
+    folder =
+      (await Folder.create({
+        name: name,
+        type: 'JournalEntry',
+        parent: current_id,
+        sorting: 'm',
+      })) ?? rootFolder;
   }
   const notes = node.notes.reverse();
-  let htmlNote = notes.reduce((note: string, htmlNote: string) => {
-    return `${htmlNote}<p>${note}</p>`;
+  const values = notes.map((note: Note) => `<${note.tag}>${note.value}</${note.tag}>`);
+  let htmlNote = values.reduce((note: string, htmlNote: string) => {
+    return `${htmlNote}${note}`;
   }, ``);
   htmlNote = `<div>${htmlNote}</div>`;
   await JournalEntry.create({
-    name: `${node.value}`,
+    name: `${name}`,
     content: htmlNote,
     collectionName: node.value,
     folder: folder?.data?._id,
@@ -134,7 +155,7 @@ async function createFoldersRecursive(node: JsonData, parentFolder: StoredDocume
       return { ...child, sortValue: getSortValue(child.value) };
     });
     for (const child of children) {
-      await createFoldersRecursive(child, folder);
+      await createFoldersRecursive(child, rootFolder, folder);
     }
   }
 }
@@ -145,10 +166,15 @@ async function buildFromJson(name: string, data: JsonData[]) {
     name: name,
     type: 'JournalEntry',
   });
-  data.forEach(async (section: JsonData) => {
-    await createFoldersRecursive(section, folder);
-  });
-  console.log(`Finished generating ${name} Journals...`);
+  if (!folder) {
+    console.log(`Error creating folder ${name}`);
+    return;
+  } else {
+    data.forEach(async (section: JsonData) => {
+      await createFoldersRecursive(section, folder, undefined);
+    });
+    console.log(`Finished generating ${name} Journals...`);
+  }
 }
 
 // When ready
