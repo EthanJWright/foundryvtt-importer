@@ -1,77 +1,62 @@
 # foundryvtt-json-journal
 
-Add your description here.
+Create a nested folder structure from a simple json structure.
 
-## Installation
-
-Add your installation instructions here.
-
-## Development
-
-### Prerequisites
-
-In order to build this module, recent versions of `node` and `npm` are
-required. Most likely using `yarn` also works but only `npm` is officially
-supported. We recommend using the latest lts version of `node`. If you use `nvm`
-to manage your `node` versions, you can simply run
+The JSON should be formatted like so:
 
 ```
-nvm install
+[
+  {
+    value: "Chapter 1",
+    tag: "h2",
+    notes: [
+    {
+      value: "Treasure: 200 gp",
+      tag: "p"
+      }, {
+      value: "Description: A caravan of goblins descends on the party."
+      tag: "p"
+      }
+    ]
+    children: [
+      {
+        value: "NPCs"
+        tag: "h3",
+        notes: [
+        {
+          value: "Grib the Goblin : friendly, short, willing to bargin.",
+          tag: "p"
+          },{
+          value: "Chadwick: captured by goblins, wants to be rescued but will betray the adventurers"
+          tag: "p"
+          }
+        ]
+      }
+    ]
+  }
+]
 ```
 
-in the project's root directory.
-
-You also need to install the the project's dependencies. To do so, run
+The typescrip interfaces for the JSON are as follows
 
 ```
-npm install
-```
+interface Note {
+  value: string;
+  tag: string;
+}
 
-### Building
-
-You can build the project by running
-
-```
-npm run build
-```
-
-Alternatively, you can run
-
-```
-npm run build:watch
-```
-
-to watch for changes and automatically build as necessary.
-
-### Linking the built project to Foundry VTT
-
-In order to provide a fluent development experience, it is recommended to link
-the built module to your local Foundry VTT installation's data folder. In
-order to do so, first add a file called `foundryconfig.json` to the project root
-with the following content:
-
-```
-{
-  "dataPath": "/absolute/path/to/your/FoundryVTT"
+interface JsonData {
+  value: string;
+  tag: string;
+  notes: Array<Note>;
+  children: Array<JsonData>;
+  sortValue?: number;
 }
 ```
 
-(if you are using Windows, make sure to use `\` as a path separator instead of
-`/`)
+## Sources for importing
 
-Then run
-
-```
-npm run link-project
-```
-
-On Windows, creating symlinks requires administrator privileges so unfortunately
-you need to run the above command in an administrator terminal for it to work.
-
-### Running the tests
-
-You can run the tests with the following command:
-
-```
-npm test
-```
+The project [PDF Parse](https://github.com/EthanJWright/pdfparse) is an attempt
+to scrub through PDFs and based on configured parameters output a JSON of the
+format above. When combined this module should allow for PDFs to be read into
+Foundry.
