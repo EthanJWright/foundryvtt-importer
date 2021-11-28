@@ -1,7 +1,7 @@
 import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
 
-const MAX_DEPTH = 2;
+const MAX_DEPTH = 3;
 
 function getRootName(fullFileName: string) {
   // get file name from full path
@@ -148,7 +148,7 @@ async function createFoldersRecursive(
   node: JournalNode,
   rootFolder: StoredDocument<Folder>,
   currentFolder: StoredDocument<Folder> | undefined,
-  currentDepth = 0,
+  currentDepth = 1,
 ) {
   let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
   // if node.value in collission_tracker, then we have a collision
@@ -158,7 +158,7 @@ async function createFoldersRecursive(
   // convert %20 to space
   name = name.replace(/%20/g, ' ');
 
-  if (node.children.length > 0 && currentDepth < MAX_DEPTH) {
+  if (node.children.length > 0 && currentDepth <= MAX_DEPTH) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
     folder =
       (await Folder.create({
@@ -212,7 +212,6 @@ async function createFoldersRecursive(
 }
 
 async function buildFromJson(name: string, data: JournalNode[]) {
-  console.log(`${data[0]['value']}`);
   const folder = await Folder.create({
     name: name,
     type: 'JournalEntry',
@@ -223,7 +222,7 @@ async function buildFromJson(name: string, data: JournalNode[]) {
     return;
   } else {
     data.forEach(async (section: JournalNode) => {
-      await createFoldersRecursive(section, folder, undefined, 0);
+      await createFoldersRecursive(section, folder, undefined, 1);
     });
     console.log(`Finished generating ${name} Journals...`);
   }
