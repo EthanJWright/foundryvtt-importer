@@ -1,7 +1,6 @@
 import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
-
-const MAX_DEPTH = 3;
+import { Config } from './settings';
 
 function getRootName(fullFileName: string) {
   // get file name from full path
@@ -149,6 +148,7 @@ async function createFoldersRecursive(
   rootFolder: StoredDocument<Folder>,
   currentFolder: StoredDocument<Folder> | undefined,
   currentDepth = 1,
+  settings: Config,
 ) {
   let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
   // if node.value in collission_tracker, then we have a collision
@@ -158,7 +158,7 @@ async function createFoldersRecursive(
   // convert %20 to space
   name = name.replace(/%20/g, ' ');
 
-  if (node.children.length > 0 && currentDepth <= MAX_DEPTH) {
+  if (node.children.length > 0 && currentDepth < settings.folderDepth) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
     folder =
       (await Folder.create({
@@ -206,7 +206,7 @@ async function createFoldersRecursive(
       return { ...child, sortValue: getSortValue(child.value) };
     });
     for (const child of children) {
-      await createFoldersRecursive(child, rootFolder, folder, currentDepth);
+      await createFoldersRecursive(child, rootFolder, folder, currentDepth, settings);
     }
   }
 }
@@ -221,8 +221,10 @@ async function buildFromJson(name: string, data: JournalNode[]) {
     console.log(`Error creating folder ${name}`);
     return;
   } else {
+    const settings = Config._load();
+    console.log(`Building journals with a depth of ${settings.folderDepth}`);
     data.forEach(async (section: JournalNode) => {
-      await createFoldersRecursive(section, folder, undefined, 1);
+      await createFoldersRecursive(section, folder, undefined, 1, settings);
     });
     console.log(`Finished generating ${name} Journals...`);
   }
