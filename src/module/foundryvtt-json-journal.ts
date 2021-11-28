@@ -12,6 +12,16 @@ function getRootName(fullFileName: string) {
   return rootName.charAt(0).toUpperCase() + rootName.slice(1);
 }
 
+async function processTableJSON(fullFileName: string) {
+  const response = await fetch(fullFileName);
+  if (!response.ok) {
+    console.log(`Error reading ${fullFileName}`);
+    return;
+  } else {
+    console.log(`Loaded file.`);
+  }
+}
+
 async function processInputJSON(fullFileName: string) {
   const response = await fetch(fullFileName);
   if (!response.ok) {
@@ -19,7 +29,7 @@ async function processInputJSON(fullFileName: string) {
     return;
   }
   const data = await response.text();
-  const json = JSON.parse(data) as JsonData[];
+  const json = JSON.parse(data) as JournalNode[];
   const name = getRootName(fullFileName);
   buildFromJson(name, json);
 }
@@ -28,11 +38,27 @@ interface HTMLImportData {
   jsonfile: string;
 }
 
+type Handler = (jsonfile: string) => Promise<void>;
+
 class importJSONForm extends FormApplication {
+  _handler: Handler;
+  constructor(handler: Handler) {
+    super({});
+    this._handler = handler;
+  }
+
+  get handler(): Handler {
+    return this._handler;
+  }
+
+  set handler(handler) {
+    this._handler = handler;
+  }
+
   async _updateObject(event: Event, formData?: object): Promise<unknown> {
     if (!formData || formData === {}) return;
     const data = formData as HTMLImportData;
-    processInputJSON(data.jsonfile);
+    this.handler(data.jsonfile);
     return;
   }
 
@@ -47,20 +73,24 @@ class importJSONForm extends FormApplication {
   }
 }
 
-Hooks.on('renderSidebarTab', (settings: Settings) => {
-  if (settings.id != 'journal') return;
+function renderSidebarButtons(settings: Settings, tab: string, handler: Handler) {
+  if (settings.id != tab) return;
   const html = settings.element;
   if (html.find('#pdfButton').length !== 0) return;
   const button = `<button id="pdfButton" style="flex-basis: auto;">
-  <i class="fas fa-atlas"></i> Import JSON Journal
+  <i class="fas fa-atlas"></i> Import JSON ${tab}
 </button>`;
   html.find(`.header-actions`).first().append(button);
   html.find('#pdfButton').on('click', async (e) => {
     e.preventDefault();
-    // const template = 'modules/foundryvtt-json-journal/templates/importForm.html';
-    const form = new importJSONForm({});
+    const form = new importJSONForm(handler);
     form.render(true);
   });
+}
+
+Hooks.on('renderSidebarTab', (settings: Settings) => {
+  renderSidebarButtons(settings, 'journal', processInputJSON);
+  renderSidebarButtons(settings, 'tables', processTableJSON);
 });
 
 // Initialize module
@@ -87,17 +117,17 @@ interface Note {
   tag: string;
 }
 
-interface JsonData {
+interface JournalNode {
   value: string;
   tag: string;
   notes: Array<Note>;
-  children: Array<JsonData>;
+  children: Array<JournalNode>;
   sortValue?: number;
 }
 
 const collission_tracker: Record<string, number> = {};
 async function createFoldersRecursive(
-  node: JsonData,
+  node: JournalNode,
   rootFolder: StoredDocument<Folder>,
   currentFolder: StoredDocument<Folder> | undefined,
 ) {
@@ -163,7 +193,7 @@ async function createFoldersRecursive(
   }
 }
 
-async function buildFromJson(name: string, data: JsonData[]) {
+async function buildFromJson(name: string, data: JournalNode[]) {
   console.log(`${data[0]['value']}`);
   const folder = await Folder.create({
     name: name,
@@ -174,7 +204,7 @@ async function buildFromJson(name: string, data: JsonData[]) {
     console.log(`Error creating folder ${name}`);
     return;
   } else {
-    data.forEach(async (section: JsonData) => {
+    data.forEach(async (section: JournalNode) => {
       await createFoldersRecursive(section, folder, undefined);
     });
     console.log(`Finished generating ${name} Journals...`);
