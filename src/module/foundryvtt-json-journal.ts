@@ -121,7 +121,10 @@ async function createFoldersRecursive(
       })) ?? rootFolder;
   }
   const notes = node.notes.reverse();
-  const values = notes.map((note: Note) => `<${note.tag}>${note.value}</${note.tag}>`);
+  const values = notes.map((note: Note) => {
+    const tag = note.tag.includes('h') ? 'h2' : note.tag;
+    return `<${tag}>${note.value}</${tag}>`;
+  });
   let htmlNote = values.reduce((note: string, htmlNote: string) => {
     return `${htmlNote}${note}`;
   }, ``);
@@ -165,6 +168,7 @@ async function buildFromJson(name: string, data: JsonData[]) {
   const folder = await Folder.create({
     name: name,
     type: 'JournalEntry',
+    sorting: 'm',
   });
   if (!folder) {
     console.log(`Error creating folder ${name}`);
