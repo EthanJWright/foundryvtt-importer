@@ -1,6 +1,8 @@
 import { registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
 
+const MAX_DEPTH = 2;
+
 function getRootName(fullFileName: string) {
   // get file name from full path
   const fileName = fullFileName.split('/').pop() || fullFileName;
@@ -146,6 +148,7 @@ async function createFoldersRecursive(
   node: JournalNode,
   rootFolder: StoredDocument<Folder>,
   currentFolder: StoredDocument<Folder> | undefined,
+  currentDepth = 0,
 ) {
   let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
   // if node.value in collission_tracker, then we have a collision
@@ -155,9 +158,8 @@ async function createFoldersRecursive(
   // convert %20 to space
   name = name.replace(/%20/g, ' ');
 
-  if (node.children.length > 0) {
+  if (node.children.length > 0 && currentDepth < MAX_DEPTH) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
-    console.log(`Creating folder with parent : ${currentFolder?.data?.name ?? rootFolder.data.name}`);
     folder =
       (await Folder.create({
         name: name,
@@ -165,6 +167,7 @@ async function createFoldersRecursive(
         parent: current_id,
         sorting: 'm',
       })) ?? rootFolder;
+    currentDepth++;
   }
   const notes = node.notes.reverse();
   const values = notes.map((note: Note) => {
@@ -199,12 +202,11 @@ async function createFoldersRecursive(
   }
 
   if (node.children) {
-    console.log(`Sorting journal children...`);
     const children = node.children.map((child) => {
       return { ...child, sortValue: getSortValue(child.value) };
     });
     for (const child of children) {
-      await createFoldersRecursive(child, rootFolder, folder);
+      await createFoldersRecursive(child, rootFolder, folder, currentDepth);
     }
   }
 }
@@ -221,7 +223,7 @@ async function buildFromJson(name: string, data: JournalNode[]) {
     return;
   } else {
     data.forEach(async (section: JournalNode) => {
-      await createFoldersRecursive(section, folder, undefined);
+      await createFoldersRecursive(section, folder, undefined, 0);
     });
     console.log(`Finished generating ${name} Journals...`);
   }
