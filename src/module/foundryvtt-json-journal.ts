@@ -17,9 +17,10 @@ async function processTableJSON(fullFileName: string) {
   if (!response.ok) {
     console.log(`Error reading ${fullFileName}`);
     return;
-  } else {
-    console.log(`Loaded file.`);
   }
+  const data = await response.text();
+  const json = JSON.parse(data) as TableJSON;
+  createTableFromJSON(json);
 }
 
 async function processInputJSON(fullFileName: string) {
@@ -88,6 +89,26 @@ function renderSidebarButtons(settings: Settings, tab: string, handler: Handler)
   });
 }
 
+interface TableEntry {
+  range: [number, number];
+  text: string;
+}
+
+interface TableJSON {
+  title: string;
+  formula: string;
+  entries: TableEntry[];
+}
+
+async function createTableFromJSON({ title, formula, entries }: TableJSON) {
+  console.log(`creating a table...`);
+  await RollTable.create({
+    name: title,
+    formula,
+    results: [...entries],
+  });
+}
+
 Hooks.on('renderSidebarTab', (settings: Settings) => {
   renderSidebarButtons(settings, 'journal', processInputJSON);
   renderSidebarButtons(settings, 'tables', processTableJSON);
@@ -105,11 +126,6 @@ Hooks.once('init', async () => {
   await preloadTemplates();
 
   // Register custom sheets (if any)
-});
-
-// Setup module
-Hooks.once('setup', async () => {
-  // Set things up
 });
 
 interface Note {
