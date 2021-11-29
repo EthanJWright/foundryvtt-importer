@@ -24,6 +24,44 @@ function getRootName(fullFileName: string) {
   return rootName.charAt(0).toUpperCase() + rootName.slice(1);
 }
 
+const formatList = (note: string) => {
+  let prepend = '';
+  if (note.includes('1. ') && note.includes('2. ')) {
+    const splitNote = note.split(/[0-9]+\./);
+    if (note[0] !== '1') {
+      prepend = splitNote[0];
+      splitNote.shift();
+    }
+    const asList = splitNote.map((listItem: string) => {
+      return `<li>${listItem}</li>`;
+    });
+    return `${prepend}<ol>${asList.join('')}</ol>`;
+  }
+  return `${note}`;
+};
+
+const noteMaps = (note: string) => {
+  return formatList(note);
+};
+
+const mergeParagraphs = (noteList: Note[], current: Note) => {
+  if (current.tag !== 'p') {
+    noteList.push(current);
+    return noteList;
+  }
+  if (noteList.length === 0) {
+    noteList.push(current);
+    return noteList;
+  }
+
+  if (noteList[noteList.length - 1].tag === 'p') {
+    noteList[noteList.length - 1].value += ` ${current.value}`;
+  } else {
+    noteList.push(current);
+  }
+  return noteList;
+};
+
 const collission_tracker: Record<string, number> = {};
 async function createFoldersRecursive(
   node: JournalNode,
@@ -52,11 +90,13 @@ async function createFoldersRecursive(
     currentDepth++;
   }
   const notes = node.notes.reverse();
-  const values = notes.map((note: Note) => {
+  const reduced = notes.reduce(mergeParagraphs, []);
+  const values = reduced.map((note: Note) => {
     const tag = note.tag.includes('h') ? 'h2' : note.tag;
     return `<${tag}>${note.value}</${tag}>`;
   });
-  let htmlNote = values.reduce((note: string, htmlNote: string) => {
+  const finalNotes = values.map(noteMaps);
+  let htmlNote = finalNotes.reduce((note: string, htmlNote: string) => {
     return `${htmlNote}${note}`;
   }, ``);
   htmlNote = `<div>${htmlNote}</div>`;
