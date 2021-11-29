@@ -2,10 +2,11 @@ import { Handler, importJSONForm } from './importForm';
 
 export function renderSidebarButtons(settings: Settings, tab: string, handler: Handler) {
   if (settings.id != tab) return;
+  const name = tab.charAt(0).toUpperCase() + tab.slice(1);
   const html = settings.element;
   if (html.find('#pdfButton').length !== 0) return;
   const button = `<button id="pdfButton" style="flex-basis: auto;">
-  <i class="fas fa-atlas"></i> Import JSON ${tab}
+  <i class="fas fa-atlas"></i> Import ${name}
 </button>`;
   html.find(`.header-actions`).first().append(button);
   html.find('#pdfButton').on('click', async (e) => {
