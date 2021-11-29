@@ -24,7 +24,7 @@ export function isBasicTable(table: FoundryTable | BasicTable) {
   return (table as FoundryTable).formula === undefined;
 }
 
-const entryMap = (current: string, index: number): TableEntry => {
+const entryStringMap = (current: string, index: number): TableEntry => {
   return {
     text: current,
     range: [index + 1, index + 1],
@@ -32,10 +32,11 @@ const entryMap = (current: string, index: number): TableEntry => {
 };
 
 export function parseBasicJSON({ title, entries }: BasicTable) {
+  const results = entries.map(entryStringMap);
   return {
     name: title,
-    formula: `1d${entries.length}`,
-    results: [...entries.map(entryMap)],
+    formula: formulaFromEntries(results),
+    results,
   };
 }
 
@@ -45,6 +46,10 @@ export function parseFoundryJSON({ title, formula, entries }: FoundryTable) {
     formula,
     results: [...entries],
   };
+}
+
+function formulaFromEntries(entries: TableEntry[]): string {
+  return `1d${entries[entries.length - 1]?.range[1]}`;
 }
 
 function nameFromFile(file: string) {
@@ -66,6 +71,37 @@ export function parseFromTxt(table: BasicTable) {
   return {
     name: nameFromFile(title),
     formula: `1d${entries.length}`,
-    results: [...entries.map(entryMap)],
+    results: [...entries.map(entryStringMap)],
+  };
+}
+
+const entryCSVMap = (current: string): TableEntry => {
+  const [stringRange, text] = current.split('|');
+  let start, end: number;
+  if (stringRange.includes('-')) {
+    [start, end] = stringRange.split('-').map(Number);
+  } else {
+    start = Number(stringRange);
+    end = start;
+  }
+  if (end === 0) {
+    end = 100;
+  }
+  if (start === 0) {
+    start = 1;
+  }
+  return {
+    text,
+    range: [start, end],
+  };
+};
+
+export function parseFromCSV(table: BasicTable) {
+  const { title, entries } = table;
+  const results = entries.map(entryCSVMap);
+  return {
+    name: nameFromFile(title),
+    formula: formulaFromEntries(results),
+    results,
   };
 }

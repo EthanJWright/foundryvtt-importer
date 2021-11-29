@@ -4,6 +4,7 @@ import {
   isFoundryTable,
   parseBasicJSON,
   parseFoundryJSON,
+  parseFromCSV,
   parseFromTxt,
   TableData,
 } from './table.process';
@@ -24,16 +25,25 @@ async function jsonRoute(stringData: string) {
   createTableFromJSON(json);
 }
 
-async function txtRoute(fullFileName: string, stringData: string) {
-  console.log(`Data: ${stringData}`);
-  const rawLines = stringData.split(/\r?\n/);
-  console.log(`raw lines: ${rawLines}`);
-  const lines = rawLines.filter((line) => {
+const breakLines = (data: string) => {
+  const rawLines = data.split(/\r?\n/);
+  return rawLines.filter((line) => {
     return line !== '';
   });
-  console.log(`lines: ${lines}`);
+};
+
+async function txtRoute(fullFileName: string, stringData: string) {
+  console.log(`Data: ${stringData}`);
+  const lines = breakLines(stringData);
   const parsed = parseFromTxt({ title: fullFileName, entries: lines });
   await RollTable.create(parsed);
+}
+
+async function csvRoute(fullFileName: string, data: string) {
+  console.log(`CSV Data: ${data}`);
+  const lines = breakLines(data);
+  const parse = parseFromCSV({ title: fullFileName, entries: lines });
+  await RollTable.create(parse);
 }
 
 export async function processTableJSON(fullFileName: string) {
@@ -50,6 +60,9 @@ export async function processTableJSON(fullFileName: string) {
       break;
     case 'txt':
       txtRoute(fullFileName, data);
+      break;
+    case 'csv':
+      csvRoute(fullFileName, data);
       break;
     default:
       console.log(`Unknown file type ${ext}`);
