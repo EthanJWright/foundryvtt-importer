@@ -32,7 +32,7 @@ export class Config {
 export function registerSettings(): void {
   if (game === {}) return;
   else {
-    (game as any)?.settings?.register(CONSTANTS.module.name, 'folderDepth', {
+    (game as Game)?.settings?.register(CONSTANTS.module.name, 'folderDepth', {
       name: 'Folder Depth',
       hint: 'Folders will only be created up to this depth',
       scope: 'world',
