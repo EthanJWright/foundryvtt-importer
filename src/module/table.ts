@@ -1,18 +1,6 @@
-import { parseFoundryJSON, TableData } from './table.process';
+import { FoundryTableJSON, parseFoundryJSON, TableData } from './table.process';
 
-export interface TableEntry {
-  range: [number, number];
-  text: string;
-}
-
-export interface TableJSON {
-  title: string;
-  strategy?: 'foundry' | 'basic';
-  formula: string;
-  entries: TableEntry[];
-}
-
-async function createTableFromJSON(tableJSON: TableJSON) {
+async function createTableFromJSON(tableJSON: FoundryTableJSON) {
   console.log(`creating a table...`);
   const strategy = tableJSON.strategy || 'foundry';
   let parsed: TableData | undefined;
@@ -27,7 +15,7 @@ async function createTableFromJSON(tableJSON: TableJSON) {
 }
 
 async function jsonRoute(stringData: string) {
-  const json = JSON.parse(stringData) as TableJSON;
+  const json = JSON.parse(stringData) as FoundryTableJSON;
   createTableFromJSON(json);
 }
 
