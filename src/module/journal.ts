@@ -1,3 +1,4 @@
+import { cleanName } from './formatters';
 import { Config } from './settings';
 
 interface Note {
@@ -39,6 +40,16 @@ const formatList = (note: string) => {
   }
   return `${note}`;
 };
+
+function normalizeHeaders(note: Note) {
+  if (note.tag.includes('h')) {
+    if (Number(note.tag.replace('h', '')) > 10) {
+      note.tag = 'p';
+    }
+  }
+  const tag = note.tag.includes('h') ? 'h2' : note.tag;
+  return `<${tag}>${note.value}</${tag}>`;
+}
 
 const noteMaps = (note: string) => {
   return formatList(note);
@@ -82,7 +93,7 @@ async function createFoldersRecursive(
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
     folder =
       (await Folder.create({
-        name: name,
+        name: cleanName(name),
         type: 'JournalEntry',
         parent: current_id,
         sorting: 'm',
@@ -91,17 +102,14 @@ async function createFoldersRecursive(
   }
   const notes = node.notes.reverse();
   const reduced = notes.reduce(mergeParagraphs, []);
-  const values = reduced.map((note: Note) => {
-    const tag = note.tag.includes('h') ? 'h2' : note.tag;
-    return `<${tag}>${note.value}</${tag}>`;
-  });
+  const values = reduced.map(normalizeHeaders);
   const finalNotes = values.map(noteMaps);
   let htmlNote = finalNotes.reduce((note: string, htmlNote: string) => {
     return `${htmlNote}${note}`;
   }, ``);
   htmlNote = `<div>${htmlNote}</div>`;
   await JournalEntry.create({
-    name: `${name}`,
+    name: `${cleanName(name)}`,
     content: htmlNote,
     collectionName: node.value,
     folder: folder?.data?._id,
@@ -135,7 +143,7 @@ async function createFoldersRecursive(
 
 async function journalFromJson(name: string, data: JournalNode[]) {
   const folder = await Folder.create({
-    name: name,
+    name: cleanName(name),
     type: 'JournalEntry',
     sorting: 'm',
   });

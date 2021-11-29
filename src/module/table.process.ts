@@ -1,3 +1,5 @@
+import { cleanName } from './formatters';
+
 export type TableData = ConstructorParameters<typeof foundry.documents.BaseRollTable>[0];
 
 export interface TableEntry {
@@ -59,11 +61,7 @@ function nameFromFile(file: string) {
   const name = withPath.split('/').pop() || withPath;
   // replace all underscores with spaces
   // and capitalize the first letter of each word
-  return name
-    .replace(/_/g, ' ')
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return cleanName(name);
 }
 
 export function parseFromTxt(table: BasicTable) {
