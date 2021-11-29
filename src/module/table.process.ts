@@ -6,13 +6,13 @@ export interface TableEntry {
 }
 
 export interface FoundryTable {
-  title: string;
+  name: string;
   formula: string;
   entries: TableEntry[];
 }
 
 export interface BasicTable {
-  title: string;
+  name: string;
   entries: string[];
 }
 
@@ -31,18 +31,18 @@ const entryStringMap = (current: string, index: number): TableEntry => {
   };
 };
 
-export function parseBasicJSON({ title, entries }: BasicTable) {
+export function parseBasicJSON({ name, entries }: BasicTable) {
   const results = entries.map(entryStringMap);
   return {
-    name: title,
+    name: name,
     formula: formulaFromEntries(results),
     results,
   };
 }
 
-export function parseFoundryJSON({ title, formula, entries }: FoundryTable) {
+export function parseFoundryJSON({ name, formula, entries }: FoundryTable) {
   return {
-    name: title,
+    name: name,
     formula,
     results: [...entries],
   };
@@ -67,9 +67,9 @@ function nameFromFile(file: string) {
 }
 
 export function parseFromTxt(table: BasicTable) {
-  const { title, entries } = table;
+  const { name, entries } = table;
   return {
-    name: nameFromFile(title),
+    name: nameFromFile(name),
     formula: `1d${entries.length}`,
     results: [...entries.map(entryStringMap)],
   };
@@ -97,10 +97,10 @@ const entryCSVMap = (current: string): TableEntry => {
 };
 
 export function parseFromCSV(table: BasicTable) {
-  const { title, entries } = table;
+  const { name, entries } = table;
   const results = entries.map(entryCSVMap);
   return {
-    name: nameFromFile(title),
+    name: nameFromFile(name),
     formula: formulaFromEntries(results),
     results,
   };

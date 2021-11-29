@@ -35,14 +35,14 @@ const breakLines = (data: string) => {
 async function txtRoute(fullFileName: string, stringData: string) {
   console.log(`Data: ${stringData}`);
   const lines = breakLines(stringData);
-  const parsed = parseFromTxt({ title: fullFileName, entries: lines });
+  const parsed = parseFromTxt({ name: fullFileName, entries: lines });
   await RollTable.create(parsed);
 }
 
 async function csvRoute(fullFileName: string, data: string) {
   console.log(`CSV Data: ${data}`);
   const lines = breakLines(data);
-  const parse = parseFromCSV({ title: fullFileName, entries: lines });
+  const parse = parseFromCSV({ name: fullFileName, entries: lines });
   await RollTable.create(parse);
 }
 
