@@ -1,6 +1,6 @@
 {
-  "name": "foundryvtt-json-journal",
-  "title": "foundryvtt-json-journal",
+  "name": "foundryvtt-importer",
+  "title": "foundryvtt-importer",
   "description": "",
   "version": "0.0.0",
   "author": "EthanJWright",
@@ -14,8 +14,8 @@
   "minimumCoreVersion": "0.8.8",
   "compatibleCoreVersion": "0.8.8",
   "scripts": [],
-  "esmodules": ["module/foundryvtt-json-journal.js"],
-  "styles": ["styles/foundryvtt-json-journal.css"],
+  "esmodules": ["module/foundryvtt-importer.js"],
+  "styles": ["styles/foundryvtt-importer.css"],
   "packs": [],
   "dependencies": [],
   "languages": [

@@ -1,4 +1,4 @@
-# foundryvtt-json-journal
+# foundryvtt-importer
 
 Create Foundry elements from file structures.
 

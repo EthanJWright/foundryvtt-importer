@@ -3,6 +3,7 @@ import { preloadTemplates } from './preloadTemplates';
 import { processInputJSON } from './journal';
 import { processTableJSON } from './table';
 import { renderSidebarButtons } from './renderSidebarButtons';
+import CONSTANTS from './constants';
 
 Hooks.on('renderSidebarTab', (settings: Settings) => {
   renderSidebarButtons(settings, 'journal', processInputJSON);
@@ -11,7 +12,7 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
 
 // Initialize module
 Hooks.once('init', async () => {
-  console.log('foundryvtt-json-journal | Initializing foundryvtt-json-journal');
+  console.log(`${CONSTANTS.module.name} | Initializing ${CONSTANTS.module.title}`);
   // Assign custom classes and constants here
 
   // Register custom module settings

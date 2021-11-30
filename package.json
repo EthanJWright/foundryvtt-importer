@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "foundryvtt-json-journal",
+  "name": "foundryvtt-importer",
   "version": "0.0.0",
   "description": "",
   "license": "",
@@ -62,8 +62,5 @@
   "lint-staged": {
     "*.(ts|js)": "eslint --fix",
     "*.(json|css)": "prettier --write"
-  },
-  "dependencies": {
-    "fs": "^0.0.1-security"
   }
 }
