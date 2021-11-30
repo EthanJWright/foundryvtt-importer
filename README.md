@@ -10,28 +10,28 @@ below.
 ```json
 [
   {
-    value: "Chapter 1",
-    tag: "h2",
-    notes: [
+    "value": "Chapter 1",
+    "tag": "h2",
+    "notes": [
     {
-      value: "Treasure: 200 gp",
-      tag: "p"
+      "value": "Treasure: 200 gp",
+      "tag": "p"
       }, {
-      value: "Description: A caravan of goblins descends on the party."
-      tag: "p"
+      "value": "Description: A caravan of goblins descends on the party."
+      "tag": "p"
       }
     ]
-    children: [
+    "children": [
       {
-        value: "NPCs"
-        tag: "h3",
-        notes: [
+        "value": "NPCs"
+        "tag": "h3",
+        "notes": [
         {
-          value: "Grib the Goblin : friendly, short, willing to bargin.",
-          tag: "p"
+          "value": "Grib the Goblin : friendly, short, willing to bargin.",
+          "tag": "p"
           },{
-          value: "Chadwick: captured by goblins, wants to be rescued but will betray the adventurers"
-          tag: "p"
+          "value": "Chadwick: captured by goblins, wants to be rescued but will betray the adventurers"
+          "tag": "p"
           }
         ]
       }
