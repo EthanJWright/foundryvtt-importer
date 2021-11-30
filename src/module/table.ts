@@ -49,7 +49,7 @@ async function csvRoute(fullFileName: string, data: string) {
 
 async function handleRedditCollection(input: string) {
   const parsed = parseRedditCollection(input);
-  const folder = await Folder.create({ name: parsed.name, type: 'RollTable' });
+  const folder = await Folder.create({ name: parsed.name, type: 'RollTable', sorting: 'm' });
   const promises = parsed.collection.map(async (table) => {
     return RollTable.create({ ...table, folder: folder?.data?._id });
   });
@@ -58,7 +58,7 @@ async function handleRedditCollection(input: string) {
 
 async function redditTableRoute(input: string) {
   if (isRedditCollection(input)) {
-    handleRedditCollection(input);
+    return handleRedditCollection(input);
   } else {
     const parsed = parseRedditTable(input);
     await RollTable.create(parsed);
