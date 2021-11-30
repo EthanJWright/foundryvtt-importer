@@ -1,6 +1,6 @@
 # foundryvtt-importer
 
-Create Foundry elements from file structures.
+Create foundry elements from external sources.
 
 ## Key Features
 
