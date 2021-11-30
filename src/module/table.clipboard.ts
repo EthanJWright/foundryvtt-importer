@@ -3,13 +3,14 @@ import { FoundryTable } from './table.process';
 export function parseRedditTable(userInput: string): FoundryTable {
   const raw = userInput.split('\n');
   const lines = raw.filter((line) => line !== '');
+  // TODO: base formula off weights if weights exist
   const formula = `1d${lines.length - 1}`;
   return {
     name: lines.shift() || 'No Name',
     formula,
     results: lines.map((line: string, index: number) => {
       return {
-        range: [index + 1, index + 1],
+        range: [index + 1, index + 1], // TODO: base range off weights if weights exist
         text: line.trim(),
       };
     }),
