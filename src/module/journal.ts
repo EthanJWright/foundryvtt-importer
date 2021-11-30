@@ -1,4 +1,5 @@
 import { cleanName } from './formatters';
+import { UserData } from './importForm';
 import { Config } from './settings';
 
 interface Note {
@@ -14,9 +15,9 @@ interface JournalNode {
   sortValue?: number;
 }
 
-function getRootName(fullFileName: string) {
+function getRootName(jsonfile: string) {
   // get file name from full path
-  const fileName = fullFileName.split('/').pop() || fullFileName;
+  const fileName = jsonfile.split('/').pop() || jsonfile;
   // remove extension
   const name = fileName.split('.').shift() || fileName;
   // convert _ to space
@@ -160,14 +161,14 @@ async function journalFromJson(name: string, data: JournalNode[]) {
   }
 }
 
-export async function processInputJSON(fullFileName: string) {
-  const response = await fetch(fullFileName);
+export async function processInputJSON({ jsonfile }: UserData) {
+  const response = await fetch(jsonfile);
   if (!response.ok) {
-    console.log(`Error reading ${fullFileName}`);
+    console.log(`Error reading ${jsonfile}`);
     return;
   }
   const data = await response.text();
   const json = JSON.parse(data) as JournalNode[];
-  const name = getRootName(fullFileName);
+  const name = getRootName(jsonfile);
   journalFromJson(name, json);
 }

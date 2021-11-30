@@ -4,12 +4,12 @@ export function renderSidebarButtons(settings: Settings, tab: string, handler: H
   if (settings.id != tab) return;
   const name = tab.charAt(0).toUpperCase() + tab.slice(1);
   const html = settings.element;
-  if (html.find('#pdfButton').length !== 0) return;
-  const button = `<button id="pdfButton" style="flex-basis: auto;">
+  if (html.find('#inputButton').length !== 0) return;
+  const button = `<button id="inputButton" style="flex-basis: auto;">
   <i class="fas fa-atlas"></i> Import ${name}
 </button>`;
   html.find(`.header-actions`).first().append(button);
-  html.find('#pdfButton').on('click', async (e) => {
+  html.find('#inputButton').on('click', async (e) => {
     e.preventDefault();
     const form = new importJSONForm(handler);
     form.render(true);

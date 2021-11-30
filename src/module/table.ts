@@ -1,3 +1,4 @@
+import { UserData } from './importForm';
 import {
   BasicTable,
   FoundryTable,
@@ -8,7 +9,6 @@ import {
   parseFromTxt,
   TableData,
 } from './table.process';
-
 async function createTableFromJSON(tableJSON: FoundryTable | BasicTable) {
   console.log(`creating a table...`);
   let parsed: TableData | undefined;
@@ -46,23 +46,24 @@ async function csvRoute(fullFileName: string, data: string) {
   await RollTable.create(parse);
 }
 
-export async function processTableJSON(fullFileName: string) {
-  const response = await fetch(fullFileName);
+export async function processTableJSON({ jsonfile }: UserData) {
+  const response = await fetch(jsonfile);
   if (!response.ok) {
-    console.log(`Error reading ${fullFileName}`);
+    console.log(`Error reading ${jsonfile}`);
     return;
   }
   const data = await response.text();
-  const ext = fullFileName.split('.').pop();
+
+  const ext = jsonfile.split('.').pop();
   switch (ext) {
     case 'json':
       jsonRoute(data);
       break;
     case 'txt':
-      txtRoute(fullFileName, data);
+      txtRoute(jsonfile, data);
       break;
     case 'csv':
-      csvRoute(fullFileName, data);
+      csvRoute(jsonfile, data);
       break;
     default:
       console.log(`Unknown file type ${ext}`);

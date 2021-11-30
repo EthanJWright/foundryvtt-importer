@@ -2,7 +2,12 @@ interface HTMLImportData {
   jsonfile: string;
 }
 
-export type Handler = (jsonfile: string) => Promise<void>;
+export interface UserData {
+  jsonfile: string;
+  clipboardInput: string;
+}
+
+export type Handler = (data: UserData) => Promise<void>;
 export class importJSONForm extends FormApplication {
   _handler: Handler;
   constructor(handler: Handler) {
@@ -21,7 +26,8 @@ export class importJSONForm extends FormApplication {
   async _updateObject(event: Event, formData?: object): Promise<unknown> {
     if (!formData || formData === {}) return;
     const data = formData as HTMLImportData;
-    this.handler(data.jsonfile);
+    console.log(`data: ${JSON.stringify(data, null, 2)}`);
+    this.handler(data as UserData);
     return;
   }
 
