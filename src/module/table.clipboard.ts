@@ -21,7 +21,7 @@ export interface TableCollection {
 }
 
 export function isRedditCollection(userInput: string) {
-  return userInput.split(/d[0-9]{1,2}/).length > 1;
+  return userInput.split(/\nd[0-9]{1,2}/).length > 1;
 }
 
 export function parseRedditCollection(userInput: string): TableCollection {
