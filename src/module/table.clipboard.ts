@@ -3,9 +3,10 @@ import { FoundryTable } from './table.process';
 export function parseRedditTable(userInput: string): FoundryTable {
   const raw = userInput.split('\n');
   const lines = raw.filter((line) => line !== '');
+  const formula = `1d${lines.length - 1}`;
   return {
     name: lines.shift() || 'No Name',
-    formula: `1d${lines.length}`,
+    formula,
     results: lines.map((line: string, index: number) => {
       return {
         range: [index + 1, index + 1],

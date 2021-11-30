@@ -9,6 +9,12 @@ describe('parseRedditTable', () => {
     expect(parsed.name).toBe('d10 The castle sits...');
     expect(parsed.formula).toBe('1d10');
   });
+  it('should use table weights if provided', () => {
+    const table =
+      'd100 Air Currents\n01-05. breeze, slight.\n06-10. breeze, slight, damp.\n11-12. breeze, gusting.\n13-18. cold current.\n19-20. downdraft, slight.\n21-22. downdraft, strong.\n23-69. still.\n70-75. still, very chill.\n76-85. still, warm (or hot).\n86-87. updraft, slight.\n88-89. updraft, strong.\n90-93. wind, strong.\n94-95. wind, strong, gusting.\n96-100. wind, strong, moaning.';
+    const parsed = parseRedditTable(table);
+    expect(parsed.results).toHaveLength(14);
+  });
 });
 
 describe('parseRedditCollection', () => {

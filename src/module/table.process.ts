@@ -73,13 +73,12 @@ export function parseFromTxt(table: BasicTable) {
   };
 }
 
-const entryCSVMap = (current: string): TableEntry => {
-  const [stringRange, text] = current.split('|');
+const rangeStringMap = (current: string): [number, number] => {
   let start, end: number;
-  if (stringRange.includes('-')) {
-    [start, end] = stringRange.split('-').map(Number);
+  if (current.includes('-')) {
+    [start, end] = current.split('-').map(Number);
   } else {
-    start = Number(stringRange);
+    start = Number(current);
     end = start;
   }
   if (end === 0) {
@@ -88,6 +87,12 @@ const entryCSVMap = (current: string): TableEntry => {
   if (start === 0) {
     start = 1;
   }
+  return [start, end];
+};
+
+const entryCSVMap = (current: string): TableEntry => {
+  const [stringRange, text] = current.split('|');
+  const [start, end] = rangeStringMap(stringRange);
   return {
     text,
     range: [start, end],
