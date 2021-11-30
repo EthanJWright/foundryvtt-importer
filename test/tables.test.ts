@@ -1,4 +1,11 @@
-import { isRedditCollection, parseRedditCollection, parseRedditTable } from '../src/module/table.clipboard';
+import { hasWeights, isRedditCollection, parseRedditCollection, parseRedditTable } from '../src/module/table.clipboard';
+
+describe('hasWeights', () => {
+  it('should return true if the element has weights', () => {
+    const item = '\n06-10. breeze, slight, damp.';
+    expect(hasWeights(item)).toBe(true);
+  });
+});
 
 describe('parseRedditTable', () => {
   it('should parse a single table', () => {

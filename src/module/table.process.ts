@@ -51,7 +51,7 @@ export function parseFoundryJSON({ name, formula, results }: FoundryTable) {
 }
 
 function formulaFromEntries(entries: TableEntry[]): string {
-  return `1d${entries[entries.length - 1]?.range[1]}`;
+  return `1d${entries[entries.length - 1].range[1]}`;
 }
 
 function nameFromFile(file: string) {
@@ -73,7 +73,7 @@ export function parseFromTxt(table: BasicTable) {
   };
 }
 
-const rangeStringMap = (current: string): [number, number] => {
+export const rangeStringMap = (current: string): [number, number] => {
   let start, end: number;
   if (current.includes('-')) {
     [start, end] = current.split('-').map(Number);
