@@ -10,7 +10,7 @@ export interface TableEntry {
 export interface FoundryTable {
   name: string;
   formula: string;
-  entries: TableEntry[];
+  results: TableEntry[];
 }
 
 export interface BasicTable {
@@ -42,11 +42,11 @@ export function parseBasicJSON({ name, entries }: BasicTable) {
   };
 }
 
-export function parseFoundryJSON({ name, formula, entries }: FoundryTable) {
+export function parseFoundryJSON({ name, formula, results }: FoundryTable) {
   return {
     name: name,
     formula,
-    results: [...entries],
+    results: [...results],
   };
 }
 

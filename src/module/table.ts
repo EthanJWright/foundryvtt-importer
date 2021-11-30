@@ -1,4 +1,5 @@
 import { UserData } from './importForm';
+import { parseRedditTable } from './table.clipboard';
 import {
   BasicTable,
   FoundryTable,
@@ -46,7 +47,16 @@ async function csvRoute(fullFileName: string, data: string) {
   await RollTable.create(parse);
 }
 
-export async function processTableJSON({ jsonfile }: UserData) {
+async function redditTableRoute(input: string) {
+  const parsed = parseRedditTable(input);
+  await RollTable.create(parsed);
+}
+
+export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
+  if (clipboardInput) {
+    redditTableRoute(clipboardInput);
+    return;
+  }
   const response = await fetch(jsonfile);
   if (!response.ok) {
     console.log(`Error reading ${jsonfile}`);
