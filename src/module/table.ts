@@ -1,5 +1,5 @@
 import { UserData } from './importForm';
-import { parseRedditTable } from './table.clipboard';
+import { isRedditCollection, parseRedditCollection, parseRedditTable } from './table.clipboard';
 import {
   BasicTable,
   FoundryTable,
@@ -47,9 +47,22 @@ async function csvRoute(fullFileName: string, data: string) {
   await RollTable.create(parse);
 }
 
+async function handleRedditCollection(input: string) {
+  const parsed = parseRedditCollection(input);
+  const folder = await Folder.create({ name: parsed.name, type: 'RollTable' });
+  const promises = parsed.collection.map(async (table) => {
+    return RollTable.create({ ...table, folder: folder?.data?._id });
+  });
+  await Promise.all(promises);
+}
+
 async function redditTableRoute(input: string) {
-  const parsed = parseRedditTable(input);
-  await RollTable.create(parsed);
+  if (isRedditCollection(input)) {
+    handleRedditCollection(input);
+  } else {
+    const parsed = parseRedditTable(input);
+    await RollTable.create(parsed);
+  }
 }
 
 export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
