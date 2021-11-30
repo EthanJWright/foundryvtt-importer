@@ -2,6 +2,24 @@
 
 Create Foundry elements from file structures.
 
+## Key Features
+
+### Tables
+
+Import tables from external sources, creating quick collections.
+
+Import tables from:
+
+- [Reddit](https://www.reddit.com/r/BehindTheTables)
+- txt file
+- CSV
+- JSON
+
+### Journals
+
+Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
+tool which attempts to process modules that may be found in DMs guild.
+
 ## Journals
 
 Journal entries can be created through a tree like JSON structure as seen
