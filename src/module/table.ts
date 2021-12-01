@@ -50,8 +50,8 @@ async function csvRoute(fullFileName: string, data: string) {
 async function handleRedditCollection(input: string) {
   const parsed = parseRedditCollection(input);
   const folder = await Folder.create({ name: parsed.name, type: 'RollTable', sorting: 'm' });
-  const promises = parsed.collection.map(async (table) => {
-    return RollTable.create({ ...table, folder: folder?.data?._id });
+  const promises = parsed.collection.map(async (table, index) => {
+    return RollTable.create({ ...table, folder: folder?.data?._id, sort: index });
   });
   await Promise.all(promises);
 }
