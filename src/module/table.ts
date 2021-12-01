@@ -1,9 +1,11 @@
 import { UserData } from './importForm';
-import { isRedditCollection, parseRedditCollection, parseRedditTable } from './table.reddit';
+import { isRedditCollection, isRedditTable, parseRedditCollection, parseRedditTable } from './table.reddit';
 import {
   BasicTable,
   FoundryTable,
+  isCSVTable,
   isFoundryTable,
+  isJSONTable,
   parseBasicJSON,
   parseFoundryJSON,
   parseFromCSV,
@@ -67,7 +69,17 @@ async function redditTableRoute(input: string) {
 
 export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
   if (clipboardInput) {
-    redditTableRoute(clipboardInput);
+    if (isJSONTable(clipboardInput)) {
+      jsonRoute(clipboardInput);
+    } else if (isCSVTable(clipboardInput)) {
+      csvRoute('CSV Imported Table', clipboardInput);
+    } else if (isRedditCollection(clipboardInput)) {
+      redditTableRoute(clipboardInput);
+    } else if (isRedditTable(clipboardInput)) {
+      redditTableRoute(clipboardInput);
+    } else {
+      txtRoute('Line Imported Table', clipboardInput);
+    }
     return;
   }
   const response = await fetch(jsonfile);

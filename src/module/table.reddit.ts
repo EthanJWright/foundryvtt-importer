@@ -56,6 +56,10 @@ export interface TableCollection {
   name: string;
 }
 
+export function isRedditTable(userInput: string): boolean {
+  return /^d[0-9]{1,3}/.test(userInput.trim());
+}
+
 export function isRedditCollection(userInput: string) {
   return userInput.split(/\nd[0-9]{1,2}/).length > 1;
 }
