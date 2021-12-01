@@ -13,10 +13,13 @@ Import tables from external sources, creating quick collections.
 
 Import tables from:
 
-- [Reddit](https://www.reddit.com/r/BehindTheTables)
-- txt file
-- CSV
-- JSON
+- Create many tables all nested in a folder from [Reddit](https://www.reddit.com/r/BehindTheTables)
+- Copy and paste data to be parsed (entries per line, csv, json, etc.)
+- Import text files (new lines are table entries)
+- Import CSV files (first column treated as roll hits)
+- Import from JSON (a few different structures to suite needs, easy to generate from scripts)
+
+Reddit.
 
 ---
 
