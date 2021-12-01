@@ -26,14 +26,14 @@ Importing Reddit table collections is great when paired with the [Table Ninja](h
 
 ---
 
-## Examples
-
-![](./images/table-example.png)
-
 ### Journals
 
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
 tool which attempts to process modules that may be found in DMs guild.
+
+## Examples
+
+![](./images/table-example.png)
 
 ## Tables
 
