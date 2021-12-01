@@ -26,7 +26,7 @@ export class importJSONForm extends FormApplication {
     this._handler = handler;
   }
 
-  async _updateObject(event: Event, formData?: object): Promise<unknown> {
+  async _updateObject(_: Event, formData?: object): Promise<unknown> {
     if (!formData || formData === {}) return;
     const data = formData as HTMLImportData;
     console.log(`data: ${JSON.stringify(data, null, 2)}`);
