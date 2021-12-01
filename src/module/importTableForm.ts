@@ -32,7 +32,7 @@ export class importTableForm extends FormApplication {
       width: 400,
       top: window.innerHeight - window.innerHeight + 20,
       left: window.innerWidth - 710,
-      template: `modules/foundryvtt-importer/templates/importTableForm.html`,
+      template: `modules/foundryvtt-importer/templates/importTableForm.hbs`,
     });
   }
 }
