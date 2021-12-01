@@ -1,4 +1,4 @@
-import { registerSettings } from './settings';
+import { Config, registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
 import { processInputJSON } from './journal';
 import { processTableJSON } from './table';
@@ -6,7 +6,10 @@ import { renderSidebarButtons } from './renderSidebarButtons';
 import CONSTANTS from './constants';
 
 Hooks.on('renderSidebarTab', (settings: Settings) => {
-  renderSidebarButtons(settings, 'journal', processInputJSON);
+  const config = Config._load();
+  if (config.journalImporter) {
+    renderSidebarButtons(settings, 'journal', processInputJSON);
+  }
   renderSidebarButtons(settings, 'tables', processTableJSON);
 });
 
