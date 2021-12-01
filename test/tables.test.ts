@@ -1,4 +1,4 @@
-import { hasWeights, isRedditCollection, parseRedditCollection, parseRedditTable } from '../src/module/table.clipboard';
+import { hasWeights, isRedditCollection, parseRedditCollection, parseRedditTable } from '../src/module/table.reddit';
 
 describe('hasWeights', () => {
   it('should return true if the element has weights', () => {

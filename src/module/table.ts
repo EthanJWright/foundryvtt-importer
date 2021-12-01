@@ -1,5 +1,5 @@
 import { UserData } from './importForm';
-import { isRedditCollection, parseRedditCollection, parseRedditTable } from './table.clipboard';
+import { isRedditCollection, parseRedditCollection, parseRedditTable } from './table.reddit';
 import {
   BasicTable,
   FoundryTable,
