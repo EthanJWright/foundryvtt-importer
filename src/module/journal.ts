@@ -86,9 +86,7 @@ async function createFoldersRecursive(
   // if node.value in collission_tracker, then we have a collision
   collission_tracker[node.value] = collission_tracker[node.value] ?? 0;
   collission_tracker[node.value]++;
-  let name = `${node.value}`;
-  // convert %20 to space
-  name = name.replace(/%20/g, ' ');
+  const name = `${node.value}`;
 
   if (node.children.length > 0 && currentDepth < settings.folderDepth) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
