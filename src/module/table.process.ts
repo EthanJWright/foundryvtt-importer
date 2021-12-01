@@ -64,6 +64,21 @@ function nameFromFile(file: string) {
   return cleanName(name);
 }
 
+export function isCSVTable(data: string) {
+  const delims = ['|', ','];
+  const check = data.split('\n')[0];
+  return delims.reduce((acc, cur) => check.includes(cur) || acc, false);
+}
+
+export function isJSONTable(data: string) {
+  try {
+    JSON.parse(data);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
 export function parseFromTxt(table: BasicTable) {
   const { name, entries } = table;
   return {
