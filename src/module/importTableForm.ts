@@ -1,14 +1,6 @@
-export interface HTMLImportData {
-  jsonfile: string;
-}
+import { Handler, HTMLImportData, UserData } from './importForm';
 
-export interface UserData {
-  jsonfile: string;
-  clipboardInput?: string;
-}
-
-export type Handler = (data: UserData) => Promise<void>;
-export class importJSONForm extends FormApplication {
+export class importTableForm extends FormApplication {
   _handler: Handler;
   tab: string;
 
@@ -40,7 +32,7 @@ export class importJSONForm extends FormApplication {
       width: 400,
       top: window.innerHeight - window.innerHeight + 20,
       left: window.innerWidth - 710,
-      template: `modules/foundryvtt-importer/templates/importForm.html`,
+      template: `modules/foundryvtt-importer/templates/importTableForm.html`,
     });
   }
 }

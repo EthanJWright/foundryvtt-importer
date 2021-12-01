@@ -1,4 +1,5 @@
 import { Handler, importJSONForm } from './importForm';
+import { importTableForm } from './importTableForm';
 
 export function renderSidebarButtons(settings: Settings, tab: string, handler: Handler) {
   if (settings.id != tab) return;
@@ -11,7 +12,19 @@ export function renderSidebarButtons(settings: Settings, tab: string, handler: H
   html.find(`.header-actions`).first().append(button);
   html.find('#inputButton').on('click', async (e) => {
     e.preventDefault();
-    const form = new importJSONForm(handler);
-    form.render(true);
+    switch (tab) {
+      case 'journal': {
+        const form = new importJSONForm(handler, tab);
+        form.render(true);
+        break;
+      }
+      case 'tables': {
+        const form = new importTableForm(handler, tab);
+        form.render(true);
+        break;
+      }
+      default:
+        throw new Error(`Unknown tab: ${tab}`);
+    }
   });
 }
