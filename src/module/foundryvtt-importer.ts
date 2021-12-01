@@ -6,6 +6,7 @@ import { renderSidebarButtons } from './renderSidebarButtons';
 import CONSTANTS from './constants';
 
 Hooks.on('renderSidebarTab', (settings: Settings) => {
+  if (!(game as Game)?.user?.isGM) return;
   const config = Config._load();
   if (config.journalImporter) {
     renderSidebarButtons(settings, 'journal', processInputJSON);
