@@ -237,10 +237,10 @@ export function parseFeatures(lines: string[], startIndex: number): Feature[] {
   return features;
 }
 
-export function findFirstActionIndex(lines: string[]): number {
+export function findFirstSectionIndex(lines: string[], term: string): number {
   let firstMatch = 0;
   lines.forEach((line) => {
-    if (line.toUpperCase().includes('ACTION') && line.split(' ').length < 3) {
+    if (line.toUpperCase().includes(term.toUpperCase()) && line.split(' ').length < 3) {
       firstMatch = lines.indexOf(line);
     }
   });
@@ -286,6 +286,6 @@ export function textToActor(input: string): ImportActor {
     speed: parseSpeed(lines),
     skills: parseSkills(lines),
     features: parseFeatures(featureLines, findFirstFeatureIndex(featureLines)),
-    actions: parseActions(featureLines, findFirstActionIndex(featureLines)),
+    actions: parseActions(featureLines, findFirstSectionIndex(featureLines, 'actions')),
   };
 }
