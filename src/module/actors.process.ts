@@ -1,77 +1,16 @@
-/* {
-  "Actor": {
-    "types": ["character", "npc"],
-    "templates": {
-      "base": {
-        "health": {
-          "value": 10,
-          "min": 0,
-          "max": 10
-        },
-        "power": {
-          "value": 5,
-          "min": 0,
-          "max": 5
-        },
-        "biography": ""
-      }
-    },
-    "character": {
-      "templates": ["base"],
-      "attributes": {
-        "level": {
-          "value": 1
-        }
-      },
-      "abilities": {
-        "str": {
-          "value": 10
-        },
-        "dex": {
-          "value": 10
-        },
-        "con": {
-          "value": 10
-        },
-        "int": {
-          "value": 10
-        },
-        "wis": {
-          "value": 10
-        },
-        "cha": {
-          "value": 10
-        }
-      }
-    },
-    "npc": {
-      "templates": ["base"],
-      "cr": 0
-    }
-  },
-  "Item": {
-    "types": ["item", "feature", "spell"],
-    "templates": {
-      "base": {
-        "description": ""
-      }
-    },
-    "item": {
-      "templates": ["base"],
-      "quantity": 1,
-      "weight": 0,
-      "formula": "d20 + @str.mod + ceil(@lvl / 2)"
-    },
-    "feature": {
-      "templates": ["base"]
-    },
-    "spell": {
-      "templates": ["base"],
-      "spellLevel": 1
-    }
-  }
-} */
+interface Ability {
+  value: number;
+  mod: number;
+}
 
+interface Abilities {
+  str: Ability;
+  dex: Ability;
+  con: Ability;
+  int: Ability;
+  wis: Ability;
+  cha: Ability;
+}
 interface Skill {
   name: string;
   bonus: number;
@@ -82,6 +21,11 @@ interface ArmorClass {
   type: string;
 }
 
+interface Feature {
+  name: string;
+  description: string;
+}
+
 export interface ImportActor {
   name: string;
   biography: string;
@@ -90,6 +34,7 @@ export interface ImportActor {
     min: number;
     max: number;
   };
+
   armorClass: ArmorClass;
   stats: Abilities;
   speed: number;
@@ -150,20 +95,6 @@ export function parseAC(acString: string): ArmorClass {
     value: Number(acNumber[0]),
     type: ac,
   };
-}
-
-interface Ability {
-  value: number;
-  mod: number;
-}
-
-interface Abilities {
-  str: Ability;
-  dex: Ability;
-  con: Ability;
-  int: Ability;
-  wis: Ability;
-  cha: Ability;
 }
 
 function parseAbilityScore(score: number, mod: string): Ability {
@@ -261,6 +192,22 @@ export function parseSkills(lines: string[]): Skill[] {
     };
   });
   return skills;
+}
+
+export function findFirstSkillIndex(lines: string[]) {
+  let firstMatch = 0;
+  lines.forEach((test, index) => {
+    // check to see if test has a . followed by 3 or more words
+    if (test.match(/\.\s\w{3,}/) && firstMatch === 0) {
+      // if so, this is the first match
+      firstMatch = index;
+    }
+  });
+  return firstMatch;
+}
+
+export function parseFeatures(lines: string[]): Feature[] {
+  throw new Error('Not implemented');
 }
 
 export function textToActor(input: string): ImportActor {
