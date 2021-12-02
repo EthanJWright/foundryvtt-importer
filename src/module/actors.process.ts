@@ -41,6 +41,7 @@ export interface ImportActor {
   skills: Skill[];
   features: Feature[];
   actions: Feature[];
+  reactions: Feature[];
 }
 
 export function parseHealth(line: string) {
@@ -251,6 +252,9 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
 }
 
 export function parseActions(lines: string[], startIndex: number): Feature[] {
+  if (startIndex === -1) {
+    return [];
+  }
   const actionSamples = lines[startIndex].split('\n');
   const actionStrings = actionSamples.reduce((acc: string[], curr: string) => {
     if (acc.length === 0 || (curr.match(/\.\s\w{3,}/) && !curr.match(/^ft./))) {
@@ -287,5 +291,6 @@ export function textToActor(input: string): ImportActor {
     skills: parseSkills(lines),
     features: parseFeatures(featureLines, findFirstFeatureIndex(featureLines)),
     actions: parseActions(featureLines, findFirstSectionIndex(featureLines, 'actions')),
+    reactions: parseActions(featureLines, findFirstSectionIndex(featureLines, 'reactions')),
   };
 }
