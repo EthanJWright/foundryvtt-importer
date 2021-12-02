@@ -72,6 +72,11 @@
   }
 } */
 
+interface Skill {
+  name: string;
+  bonus: number;
+}
+
 interface ArmorClass {
   value: number;
   type: string;
@@ -88,6 +93,7 @@ export interface ImportActor {
   armorClass: ArmorClass;
   stats: Abilities;
   speed: number;
+  skills: Skill[];
 }
 
 export function parseHealth(line: string) {
@@ -233,6 +239,30 @@ export function parseSpeed(lines: string[]) {
   return Number(speed[0]);
 }
 
+export function parseSkills(lines: string[]): Skill[] {
+  let skillLine = lines.find((line) => line.toUpperCase().includes('SKILL'));
+  if (!skillLine) {
+    throw new Error('Could not find skill line');
+  }
+  skillLine = skillLine.replace(/skills/i, '');
+  const skillKeys = skillLine.match(/\w{3,13}/g);
+  if (!skillKeys || skillKeys.length < 1) {
+    throw new Error('Could not find skill keys');
+  }
+  const skillValues = skillLine.match(/\d+/g);
+  if (!skillValues || skillValues.length < 1) {
+    throw new Error('Could not find skill values');
+  }
+
+  const skills = skillKeys.map((value, index) => {
+    return {
+      name: value.toLowerCase(),
+      bonus: Number(skillValues[index]),
+    };
+  });
+  return skills;
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
@@ -247,5 +277,6 @@ export function textToActor(input: string): ImportActor {
     armorClass: parseAC(acLine),
     stats: parseStats(lines),
     speed: parseSpeed(lines),
+    skills: parseSkills(lines),
   };
 }
