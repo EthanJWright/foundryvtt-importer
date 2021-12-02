@@ -54,5 +54,6 @@ describe('Parse Text', () => {
     expect(actor.health.max).toEqual(12 * 8 + 12);
     expect(actor.armorClass.value).toEqual(17);
     expect(actor.armorClass.type).toBe('leather armor');
+    expect(actor.speed).toEqual(30);
   });
 });

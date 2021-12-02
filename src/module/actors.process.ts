@@ -87,6 +87,7 @@ export interface ImportActor {
   };
   armorClass: ArmorClass;
   stats: Abilities;
+  speed: number;
 }
 
 export function parseHealth(line: string) {
@@ -220,6 +221,18 @@ export function parseStats(inputList: string[]) {
   throw new Error('Could not parse ability line');
 }
 
+export function parseSpeed(lines: string[]) {
+  const speedLine = lines.find((line) => line.toUpperCase().includes('SPEED'));
+  if (!speedLine) {
+    throw new Error('Could not find speed line');
+  }
+  const speed = speedLine.match(/\d+/);
+  if (!speed || speed.length < 1) {
+    throw new Error('Could not find speed');
+  }
+  return Number(speed[0]);
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
@@ -233,5 +246,6 @@ export function textToActor(input: string): ImportActor {
     health: parseHealth(healthLine),
     armorClass: parseAC(acLine),
     stats: parseStats(lines),
+    speed: parseSpeed(lines),
   };
 }
