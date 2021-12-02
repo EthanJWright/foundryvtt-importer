@@ -1,4 +1,13 @@
-import { textToActor } from '../src/module/actors.process';
+import { parseHealth, textToActor } from '../src/module/actors.process';
+describe('parseHealth', () => {
+  it('should parse a valid health string', () => {
+    const health = parseHealth('Hit Points 66 (12d8 + 12)');
+    expect(health.value).toBe(66);
+    expect(health.max).toBe(12 * 8 + 12);
+    expect(health.min).toBe(12 + 12);
+  });
+});
+
 describe('Parse Text', () => {
   it('should parse the text into an actor', () => {
     const actorText =
