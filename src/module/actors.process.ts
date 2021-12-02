@@ -225,6 +225,16 @@ export function parseFeatures(lines: string[]): Feature[] {
   return features;
 }
 
+export function findFirstActionIndex(lines: string[]): number {
+  let firstMatch = 0;
+  lines.forEach((line) => {
+    if (line.toUpperCase().includes('ACTION') && line.split(' ').length < 3) {
+      firstMatch = lines.indexOf(line);
+    }
+  });
+  return firstMatch + 1;
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
