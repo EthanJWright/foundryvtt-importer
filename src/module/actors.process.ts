@@ -39,6 +39,8 @@ export interface ImportActor {
   stats: Abilities;
   speed: number;
   skills: Skill[];
+  features: Feature[];
+  actions: Feature[];
 }
 
 export function parseHealth(line: string) {
@@ -203,21 +205,31 @@ export function findFirstFeatureIndex(lines: string[]) {
       firstMatch = index;
     }
   });
+  if (firstMatch === 0) {
+    return -1;
+  }
   return firstMatch;
 }
 
-export function parseFeatures(lines: string[]): Feature[] {
-  const startIndex = findFirstFeatureIndex(lines);
+function extractFeature(checking: string): Feature | undefined {
+  if (checking.match(/\.\s\w{3,}/)) {
+    const [name, ...rest] = checking.split(/(?=\.)/);
+    return {
+      name: name.trim(),
+      description: rest.join('').trim().replace(/\n/g, ' ').replace(/^\. /, ''),
+    };
+  }
+  return undefined;
+}
+
+export function parseFeatures(lines: string[], startIndex: number): Feature[] {
   const features: Feature[] = [];
   for (let i = startIndex; i < lines.length; i++) {
     const checking = lines[i];
     // see if checking has a . followed by 3 or more words
-    if (checking.match(/\.\s\w{3,}/)) {
-      const [name, ...rest] = checking.split('.');
-      features.push({
-        name: name.trim(),
-        description: rest.join('').trim().replace(/\n/g, ' ') + '.',
-      });
+    const feature = extractFeature(checking);
+    if (feature) {
+      features.push(feature);
       continue;
     }
     return features;
@@ -232,11 +244,34 @@ export function findFirstActionIndex(lines: string[]): number {
       firstMatch = lines.indexOf(line);
     }
   });
+  if (firstMatch === 0) {
+    return -1;
+  }
   return firstMatch + 1;
+}
+
+export function parseActions(lines: string[], startIndex: number): Feature[] {
+  const actionSamples = lines[startIndex].split('\n');
+  const actionStrings = actionSamples.reduce((acc: string[], curr: string) => {
+    if (acc.length === 0 || (curr.match(/\.\s\w{3,}/) && !curr.match(/^ft./))) {
+      acc.push(curr);
+    } else {
+      acc[acc.length - 1] += ' ' + curr;
+    }
+    return acc;
+  }, []);
+  return actionStrings.map((action) => {
+    const [name, ...rest] = action.split(/(?=\.)/);
+    return {
+      name: name.trim(),
+      description: rest.join('').trim().replace(/\n/g, ' ').replace(/^\. /, ''),
+    };
+  });
 }
 
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
+  const featureLines = input.split('\n\n');
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
   const acLine = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
   if (!acLine || typeof acLine !== 'string') {
@@ -250,5 +285,7 @@ export function textToActor(input: string): ImportActor {
     stats: parseStats(lines),
     speed: parseSpeed(lines),
     skills: parseSkills(lines),
+    features: parseFeatures(featureLines, findFirstFeatureIndex(featureLines)),
+    actions: parseActions(featureLines, findFirstActionIndex(featureLines)),
   };
 }
