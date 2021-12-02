@@ -194,7 +194,7 @@ export function parseSkills(lines: string[]): Skill[] {
   return skills;
 }
 
-export function findFirstSkillIndex(lines: string[]) {
+export function findFirstFeatureIndex(lines: string[]) {
   let firstMatch = 0;
   lines.forEach((test, index) => {
     // check to see if test has a . followed by 3 or more words
@@ -207,7 +207,22 @@ export function findFirstSkillIndex(lines: string[]) {
 }
 
 export function parseFeatures(lines: string[]): Feature[] {
-  throw new Error('Not implemented');
+  const startIndex = findFirstFeatureIndex(lines);
+  const features: Feature[] = [];
+  for (let i = startIndex; i < lines.length; i++) {
+    const checking = lines[i];
+    // see if checking has a . followed by 3 or more words
+    if (checking.match(/\.\s\w{3,}/)) {
+      const [name, ...rest] = checking.split('.');
+      features.push({
+        name: name.trim(),
+        description: rest.join('').trim().replace(/\n/g, ' ') + '.',
+      });
+      continue;
+    }
+    return features;
+  }
+  return features;
 }
 
 export function textToActor(input: string): ImportActor {
