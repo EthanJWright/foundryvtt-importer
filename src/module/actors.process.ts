@@ -86,12 +86,12 @@ export interface ImportActor {
     max: number;
   };
   armorClass: ArmorClass;
+  stats: Abilities;
 }
 
 export function parseHealth(line: string) {
   // line: Hit Points 66 (12d8 + 12)
   // get string from between parentheses
-  console.log(`line: ${line}`);
   // match = (12d8 + 12),12d8 + 12
   const formulaArray = line.match(/\(([^)]+)\)/);
   if (!formulaArray || formulaArray.length < 2) {
@@ -145,6 +145,81 @@ export function parseAC(acString: string): ArmorClass {
   };
 }
 
+interface Ability {
+  value: number;
+  mod: number;
+}
+
+interface Abilities {
+  str: Ability;
+  dex: Ability;
+  con: Ability;
+  int: Ability;
+  wis: Ability;
+  cha: Ability;
+}
+
+function parseAbilityScore(score: number, mod: string): Ability {
+  // score: 12
+  // mod: (+2)
+  // get string from between parentheses
+  const modNumberArray = mod.match(/\d+/);
+  if (!modNumberArray || modNumberArray.length < 1) {
+    throw new Error(`Could not parse ability score from string: ${mod}`);
+  }
+  let modNumber = modNumberArray[0];
+  if (mod.includes('-')) {
+    modNumber = '-' + modNumber;
+  }
+
+  return {
+    value: score,
+    mod: Number(modNumber),
+  };
+}
+
+export function parseStats(inputList: string[]) {
+  const abilityLine = inputList.find((line) => line.toUpperCase().includes('CHA'));
+  if (!abilityLine) {
+    throw new Error('Could not find ability line');
+  }
+  const abilityIndex = inputList.indexOf(abilityLine);
+  const singleLine = abilityLine.includes('STR');
+  if (singleLine) {
+    // match 3 to 6 letters
+    const abilityKeys = abilityLine.match(/\w{3,7}/g);
+    if (!abilityKeys || abilityKeys.length < 6) {
+      throw new Error('Could not find ability keys');
+    }
+    const valueLine = inputList[abilityIndex + 1];
+    // match 1 to 2 numbers
+    const abilityValuesWithMods = valueLine.match(/\d{1,2}/g);
+    if (!abilityValuesWithMods || abilityValuesWithMods.length < 6) {
+      throw new Error('Could not find ability values');
+    }
+    const abilityValues: number[] = [];
+    abilityValuesWithMods.forEach((value, index) => {
+      if (index % 2 === 0) {
+        abilityValues.push(Number(value));
+      }
+    });
+    // match + numbers in parentheses
+    const abilityModifiers = valueLine.match(/\(([+-]\d+)\)/g);
+    if (!abilityModifiers || abilityModifiers.length < 6) {
+      throw new Error('Could not find ability modifiers');
+    }
+    if (!abilityValues || abilityValues.length < 6) {
+      throw new Error('Could not find ability values');
+    }
+    const zipped = abilityKeys.reduce(
+      (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilityValues[i], abilityModifiers[i]) }),
+      {},
+    );
+    return zipped as Abilities;
+  }
+  throw new Error('Could not parse ability line');
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
@@ -157,5 +232,6 @@ export function textToActor(input: string): ImportActor {
     biography: lines[1].trim(),
     health: parseHealth(healthLine),
     armorClass: parseAC(acLine),
+    stats: parseStats(lines),
   };
 }
