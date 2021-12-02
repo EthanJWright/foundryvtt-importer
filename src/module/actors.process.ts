@@ -72,6 +72,11 @@
   }
 } */
 
+interface ArmorClass {
+  value: number;
+  type: string;
+}
+
 export interface ImportActor {
   name: string;
   biography: string;
@@ -80,6 +85,7 @@ export interface ImportActor {
     min: number;
     max: number;
   };
+  armorClass: ArmorClass;
 }
 
 export function parseHealth(line: string) {
@@ -119,12 +125,37 @@ export function parseHealth(line: string) {
   };
 }
 
+export function parseAC(acString: string): ArmorClass {
+  // acString: Armor Class 17 (natural armor)
+  // get string from between parentheses
+  const acArray = acString.match(/\(([^)]+)\)/);
+  if (!acArray || acArray.length < 2) {
+    throw new Error(`Could not parse AC from string: ${acString}`);
+  }
+  // pull formula from match
+  const ac = acArray[1];
+  // find number in string
+  const acNumber = acString.match(/\d+/);
+  if (!acNumber || acNumber.length < 1) {
+    throw new Error(`Could not parse AC from string: ${acString}`);
+  }
+  return {
+    value: Number(acNumber[0]),
+    type: ac,
+  };
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
+  const acLine = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
+  if (!acLine || typeof acLine !== 'string') {
+    throw new Error('Could not find AC line');
+  }
   return {
     name: lines[0].trim(),
     biography: lines[1].trim(),
     health: parseHealth(healthLine),
+    armorClass: parseAC(acLine),
   };
 }

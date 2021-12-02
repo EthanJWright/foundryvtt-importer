@@ -18,5 +18,7 @@ describe('Parse Text', () => {
     expect(actor.health.value).toEqual(66);
     expect(actor.health.min).toEqual(12 + 12);
     expect(actor.health.max).toEqual(12 * 8 + 12);
+    expect(actor.armorClass.value).toEqual(17);
+    expect(actor.armorClass.type).toBe('leather armor');
   });
 });
