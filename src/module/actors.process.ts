@@ -5,7 +5,7 @@ interface Ability {
   mod: number;
 }
 
-interface Abilities {
+export interface Abilities {
   str: Ability;
   dex: Ability;
   con: Ability;
@@ -13,7 +13,7 @@ interface Abilities {
   wis: Ability;
   cha: Ability;
 }
-interface Skill {
+export interface Skill {
   name: string;
   bonus: number;
 }
@@ -41,7 +41,6 @@ export interface ImportActor {
     min: number;
     max: number;
   };
-
   armorClass: ArmorClass;
   stats: Abilities;
   speed: number;
