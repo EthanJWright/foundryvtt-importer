@@ -205,7 +205,6 @@ export function parseSkills(lines: string[]): Skill[] {
 export function parseStandardCSV(lines: string[], name: string): Set {
   let standardLine = lines.find((line) => line.toUpperCase().includes(name.toUpperCase()));
   if (!standardLine) {
-    console.log();
     throw new Error(`${name} not found`);
   }
   const rePattern = new RegExp(`${name}`, 'gi');
@@ -232,7 +231,6 @@ export function findFirstFeatureIndex(lines: string[]) {
   if (firstMatch === 0) {
     return -1;
   }
-  console.log(`First is: ${check[firstMatch]}`);
   return firstMatch;
 }
 
@@ -264,19 +262,19 @@ export function parseFeatures(lines: string[], startIndex: number): Feature[] {
 
 function getFeatureLines(lines: string[]): number[] {
   return lines.reduce((acc: number[], curr: string, index: number) => {
-    if (/action/i.test(curr)) acc.push(index);
+    if (curr.toUpperCase().trim() === 'actions'.toUpperCase()) acc.push(index);
     return acc;
   }, []);
 }
 
 function getFeatureNames(line: string): string | undefined {
-  // match 1, 2, or 3 words separated by spaces each starting with a capital letter
-  // const re = /\b[A-Z]{1}[a-z]{2,}\b\./g;
-  // match 1 or 2 words in a row that start with a capital letters
+  // match 1 or 2 words in a row that start with a capital letters and ending
+  // in a period
   const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
   const matches = line.match(re);
   if (matches) {
-    return line.split('.')[0];
+    const name = line.split('.')[0];
+    return name;
   }
 
   return undefined;
@@ -328,8 +326,7 @@ function parseFeatureSection(lines: string[]) {
     const name = getFeatureNames(line);
     if (name && firstFeatureIndex === 0) firstFeatureIndex = index;
   });
-  const validFeatures = lines.slice(firstFeatureIndex, lines.length - 1);
-  console.log(`First Feature: ${lines[firstFeatureIndex]}`);
+  const validFeatures = lines.slice(firstFeatureIndex);
   const features: Feature[] = cleanSectionElements(validFeatures, 'Features');
   const featureSection: Section = {
     name: 'Features',
