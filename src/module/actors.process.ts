@@ -1,3 +1,5 @@
+const FEATURE_HEADERS = ['Actions', 'Reactions'];
+
 interface Ability {
   value: number;
   mod: number;
@@ -215,25 +217,6 @@ export function parseStandardCSV(lines: string[], name: string): Set {
   };
 }
 
-export function findFirstFeatureIndex(lines: string[]) {
-  let firstMatch = 0;
-  const check = lines.flatMap((line) => {
-    return line.split('\n');
-  });
-
-  check.forEach((test, index) => {
-    // check to see if test has a . followed by 3 or more words
-    if (test.match(/\.\s\w{3,}/) && firstMatch === 0) {
-      // if so, this is the first match
-      firstMatch = index;
-    }
-  });
-  if (firstMatch === 0) {
-    return -1;
-  }
-  return firstMatch;
-}
-
 function extractFeature(checking: string): Feature | undefined {
   if (checking.match(/\.\s\w{3,}/)) {
     const [name, ...rest] = checking.split(/(?=\.)/);
@@ -260,9 +243,16 @@ export function parseFeatures(lines: string[], startIndex: number): Feature[] {
   return features;
 }
 
+function isHeader(check: string) {
+  return FEATURE_HEADERS.reduce(
+    (acc, feature) => acc || feature.toUpperCase().trim() === check.trim().toUpperCase(),
+    false,
+  );
+}
+
 function getFeatureLines(lines: string[]): number[] {
   return lines.reduce((acc: number[], curr: string, index: number) => {
-    if (curr.toUpperCase().trim() === 'actions'.toUpperCase()) acc.push(index);
+    if (isHeader(curr)) acc.push(index);
     return acc;
   }, []);
 }
