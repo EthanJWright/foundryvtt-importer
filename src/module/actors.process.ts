@@ -243,7 +243,7 @@ export function parseFeatures(lines: string[], startIndex: number): Feature[] {
   return features;
 }
 
-function isHeader(check: string) {
+function isFeatureHeader(check: string) {
   return FEATURE_HEADERS.reduce(
     (acc, feature) => acc || feature.toUpperCase().trim() === check.trim().toUpperCase(),
     false,
@@ -252,7 +252,7 @@ function isHeader(check: string) {
 
 function getFeatureLines(lines: string[]): number[] {
   return lines.reduce((acc: number[], curr: string, index: number) => {
-    if (isHeader(curr)) acc.push(index);
+    if (isFeatureHeader(curr)) acc.push(index);
     return acc;
   }, []);
 }
