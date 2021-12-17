@@ -1,0 +1,10 @@
+{
+  "tasks": [
+    {
+      "command": "npm run test:watch",
+      "label": "🧪 Run unit tests and watch for changes",
+      "problemMatcher": [],
+      "type": "shell"
+    }
+  ]
+}

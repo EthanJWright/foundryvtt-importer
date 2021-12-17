@@ -16,6 +16,11 @@ interface Skill {
   bonus: number;
 }
 
+interface Set {
+  name: string;
+  collection: string[];
+}
+
 interface ArmorClass {
   value: number;
   type: string;
@@ -197,9 +202,27 @@ export function parseSkills(lines: string[]): Skill[] {
   return skills;
 }
 
+export function parseStandardCSV(lines: string[], name: string): Set {
+  let standardLine = lines.find((line) => line.toUpperCase().includes(name.toUpperCase()));
+  if (!standardLine) {
+    console.log();
+    throw new Error(`${name} not found`);
+  }
+  const rePattern = new RegExp(`${name}`, 'gi');
+  standardLine = standardLine.replace(rePattern, '');
+  return {
+    name,
+    collection: standardLine.split(',').map((value) => value.trim()),
+  };
+}
+
 export function findFirstFeatureIndex(lines: string[]) {
   let firstMatch = 0;
-  lines.forEach((test, index) => {
+  const check = lines.flatMap((line) => {
+    return line.split('\n');
+  });
+
+  check.forEach((test, index) => {
     // check to see if test has a . followed by 3 or more words
     if (test.match(/\.\s\w{3,}/) && firstMatch === 0) {
       // if so, this is the first match
@@ -209,6 +232,7 @@ export function findFirstFeatureIndex(lines: string[]) {
   if (firstMatch === 0) {
     return -1;
   }
+  console.log(`First is: ${check[firstMatch]}`);
   return firstMatch;
 }
 
@@ -236,6 +260,115 @@ export function parseFeatures(lines: string[], startIndex: number): Feature[] {
     return features;
   }
   return features;
+}
+
+function getFeatureLines(lines: string[]): number[] {
+  return lines.reduce((acc: number[], curr: string, index: number) => {
+    if (/action/i.test(curr)) acc.push(index);
+    return acc;
+  }, []);
+}
+
+function getFeatureNames(line: string): string | undefined {
+  // match 1, 2, or 3 words separated by spaces each starting with a capital letter
+  // const re = /\b[A-Z]{1}[a-z]{2,}\b\./g;
+  // match 1 or 2 words in a row that start with a capital letters
+  const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
+  const matches = line.match(re);
+  if (matches) {
+    return line.split('.')[0];
+  }
+
+  return undefined;
+}
+
+interface Section {
+  name: string;
+  features: Feature[];
+}
+function cleanSectionElements(section: string[], sectionTitle: string): Feature[] {
+  const formatted: string[] = section.map((line: string) => line.replace(sectionTitle, '').trim()).filter((n) => n);
+  const preparedLines = formatted.reduce((acc: string[], curr: string) => {
+    const names = getFeatureNames(curr);
+    if (names || acc.length === 0) {
+      acc.push(curr);
+    } else {
+      acc[acc.length - 1] = acc[acc.length - 1] + curr;
+    }
+    return acc;
+  }, []);
+  return preparedLines.map((line) => {
+    const fetchedName = getFeatureNames(line);
+    let name;
+    if (!fetchedName) name = 'Unknown Name';
+    else name = fetchedName;
+
+    const feature: Feature = {
+      name,
+      description: line.replace(name, '').trim(),
+    };
+    return feature;
+  });
+}
+
+function buildSections(featureLine: number[], featureSections: string[][], lines: string[]): Section[] {
+  const sections: Section[] = [];
+  featureLine.forEach((value: number, index: number) => {
+    sections.push({
+      name: lines[value].trim(),
+      features: cleanSectionElements(featureSections[index], lines[value]),
+    });
+  });
+  return sections;
+}
+
+function parseFeatureSection(lines: string[]) {
+  let firstFeatureIndex = 0;
+  lines.forEach((line, index) => {
+    const name = getFeatureNames(line);
+    if (name && firstFeatureIndex === 0) firstFeatureIndex = index;
+  });
+  const validFeatures = lines.slice(firstFeatureIndex, lines.length - 1);
+  console.log(`First Feature: ${lines[firstFeatureIndex]}`);
+  const features: Feature[] = cleanSectionElements(validFeatures, 'Features');
+  const featureSection: Section = {
+    name: 'Features',
+    features,
+  };
+  return featureSection;
+}
+
+export function featureFromSection(sections: Section[], match: string): Section {
+  return (
+    sections.find(({ name }) => {
+      return name.toUpperCase() === match.toUpperCase();
+    }) || { features: [], name: 'No matching feature' }
+  );
+}
+
+export function parseFeatureSections(text: string): Section[] {
+  const lines = text.split('\n');
+  const featureLine = getFeatureLines(lines);
+  // create start and end indexes for each featureLine
+  const featureSections = featureLine.reduce((acc: string[][], value, index) => {
+    if (index === 0) {
+      acc.push(lines.slice(0, featureLine[index]));
+    }
+
+    if (featureLine.length >= index + 1) {
+      if (lines.length >= featureLine[index + 1]) {
+        acc.push(lines.slice(value, featureLine[index + 1]));
+      } else {
+        acc.push(lines.slice(value, lines.length));
+      }
+    }
+    return acc;
+  }, []);
+  const features = featureSections.shift();
+  if (!features) throw new Error('Could not parse first feature section');
+  const featureSection = parseFeatureSection(features);
+  const sections = buildSections(featureLine, featureSections, lines);
+  return [featureSection, ...sections];
 }
 
 export function findFirstSectionIndex(lines: string[], term: string): number {
@@ -275,12 +408,25 @@ export function parseActions(lines: string[], startIndex: number): Feature[] {
 
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
-  const featureLines = input.split('\n\n');
+  let featureLines = input.split('\n\n');
+  if (featureLines.length === 1) {
+    featureLines = lines;
+  }
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
   const acLine = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
   if (!acLine || typeof acLine !== 'string') {
     throw new Error('Could not find AC line');
   }
+
+  const sections = parseFeatureSections(input);
+  const { features: actions } = featureFromSection(sections, 'Actions');
+  const reactionSection = featureFromSection(sections, 'Reactions');
+  let { features: reactions } = reactionSection;
+  if (reactionSection.name === 'No matching feature') {
+    reactions = [];
+  }
+  const { features } = featureFromSection(sections, 'Features');
+
   return {
     name: lines[0].trim(),
     biography: lines[1].trim(),
@@ -289,8 +435,8 @@ export function textToActor(input: string): ImportActor {
     stats: parseStats(lines),
     speed: parseSpeed(lines),
     skills: parseSkills(lines),
-    features: parseFeatures(featureLines, findFirstFeatureIndex(featureLines)),
-    actions: parseActions(featureLines, findFirstSectionIndex(featureLines, 'actions')),
-    reactions: parseActions(featureLines, findFirstSectionIndex(featureLines, 'reactions')),
+    features,
+    actions,
+    reactions,
   };
 }
