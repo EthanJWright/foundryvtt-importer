@@ -23,7 +23,7 @@ interface Set {
   collection: string[];
 }
 
-interface ArmorClass {
+export interface ArmorClass {
   value: number;
   type: string;
 }
@@ -33,14 +33,16 @@ interface Feature {
   description: string;
 }
 
+export interface Health {
+  value: number;
+  min: number;
+  max: number;
+}
+
 export interface ImportActor {
   name: string;
   biography: string;
-  health: {
-    value: number;
-    min: number;
-    max: number;
-  };
+  health: Health;
   armorClass: ArmorClass;
   stats: Abilities;
   speed: number;
