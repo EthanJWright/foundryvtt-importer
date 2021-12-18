@@ -1,9 +1,10 @@
-import { Abilities, ArmorClass, Feature, Health, ImportActor, Skill } from './actors.process';
+import { Abilities, ArmorClass, Feature, Health, ImportActor, parseFormula, Skill } from './actors.process';
 import {
   FifthAbilities,
   FifthAttributes,
   FifthFeatureCost,
   FifthItem,
+  FifthItemType,
   FifthSkill,
   FifthSkills,
   FifthStat,
@@ -135,13 +136,24 @@ function convertSkills(skills: Skill[]): FifthSkills {
   return fifthSkills;
 }
 
+export function buildDamage(description: string) {
+  // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
+  const parsed = parseFormula(description, /Melee Weapon Attack: +/);
+  return [[parsed.str]];
+}
+
 export function featuresToItems(type: FifthFeatureCost, features: Feature[]): FifthItem[] {
   return features.map((feature) => {
     let activationType = type;
-    if (feature.description.includes('bonus action')) activationType = 'bonus action';
+    let itemType: FifthItemType = 'feat';
+    if (feature.description.includes('bonus action')) activationType = 'bonus';
+    if (/melee weapon attack/i.test(feature.description)) itemType = 'weapon';
+    if (/ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
+    if (/melee or ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
+
     return {
       name: feature.name,
-      type: 'feat',
+      type: itemType,
       data: {
         description: {
           value: feature.description,

@@ -108,9 +108,25 @@ export interface FifthSkills {
   sur?: FifthSkill;
 }
 
+export interface FifthItemDamage {
+  parts: string[][];
+  versatile?: string;
+}
+
+export type FifthFeatureCost = 'action' | 'bonus' | 'reaction' | 'legendary' | 'spell' | 'weapon' | 'none';
+export type FifthItemType =
+  | 'weapon'
+  | 'equipment'
+  | 'consumable'
+  | 'tool'
+  | 'loot'
+  | 'class'
+  | 'spell'
+  | 'feat'
+  | 'backpack';
 export interface FifthItem {
   name: string;
-  type: 'weapon' | 'equipment' | 'consumable' | 'tool' | 'loot' | 'class' | 'spell' | 'feat' | 'backpack';
+  type: FifthItemType;
   data: {
     description?: {
       value: string;
@@ -119,7 +135,7 @@ export interface FifthItem {
     };
     source?: string;
     activation?: {
-      type: 'action' | 'bonus action' | 'reaction' | 'legendary' | 'spell' | 'none';
+      type: FifthFeatureCost;
       cost?: number;
       condition?: string;
     };
@@ -136,7 +152,6 @@ export interface FifthItem {
   };
 }
 
-export type FifthFeatureCost = 'action' | 'reaction' | 'bonus action' | 'none';
 export interface FifthEditionActor {
   abilities: FifthAbilities;
   attributes: FifthAttributes;
