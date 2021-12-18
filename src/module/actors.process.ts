@@ -52,13 +52,13 @@ export interface ImportActor {
   reactions: Feature[];
 }
 
-export function parseHealth(line: string) {
+export function parseFormula(line: string, regexStart: RegExp) {
   // line: Hit Points 66 (12d8 + 12)
   // get string from between parentheses
   // match = (12d8 + 12),12d8 + 12
   const formulaArray = line.match(/\(([^)]+)\)/);
   if (!formulaArray || formulaArray.length < 2) {
-    throw new Error(`Could not parse health from line: ${line}`);
+    throw new Error(`Could not parse formula from line: ${line}`);
   }
   // pull formula from match
   const formula = formulaArray[1];
@@ -80,7 +80,7 @@ export function parseHealth(line: string) {
   const dieSize = dieFormula.split('d')[1];
 
   // get value after Hit Points string
-  const hp = line.match(/Hit Points (.*)/) || '10';
+  const hp = line.match(regexStart) || '10';
   return {
     value: parseInt(hp[1], 10),
     min: Number(numOfDice) + Number(change),
@@ -421,7 +421,7 @@ export function textToActor(input: string): ImportActor {
   return {
     name: lines[0].trim(),
     biography: lines[1].trim(),
-    health: parseHealth(healthLine),
+    health: parseFormula(healthLine, /Hit Points (.*)/),
     armorClass: parseAC(acLine),
     stats: parseStats(lines),
     speed: parseSpeed(lines),
