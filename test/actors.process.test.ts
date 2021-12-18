@@ -16,6 +16,7 @@ describe('parseHealth', () => {
     expect(health.value).toBe(66);
     expect(health.max).toBe(12 * 8 + 12);
     expect(health.min).toBe(12 + 12);
+    expect(health.str).toBe('12d8 + 12');
   });
 });
 

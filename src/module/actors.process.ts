@@ -52,6 +52,13 @@ export interface ImportActor {
   reactions: Feature[];
 }
 
+export interface Formula {
+  value: number;
+  str: string;
+  min?: number;
+  max?: number;
+}
+
 export function parseFormula(line: string, regexStart: RegExp) {
   // line: Hit Points 66 (12d8 + 12)
   // get string from between parentheses
@@ -85,6 +92,7 @@ export function parseFormula(line: string, regexStart: RegExp) {
     value: parseInt(hp[1], 10),
     min: Number(numOfDice) + Number(change),
     max: Number(numOfDice) * Number(dieSize) + Number(change),
+    str: formula,
   };
 }
 
