@@ -28,7 +28,7 @@ export interface ArmorClass {
   type: string;
 }
 
-interface Feature {
+export interface Feature {
   name: string;
   description: string;
 }
@@ -292,9 +292,12 @@ function cleanSectionElements(section: string[], sectionTitle: string): Feature[
     if (!fetchedName) name = 'Unknown Name';
     else name = fetchedName;
 
+    let cleanLine = line.replace(name, '').trim();
+    if (cleanLine.startsWith('.')) cleanLine = cleanLine.substring(1);
+    if (cleanLine.startsWith(' ')) cleanLine = cleanLine.substring(1);
     const feature: Feature = {
       name,
-      description: line.replace(name, '').trim(),
+      description: cleanLine,
     };
     return feature;
   });

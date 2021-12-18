@@ -159,6 +159,9 @@ describe('Parse Text', () => {
     expect(actor.speed).toEqual(30);
     expect(actor.skills.length).toEqual(3);
     expect(actor.features.length).toEqual(2);
+    expect(actor.features[0].description).toBe(
+      'The swashbuckler can take the Dash or Disengageaction as a bonus action on each of its turns.',
+    );
     expect(actor.actions.length).toEqual(3);
   });
 
@@ -176,6 +179,9 @@ describe('Parse Text', () => {
     expect(actor.skills.length).toEqual(2);
     expect(actor.features.length).toEqual(4);
     expect(actor.features[0].name).toBe('Magic Resistance');
+    expect(actor.features[0].description).toBe(
+      'The nimblewright has advantage on savingthrows against spells and other magical effects.',
+    );
     expect(actor.actions[0].name).toBe('Multiattack');
   });
 });

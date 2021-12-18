@@ -1,14 +1,30 @@
-import { actorToFifth } from './actors.convert';
+import { actorToFifth, featureCollectionToItems } from './actors.convert';
 import { textToActor } from './actors.process';
 import { UserData } from './importForm';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
-  await Actor.create({
+  const { actions, features, reactions } = actor;
+  const preparedItems = featureCollectionToItems({ actions, features, reactions });
+  const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',
     data: actorToFifth(actor),
   });
+
+  await Promise.all(
+    preparedItems.map(async (item) => {
+      console.log(`Creating item: ${JSON.stringify(item, null, 2)}`);
+      return await Item.create(
+        {
+          ...item,
+        },
+        {
+          parent: foundryActor,
+        },
+      );
+    }),
+  );
 }
 
 export async function processActorInput({ jsonfile, clipboardInput }: UserData) {

@@ -57,8 +57,8 @@ export interface FifthAttributes {
   };
   hp: {
     value: number;
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
     temp?: number;
     tempmax?: number;
   };
@@ -108,6 +108,35 @@ export interface FifthSkills {
   sur?: FifthSkill;
 }
 
+export interface FifthItem {
+  name: string;
+  type: 'weapon' | 'equipment' | 'consumable' | 'tool' | 'loot' | 'class' | 'spell' | 'feat' | 'backpack';
+  data: {
+    description?: {
+      value: string;
+      chat?: string;
+      unidentified?: string;
+    };
+    source?: string;
+    activation?: {
+      type: 'action' | 'bonus action' | 'reaction' | 'legendary' | 'spell' | 'none';
+      cost?: number;
+      condition?: string;
+    };
+    duration?: {
+      value: number;
+      units: string;
+    };
+    target?: {
+      value: number;
+      width?: number;
+      units?: string;
+      type: 'creature' | 'point' | 'self' | 'touch' | 'none';
+    };
+  };
+}
+
+export type FifthFeatureCost = 'action' | 'reaction' | 'bonus action' | 'none';
 export interface FifthEditionActor {
   abilities: FifthAbilities;
   attributes: FifthAttributes;

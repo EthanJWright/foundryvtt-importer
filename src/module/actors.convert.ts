@@ -1,31 +1,39 @@
-import { Abilities, ArmorClass, Health, ImportActor, Skill } from './actors.process';
-import { FifthAbilities, FifthAttributes, FifthSkill, FifthSkills, FifthStat } from './fifthedition.actor.template';
+import { Abilities, ArmorClass, Feature, Health, ImportActor, Skill } from './actors.process';
+import {
+  FifthAbilities,
+  FifthAttributes,
+  FifthFeatureCost,
+  FifthItem,
+  FifthSkill,
+  FifthSkills,
+  FifthStat,
+} from './fifthedition.actor.template';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {
   return {
     str: {
       value: str.value,
-      proficient: str.mod,
+      proficient: 0,
     },
     dex: {
       value: dex.value,
-      proficient: dex.mod,
+      proficient: 0,
     },
     con: {
       value: con.value,
-      proficient: con.mod,
+      proficient: 0,
     },
     int: {
       value: int.value,
-      proficient: int.mod,
+      proficient: 0,
     },
     wis: {
       value: wis.value,
-      proficient: wis.mod,
+      proficient: 0,
     },
     cha: {
       value: cha.value,
-      proficient: cha.mod,
+      proficient: 0,
     },
   };
 }
@@ -39,12 +47,12 @@ function convertAttributes({ armorClass, health, speed }: Attributes): FifthAttr
   return {
     ac: {
       flat: armorClass.value,
-      formula: armorClass.type,
+      calc: 'flat',
     },
     hp: {
       value: health.value,
-      min: health.min,
-      max: health.max,
+      max: health.value,
+      min: 0,
     },
     movement: {
       units: 'ft',
@@ -61,7 +69,7 @@ function buildSkill(skill: Skill, ability: FifthStat): FifthSkill {
   return fifthSkill;
 }
 
-function convertSkills(skills: Skill[]) {
+function convertSkills(skills: Skill[]): FifthSkills {
   const fifthSkills: FifthSkills = {};
   skills.forEach((skill) => {
     const skillName = skill.name.toLowerCase().trim();
@@ -124,6 +132,39 @@ function convertSkills(skills: Skill[]) {
         break;
     }
   });
+  return fifthSkills;
+}
+
+export function featuresToItems(type: FifthFeatureCost, features: Feature[]): FifthItem[] {
+  return features.map((feature) => {
+    let activationType = type;
+    if (feature.description.includes('bonus action')) activationType = 'bonus action';
+    return {
+      name: feature.name,
+      type: 'feat',
+      data: {
+        description: {
+          value: feature.description,
+        },
+        activation: {
+          type: activationType,
+        },
+      },
+    };
+  });
+}
+
+export interface FeatureCollection {
+  features: Feature[];
+  actions: Feature[];
+  reactions?: Feature[];
+}
+export function featureCollectionToItems({ features, actions, reactions }: FeatureCollection): FifthItem[] {
+  const items = [...featuresToItems('none', features), ...featuresToItems('action', actions)];
+  if (reactions) {
+    items.push(...featuresToItems('reaction', reactions));
+  }
+  return items;
 }
 
 export function actorToFifth({ stats, armorClass, health, speed, biography, skills }: ImportActor) {
