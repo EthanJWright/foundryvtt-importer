@@ -156,8 +156,42 @@ function getDamageType(from: string): string | undefined {
 export function buildDamageParts(description: string) {
   // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
   const parsed = parseFormula(description, /Melee Weapon Attack: +/);
-  console.log(`type is : ${getDamageType(parsed.afterFormula)}`);
   return [[parsed.str, getDamageType(parsed.afterFormula)]];
+}
+
+export function buildAttackBonus(description: string): number | undefined {
+  // regex for + followed by one or two digits
+  const attackMatch = description.match(/\+\d{1,2}/);
+  return !attackMatch ? undefined : parseInt(attackMatch[0].substring(1));
+}
+
+export function buildReach(description: string) {
+  if (!description.includes('reach')) return undefined;
+  const typeSplit = description.split('reach');
+  let type = 'ft';
+  let value = '5';
+  if (typeSplit) {
+    const raw = typeSplit[1].split(',');
+    if (raw) {
+      const reachString = raw[0].trim();
+      // pull out the number
+      const number = reachString.match(/\d+/);
+      // pull out the units
+      const units = reachString.match(/[a-zA-Z]+/);
+      if (number && units) {
+        value = number[0];
+        type = units[0];
+      }
+    }
+  }
+  return {
+    value: Number(value),
+    type: type,
+  };
+}
+
+function getActionType(description: string): string | undefined {
+  return 'mwak';
 }
 
 export function featuresToItems(type: FifthFeatureCost, features: Feature[]): FifthItem[] {
@@ -170,6 +204,7 @@ export function featuresToItems(type: FifthFeatureCost, features: Feature[]): Fi
     if (/melee or ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
 
     const damage = itemType === 'weapon' ? { parts: buildDamageParts(feature.description) } : {};
+    const actionType = itemType === 'weapon' ? getActionType(feature.description) : undefined;
 
     return {
       name: feature.name,
@@ -182,6 +217,9 @@ export function featuresToItems(type: FifthFeatureCost, features: Feature[]): Fi
           type: activationType,
         },
         damage,
+        attackBonus: buildAttackBonus(feature.description),
+        range: buildReach(feature.description),
+        actionType,
       },
     };
   });
@@ -197,6 +235,7 @@ export function featureCollectionToItems({ features, actions, reactions }: Featu
   if (reactions) {
     items.push(...featuresToItems('reaction', reactions));
   }
+  console.log(`Items : ${JSON.stringify(items)}`);
   return items;
 }
 
