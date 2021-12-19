@@ -57,6 +57,10 @@ export interface Formula {
   str: string;
   min?: number;
   max?: number;
+  afterRegex?: string;
+  beforeRegex?: string;
+  afterFormula?: string;
+  beforeFormula?: string;
 }
 
 export function parseFormula(line: string, regexStart: RegExp) {
@@ -64,6 +68,9 @@ export function parseFormula(line: string, regexStart: RegExp) {
   // get string from between parentheses
   // match = (12d8 + 12),12d8 + 12
   const formulaArray = line.match(/\(([^)]+)\)/);
+  const regexSplit = line.split(regexStart);
+  const beforeRegex = regexSplit[0];
+  const afterRegex = regexSplit[1];
   if (!formulaArray || formulaArray.length < 2) {
     throw new Error(`Could not parse formula from line: ${line}`);
   }
@@ -88,11 +95,16 @@ export function parseFormula(line: string, regexStart: RegExp) {
 
   // get value after Hit Points string
   const hp = line.match(regexStart) || '10';
+  const formulaSplit: string[] = line.split(formula).map((item) => item.replace('(,', '').replace(')', ''));
   return {
     value: parseInt(hp[1], 10),
     min: Number(numOfDice) + Number(change),
     max: Number(numOfDice) * Number(dieSize) + Number(change),
     str: formula,
+    afterRegex,
+    beforeRegex,
+    afterFormula: formulaSplit[1],
+    beforeFormula: formulaSplit[0],
   };
 }
 

@@ -14,7 +14,6 @@ async function txtRoute(stringData: string) {
 
   await Promise.all(
     preparedItems.map(async (item) => {
-      console.log(`Creating item: ${JSON.stringify(item, null, 2)}`);
       return await Item.create(
         {
           ...item,

@@ -1,4 +1,4 @@
-import { actorToFifth, buildDamage } from '../src/module/actors.convert';
+import { actorToFifth, buildDamageParts } from '../src/module/actors.convert';
 import { swashbuckler } from './mock.swashbuckler';
 
 describe('Parsed Actor to 5th Structure', () => {
@@ -14,7 +14,7 @@ describe('Parsed Actor to 5th Structure', () => {
 describe('buildDamage', () => {
   it('should build damage from a melee weapon', () => {
     const rapier = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.';
-    const built = buildDamage(rapier);
-    expect(built).toEqual([['1d8 + 4']]);
+    const built = buildDamageParts(rapier);
+    expect(built).toEqual([['1d8 + 4', 'piercing']]);
   });
 });

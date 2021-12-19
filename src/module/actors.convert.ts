@@ -136,10 +136,28 @@ function convertSkills(skills: Skill[]): FifthSkills {
   return fifthSkills;
 }
 
-export function buildDamage(description: string) {
+function getDamageType(from: string): string | undefined {
+  if (from.includes('piercing')) return 'piercing';
+  if (from.includes('slashing')) return 'slashing';
+  if (from.includes('bludgeoning')) return 'bludgeoning';
+  if (from.includes('fire')) return 'fire';
+  if (from.includes('cold')) return 'cold';
+  if (from.includes('lightning')) return 'lightning';
+  if (from.includes('acid')) return 'acid';
+  if (from.includes('poison')) return 'poison';
+  if (from.includes('psychic')) return 'psychic';
+  if (from.includes('radiant')) return 'radiant';
+  if (from.includes('thunder')) return 'thunder';
+  if (from.includes('force')) return 'force';
+  if (from.includes('necrotic')) return 'necrotic';
+  if (from.includes('psychic')) return 'psychic';
+}
+
+export function buildDamageParts(description: string) {
   // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
   const parsed = parseFormula(description, /Melee Weapon Attack: +/);
-  return [[parsed.str]];
+  console.log(`type is : ${getDamageType(parsed.afterFormula)}`);
+  return [[parsed.str, getDamageType(parsed.afterFormula)]];
 }
 
 export function featuresToItems(type: FifthFeatureCost, features: Feature[]): FifthItem[] {
@@ -151,6 +169,8 @@ export function featuresToItems(type: FifthFeatureCost, features: Feature[]): Fi
     if (/ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
     if (/melee or ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
 
+    const damage = itemType === 'weapon' ? { parts: buildDamageParts(feature.description) } : {};
+
     return {
       name: feature.name,
       type: itemType,
@@ -161,6 +181,7 @@ export function featuresToItems(type: FifthFeatureCost, features: Feature[]): Fi
         activation: {
           type: activationType,
         },
+        damage,
       },
     };
   });
