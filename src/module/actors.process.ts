@@ -57,6 +57,7 @@ export interface Formula {
   str: string;
   min?: number;
   max?: number;
+  mod?: number;
   afterRegex?: string;
   beforeRegex?: string;
   afterFormula?: string;
@@ -103,6 +104,7 @@ export function parseFormula(line: string, regexStart: RegExp) {
     str: formula,
     afterRegex,
     beforeRegex,
+    mod: Number(change),
     afterFormula: formulaSplit[1],
     beforeFormula: formulaSplit[0],
   };
@@ -187,6 +189,33 @@ export function parseStats(inputList: string[]) {
     return zipped as Abilities;
   }
   throw new Error('Could not parse ability line');
+}
+
+function indexOfAbility(lines: string[], ability: string): number {
+  let firstIndex = 0;
+  lines.forEach((line, index) => {
+    if (line.trim().toLowerCase() === ability.trim().toLowerCase()) firstIndex = index;
+  });
+  return firstIndex;
+}
+
+function parseMod(line: string) {
+  const components = line.split(' ');
+  return {
+    value: Number(components[0]),
+    mod: Number(components[1].replace('(', '').replace(')', '')),
+  };
+}
+
+export function parseMultilineStats(lines: string[]): Abilities {
+  return {
+    str: parseMod(lines[indexOfAbility(lines, 'STR') + 1]),
+    dex: parseMod(lines[indexOfAbility(lines, 'DEX') + 1]),
+    con: parseMod(lines[indexOfAbility(lines, 'CON') + 1]),
+    int: parseMod(lines[indexOfAbility(lines, 'INT') + 1]),
+    wis: parseMod(lines[indexOfAbility(lines, 'WIS') + 1]),
+    cha: parseMod(lines[indexOfAbility(lines, 'CHA') + 1]),
+  };
 }
 
 export function parseSpeed(lines: string[]) {
@@ -417,6 +446,27 @@ export function parseActions(lines: string[], startIndex: number): Feature[] {
   });
 }
 
+function tryStatParsers(lines: string[]): Abilities {
+  let stats: Abilities | undefined;
+  try {
+    stats = parseStats(lines);
+  } catch (error) {
+    console.log(`Failed standard parsing, trying multi line parsing`);
+    stats = parseMultilineStats(lines);
+  }
+  if (!stats) throw new Error('could not parse stats.');
+  return stats;
+}
+function getBiography(lines: string[]): string {
+  let firstBioIndex = 0;
+  lines.forEach((line: string, index: number) => {
+    if (firstBioIndex === 0 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
+      firstBioIndex = index;
+    }
+  });
+  return lines[firstBioIndex].trim();
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   let featureLines = input.split('\n\n');
@@ -440,10 +490,10 @@ export function textToActor(input: string): ImportActor {
 
   return {
     name: lines[0].trim(),
-    biography: lines[1].trim(),
+    biography: getBiography(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
     armorClass: parseAC(acLine),
-    stats: parseStats(lines),
+    stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
     skills: parseSkills(lines),
     features,

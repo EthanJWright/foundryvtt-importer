@@ -9,6 +9,7 @@ import {
   parseStandardCSV,
   parseFeatureSections,
   featureFromSection,
+  parseMultilineStats,
 } from '../src/module/actors.process';
 describe('parseHealth', () => {
   it('should parse a valid health string', () => {
@@ -184,5 +185,61 @@ describe('Parse Text', () => {
       'The nimblewright has advantage on savingthrows against spells and other magical effects.',
     );
     expect(actor.actions[0].name).toBe('Multiattack');
+  });
+
+  it('should parse swashbuckler when copied with zathura', () => {
+    const actorText =
+      'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+
+    const actor = textToActor(actorText);
+    expect(actor.name).toBe('Swashbuckler');
+    expect(actor.biography).toBe('Medium humanoid (any race), any non-lawful alignment');
+    expect(actor.health.value).toEqual(66);
+    expect(actor.health.min).toEqual(12 + 12);
+    expect(actor.health.max).toEqual(12 * 8 + 12);
+    expect(actor.armorClass.value).toEqual(17);
+    expect(actor.armorClass.type).toBe('leather armor');
+    expect(actor.speed).toEqual(30);
+    expect(actor.skills.length).toEqual(3);
+    expect(actor.features.length).toEqual(2);
+    expect(actor.features[0].description).toBe(
+      'The swashbuckler can take the Dash or Disengageaction as a bonus action on each of its turns.',
+    );
+    expect(actor.actions.length).toEqual(3);
+  });
+});
+
+describe('parseMultiLineStates', () => {
+  it('should parse stats originating from a multi line file', () => {
+    const actorText =
+      'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nMedium humanoid (any race), any alignment\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const lines: string[] = actorText.split('\n');
+    const stats = parseMultilineStats(lines);
+    expect(stats).toEqual({
+      str: {
+        value: 12,
+        mod: 1,
+      },
+      dex: {
+        value: 18,
+        mod: 4,
+      },
+      con: {
+        value: 12,
+        mod: 1,
+      },
+      int: {
+        value: 14,
+        mod: 2,
+      },
+      wis: {
+        value: 11,
+        mod: 0,
+      },
+      cha: {
+        value: 15,
+        mod: 2,
+      },
+    });
   });
 });
