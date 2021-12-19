@@ -190,11 +190,17 @@ export function buildReach(description: string) {
   };
 }
 
-function getActionType(description: string): string | undefined {
+function getActionType(_: string): string | undefined {
   return 'mwak';
 }
 
-export function featuresToItems(type: FifthFeatureCost, features: Feature[]): FifthItem[] {
+function getWeaponAbility(description: string, abilities: Abilities): string | undefined {
+  // const bonus = buildAttackBonus(description);
+  if (abilities.dex.mod > abilities.str.mod) return 'dex';
+  return 'str';
+}
+
+export function featuresToItems(type: FifthFeatureCost, features: Feature[], abilities: Abilities): FifthItem[] {
   return features.map((feature) => {
     let activationType = type;
     let itemType: FifthItemType = 'feat';
@@ -217,7 +223,7 @@ export function featuresToItems(type: FifthFeatureCost, features: Feature[]): Fi
           type: activationType,
         },
         damage,
-        attackBonus: buildAttackBonus(feature.description),
+        ability: getWeaponAbility(feature.description, abilities),
         range: buildReach(feature.description),
         actionType,
       },
@@ -230,12 +236,19 @@ export interface FeatureCollection {
   actions: Feature[];
   reactions?: Feature[];
 }
-export function featureCollectionToItems({ features, actions, reactions }: FeatureCollection): FifthItem[] {
-  const items = [...featuresToItems('none', features), ...featuresToItems('action', actions)];
+
+interface ActorData {
+  abilities: Abilities;
+}
+export function featureCollectionToItems(
+  { features, actions, reactions }: FeatureCollection,
+  { abilities }: ActorData,
+): FifthItem[] {
+  const items = [...featuresToItems('none', features, abilities), ...featuresToItems('action', actions, abilities)];
   if (reactions) {
-    items.push(...featuresToItems('reaction', reactions));
+    items.push(...featuresToItems('reaction', reactions, abilities));
   }
-  console.log(`Items : ${JSON.stringify(items)}`);
+  console.log(`Items : ${JSON.stringify(items, null, 2)}`);
   return items;
 }
 

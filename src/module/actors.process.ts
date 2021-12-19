@@ -451,7 +451,6 @@ function tryStatParsers(lines: string[]): Abilities {
   try {
     stats = parseStats(lines);
   } catch (error) {
-    console.log(`Failed standard parsing, trying multi line parsing`);
     stats = parseMultilineStats(lines);
   }
   if (!stats) throw new Error('could not parse stats.');

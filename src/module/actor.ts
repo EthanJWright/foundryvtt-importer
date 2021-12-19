@@ -5,7 +5,7 @@ import { UserData } from './importForm';
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
   const { actions, features, reactions } = actor;
-  const preparedItems = featureCollectionToItems({ actions, features, reactions });
+  const preparedItems = featureCollectionToItems({ actions, features, reactions }, { abilities: actor.stats });
   const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',
