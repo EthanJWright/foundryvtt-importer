@@ -56,6 +56,7 @@ export interface ImportActor {
   features: Feature[];
   actions: Feature[];
   reactions: Feature[];
+  allFeatures: Feature[];
 }
 
 export interface Formula {
@@ -334,32 +335,36 @@ interface Section {
   name: string;
   features: Feature[];
 }
+
+function reduceToFeatures(acc: string[], curr: string) {
+  const names = getFeatureNames(curr);
+  if (names || acc.length === 0) {
+    acc.push(curr);
+  } else {
+    acc[acc.length - 1] = acc[acc.length - 1] + curr;
+  }
+  return acc;
+}
+
+function featureStringsToFeatures(line: string) {
+  const fetchedName = getFeatureNames(line);
+  let name;
+  if (!fetchedName) name = 'Unknown Name';
+  else name = fetchedName;
+
+  let cleanLine = line.replace(name, '').trim();
+  if (cleanLine.startsWith('.')) cleanLine = cleanLine.substring(1);
+  if (cleanLine.startsWith(' ')) cleanLine = cleanLine.substring(1);
+  const feature: Feature = {
+    name,
+    description: cleanLine,
+  };
+  return feature;
+}
 function cleanSectionElements(section: string[], sectionTitle: string): Feature[] {
   const formatted: string[] = section.map((line: string) => line.replace(sectionTitle, '').trim()).filter((n) => n);
-  const preparedLines = formatted.reduce((acc: string[], curr: string) => {
-    const names = getFeatureNames(curr);
-    if (names || acc.length === 0) {
-      acc.push(curr);
-    } else {
-      acc[acc.length - 1] = acc[acc.length - 1] + curr;
-    }
-    return acc;
-  }, []);
-  return preparedLines.map((line) => {
-    const fetchedName = getFeatureNames(line);
-    let name;
-    if (!fetchedName) name = 'Unknown Name';
-    else name = fetchedName;
-
-    let cleanLine = line.replace(name, '').trim();
-    if (cleanLine.startsWith('.')) cleanLine = cleanLine.substring(1);
-    if (cleanLine.startsWith(' ')) cleanLine = cleanLine.substring(1);
-    const feature: Feature = {
-      name,
-      description: cleanLine,
-    };
-    return feature;
-  });
+  const preparedLines = formatted.reduce(reduceToFeatures, []);
+  return preparedLines.map(featureStringsToFeatures);
 }
 
 function buildSections(featureLine: number[], featureSections: string[][], lines: string[]): Section[] {
@@ -466,6 +471,14 @@ function getChallenge(challengeLine: string): Rating {
   };
 }
 
+export function getAllFeatures(text: string): Feature[] {
+  const lines = text.split('\n');
+  const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
+  const featureLines = lines.slice(firstFeatureLine);
+  const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
+  return featureStrings.map(featureStringsToFeatures);
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   let featureLines = input.split('\n\n');
@@ -512,5 +525,6 @@ export function textToActor(input: string): ImportActor {
     features,
     actions,
     reactions,
+    allFeatures: getAllFeatures(input),
   };
 }
