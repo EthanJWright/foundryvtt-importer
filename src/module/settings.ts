@@ -24,7 +24,7 @@ export class Config {
    * Helper method to quickly construct Settings from game.settings
    */
   static _load(): Config {
-    return new Config().load((game as any).settings);
+    return new Config().load((game as Game).settings as ClientSettingsReader);
   }
 
   private getSetting<T>(settings: ClientSettingsReader, key: string) {

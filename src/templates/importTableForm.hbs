@@ -1,0 +1,15 @@
+<form>
+  <div class="form-group">
+    <label for="jsonfile">JSON File:</label>
+    <div class="form-fields">
+      {{filePicker target="jsonfile"}}
+      <input type="text" name="jsonfile" placeholder="path/file.json" value="{{object.jsonfile}}" />
+    </div>
+  </div>
+  <div>
+    <textarea id="clipboardInput" name="clipboardInput" rows="4" cols="50"> </textarea>
+  </div>
+  <div class="form-group">
+    <button type="submit" name="submit" value="submit">Okay</button>
+  </div>
+</form>

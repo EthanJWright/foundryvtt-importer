@@ -1,3 +1,4 @@
+import { importActorForm } from './importActorForm';
 import { Handler, importJSONForm } from './importForm';
 import { importTableForm } from './importTableForm';
 
@@ -20,6 +21,12 @@ export function renderSidebarButtons(settings: Settings, tab: string, handler: H
       }
       case 'tables': {
         const form = new importTableForm(handler, tab);
+        form.render(true);
+        break;
+      }
+      case 'actors': {
+        console.log(`Rendering actors`);
+        const form = new importActorForm(handler, tab);
         form.render(true);
         break;
       }
