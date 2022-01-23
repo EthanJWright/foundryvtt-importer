@@ -459,10 +459,17 @@ function getBiography(lines: string[]): string {
   return lines[firstBioIndex].trim();
 }
 
-function getChallenge(challengeLine: string): Rating {
+export function getChallenge(challengeLine: string): Rating {
   // challengeLine : Challenge 1 (200 XP)
   // get the first number in the line
-  const cr = Number(challengeLine.split(' ')[1]);
+  const ratingString = challengeLine.split(' ')[1];
+  let cr = 0;
+  if (ratingString.includes('/')) {
+    const [num, denom] = ratingString.split('/');
+    cr = Number(num) / Number(denom);
+  } else {
+    cr = Number(ratingString);
+  }
   // get the number in the parentheses
   const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', ''));
   return {
