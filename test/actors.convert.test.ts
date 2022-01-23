@@ -22,7 +22,7 @@ describe('buildDamage', () => {
 describe('buildAttackBonus', () => {
   it('should build attack bonus from a melee weapon', () => {
     const rapier = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.';
-    const built = buildAttackBonus(rapier);
+    const built = buildAttackBonus(rapier, 0);
     expect(built).toEqual(6);
   });
 });

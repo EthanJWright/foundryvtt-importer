@@ -307,13 +307,17 @@ function getFeatureLines(lines: string[]): number[] {
   }, []);
 }
 
-function getFeatureNames(line: string): string | undefined {
+export function getFeatureNames(line: string): string | undefined {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
   const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
   const matches = line.match(re);
   if (matches) {
     const name = line.split('.')[0];
+    // If our regex didn't grab a match at the beginning of the line, return
+    if (name.trim().split(' ').length > 3) {
+      return;
+    }
     return name;
   }
 
@@ -422,28 +426,6 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
     return -1;
   }
   return firstMatch + 1;
-}
-
-export function parseActions(lines: string[], startIndex: number): Feature[] {
-  if (startIndex === -1) {
-    return [];
-  }
-  const actionSamples = lines[startIndex].split('\n');
-  const actionStrings = actionSamples.reduce((acc: string[], curr: string) => {
-    if (acc.length === 0 || (curr.match(/\.\s\w{3,}/) && !curr.match(/^ft./))) {
-      acc.push(curr);
-    } else {
-      acc[acc.length - 1] += ' ' + curr;
-    }
-    return acc;
-  }, []);
-  return actionStrings.map((action) => {
-    const [name, ...rest] = action.split(/(?=\.)/);
-    return {
-      name: name.trim(),
-      description: rest.join('').trim().replace(/\n/g, ' ').replace(/^\. /, ''),
-    };
-  });
 }
 
 function tryStatParsers(lines: string[]): Abilities {
