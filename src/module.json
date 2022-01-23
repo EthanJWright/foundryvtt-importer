@@ -12,7 +12,7 @@
     }
   ],
   "minimumCoreVersion": "0.8.8",
-  "compatibleCoreVersion": "0.8.8",
+  "compatibleCoreVersion": "9",
   "scripts": [],
   "esmodules": ["module/foundryvtt-importer.js"],
   "styles": ["styles/foundryvtt-importer.css"],
