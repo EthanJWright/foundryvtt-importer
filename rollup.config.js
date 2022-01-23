@@ -1,5 +1,6 @@
 const typescript = require('rollup-plugin-typescript2');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+import copy from '@guanghechen/rollup-plugin-copy';
 
 const staticFiles = ['styles', 'templates', 'lang', 'module.json'];
 
