@@ -96,7 +96,7 @@ jobs:
         uses: qzb/standard-version-action@v1.0.1
 
       - name: Push changes
-        uses: ad-m/github-push-action@main
+        uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
