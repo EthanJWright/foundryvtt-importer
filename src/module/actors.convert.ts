@@ -190,12 +190,6 @@ export function buildReach(description: string) {
   };
 }
 
-function getWeaponAbility(description: string, abilities: Abilities): string | undefined {
-  // const bonus = buildAttackBonus(description);
-  if (abilities.dex.mod > abilities.str.mod) return 'dex';
-  return 'str';
-}
-
 function getActionType(description: string): string | undefined {
   if (/melee/i.test(description)) return 'mwak';
   if (/ranged/.test(description)) return 'rwak';
