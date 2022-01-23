@@ -487,6 +487,13 @@ export function textToActor(input: string): ImportActor {
   }
   const { features } = featureFromSection(sections, 'Features');
 
+  let skills: Skill[] = [];
+  try {
+    skills = parseSkills(lines);
+  } catch (error) {
+    console.log('Could not parse skills');
+  }
+
   return {
     name: lines[0].trim(),
     biography: getBiography(lines),
@@ -494,7 +501,7 @@ export function textToActor(input: string): ImportActor {
     armorClass: parseAC(acLine),
     stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
-    skills: parseSkills(lines),
+    skills,
     features,
     actions,
     reactions,
