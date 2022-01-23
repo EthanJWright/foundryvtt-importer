@@ -159,10 +159,10 @@ export function buildDamageParts(description: string) {
   return [[parsed.str, getDamageType(parsed.afterFormula)]];
 }
 
-export function buildAttackBonus(description: string): number | undefined {
+export function buildAttackBonus(description: string, mod: number): number | undefined {
   // regex for + followed by one or two digits
   const attackMatch = description.match(/\+\d{1,2}/);
-  return !attackMatch ? undefined : parseInt(attackMatch[0].substring(1));
+  return !attackMatch ? undefined : parseInt(attackMatch[0].substring(1)) - mod;
 }
 
 export function buildReach(description: string) {
@@ -186,12 +186,8 @@ export function buildReach(description: string) {
   }
   return {
     value: Number(value),
-    type: type,
+    units: type,
   };
-}
-
-function getActionType(_: string): string | undefined {
-  return 'mwak';
 }
 
 function getWeaponAbility(description: string, abilities: Abilities): string | undefined {
@@ -200,17 +196,36 @@ function getWeaponAbility(description: string, abilities: Abilities): string | u
   return 'str';
 }
 
-export function featuresToItems(type: FifthFeatureCost, features: Feature[], abilities: Abilities): FifthItem[] {
+function getActionType(description: string): string | undefined {
+  if (/melee/i.test(description)) return 'mwak';
+  if (/ranged/.test(description)) return 'rwak';
+  return undefined;
+}
+
+function getItemType(description: string): FifthItemType {
+  let itemType: FifthItemType = 'feat';
+  if (/melee weapon attack/i.test(description)) itemType = 'weapon';
+  if (/ranged weapon attack/i.test(description)) itemType = 'weapon';
+  if (/melee or ranged weapon attack/i.test(description)) itemType = 'weapon';
+  return itemType;
+}
+
+function getMaxAbility(abilities: Abilities): FifthStat {
+  if (abilities.str.mod > abilities.dex.mod) return 'str';
+  return 'dex';
+}
+
+export function featuresToItems(features: Feature[], abilities: Abilities): FifthItem[] {
   return features.map((feature) => {
-    let activationType = type;
-    let itemType: FifthItemType = 'feat';
+    let activationType: FifthFeatureCost = 'none';
+    const itemType: FifthItemType = getItemType(feature.description);
+    if (feature.description.includes('action')) activationType = 'action';
     if (feature.description.includes('bonus action')) activationType = 'bonus';
-    if (/melee weapon attack/i.test(feature.description)) itemType = 'weapon';
-    if (/ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
-    if (/melee or ranged weapon attack/i.test(feature.description)) itemType = 'weapon';
 
     const damage = itemType === 'weapon' ? { parts: buildDamageParts(feature.description) } : {};
-    const actionType = itemType === 'weapon' ? getActionType(feature.description) : undefined;
+    const ability = getMaxAbility(abilities);
+    const mod = abilities[ability].mod;
+    const attackBonus = itemType === 'weapon' ? buildAttackBonus(feature.description, mod) : '';
 
     return {
       name: feature.name,
@@ -223,9 +238,9 @@ export function featuresToItems(type: FifthFeatureCost, features: Feature[], abi
           type: activationType,
         },
         damage,
-        ability: getWeaponAbility(feature.description, abilities),
-        range: buildReach(feature.description),
-        actionType,
+        actionType: getActionType(feature.description),
+        attackBonus,
+        ability,
       },
     };
   });
@@ -244,12 +259,8 @@ export function featureCollectionToItems(
   { features, actions, reactions }: FeatureCollection,
   { abilities }: ActorData,
 ): FifthItem[] {
-  const items = [...featuresToItems('none', features, abilities), ...featuresToItems('action', actions, abilities)];
-  if (reactions) {
-    items.push(...featuresToItems('reaction', reactions, abilities));
-  }
-  console.log(`Items : ${JSON.stringify(items, null, 2)}`);
-  return items;
+  const extras = reactions ? featuresToItems(reactions, abilities) : [];
+  return [...featuresToItems(actions, abilities), ...featuresToItems(features, abilities), ...extras];
 }
 
 export function actorToFifth({ stats, armorClass, health, speed, biography, skills }: ImportActor) {

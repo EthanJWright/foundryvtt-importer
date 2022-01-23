@@ -33,7 +33,7 @@ describe('buildReach', () => {
     const built = buildReach(rapier);
     if (!built) throw new Error('Missing reach');
     expect(built.value).toEqual(5);
-    expect(built.type).toBe('ft');
+    expect(built.units).toBe('ft');
   });
 
   it('should build a reach when a space is missing', () => {
@@ -41,6 +41,6 @@ describe('buildReach', () => {
     const built = buildReach(rapier);
     if (!built) throw new Error('Missing reach');
     expect(built.value).toEqual(5);
-    expect(built.type).toBe('ft');
+    expect(built.units).toBe('ft');
   });
 });

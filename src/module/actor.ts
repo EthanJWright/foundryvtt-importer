@@ -6,6 +6,7 @@ async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
   const { actions, features, reactions } = actor;
   const preparedItems = featureCollectionToItems({ actions, features, reactions }, { abilities: actor.stats });
+  console.log(`Prepared items: ${JSON.stringify(preparedItems, null, 2)}`);
   const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',
@@ -14,6 +15,7 @@ async function txtRoute(stringData: string) {
 
   await Promise.all(
     preparedItems.map(async (item) => {
+      console.log(`Creating item: ${item.name}`);
       return await Item.create(
         {
           ...item,
