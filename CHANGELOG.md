@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.0.3...v0.0.4) (2022-01-23)
+
+
+### Bug Fixes
+
+* adding module.json to release ([c69e46c](https://github.com/EthanJWright/foundryvtt-importer/commit/c69e46c49d5e847fc3b3df1ba07c02c7d8d0d9aa))
+* adding rollup copy ([82f6b2a](https://github.com/EthanJWright/foundryvtt-importer/commit/82f6b2ab6243b8e23136a323a58680a83c4558ea))
+* defining src and dist ([8dccf5c](https://github.com/EthanJWright/foundryvtt-importer/commit/8dccf5cf0cc12d8ffe68f371e157ec0005832927))
+* import to require ([989227f](https://github.com/EthanJWright/foundryvtt-importer/commit/989227ff12e0174c66d579adf42398a3066f93b3))
+* updating PAT for repo ([a2e7877](https://github.com/EthanJWright/foundryvtt-importer/commit/a2e7877bc9a49e6b7da38239d6f7a04276c58bdb))
+
 ### [0.0.3](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.0.2...v0.0.3) (2022-01-23)
 
 ### [0.0.2](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.0.1...v0.0.2) (2022-01-23)
