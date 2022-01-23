@@ -218,8 +218,6 @@ export function featuresToItems(features: Feature[], abilities: Abilities): Fift
 
     const damage = itemType === 'weapon' ? { parts: buildDamageParts(feature.description) } : {};
     const ability = getMaxAbility(abilities);
-    const mod = abilities[ability].mod;
-    const attackBonus = itemType === 'weapon' ? buildAttackBonus(feature.description, mod) : '';
 
     return {
       name: feature.name,
@@ -233,7 +231,6 @@ export function featuresToItems(features: Feature[], abilities: Abilities): Fift
         },
         damage,
         actionType: getActionType(feature.description),
-        attackBonus,
         ability,
       },
     };
