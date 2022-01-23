@@ -368,4 +368,5 @@ Foundry.
 ## Plans for future implementation
 
 - Import journals from markdown directories (such as Obsidian)
-- Add parsing / importing for actor & item data
+- Make settings more configurable (to hide unused elements)
+- Make parsers more modular to allow for easy extensibility

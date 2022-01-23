@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.0.1...v0.0.2) (2022-01-23)
+
+
+### Features
+
+* add action parsing ([2599fc5](https://github.com/EthanJWright/foundryvtt-importer/commit/2599fc5a4b9a0a2cd9f6c6f3a8b29cc32b6825a5))
+* add health extractor ([0065a13](https://github.com/EthanJWright/foundryvtt-importer/commit/0065a13c17400972b0dd334247c378d8770f9d10))
+* add in reaction ([e8e8832](https://github.com/EthanJWright/foundryvtt-importer/commit/e8e8832b4979c281930ad4cc580b1f2893ea1c65))
+* add skill parsing ([9727d09](https://github.com/EthanJWright/foundryvtt-importer/commit/9727d09d5c21f4d76c220545e09f448240e9e13a))
+* adding AC parsing ([293af1d](https://github.com/EthanJWright/foundryvtt-importer/commit/293af1d345ddbe0715ad34d5eefda1e223507741))
+* adding allFeature collection to remove reliance on sections ([16a7ec3](https://github.com/EthanJWright/foundryvtt-importer/commit/16a7ec3a3685c318f8047575455215de8804203a))
+* adding damage and attack to item ([4a6551d](https://github.com/EthanJWright/foundryvtt-importer/commit/4a6551d9e59cc40e7300fb907610707b57dc8d99))
+* adding feats and actions as items ([11977c6](https://github.com/EthanJWright/foundryvtt-importer/commit/11977c638a5e7c2619916f9fdef03c12b49790a3))
+* basic damage parsing ([a4a63dd](https://github.com/EthanJWright/foundryvtt-importer/commit/a4a63dddd330080a8ac13fc5f6d677c14bf06d69))
+* enable fraction based challenge ratings ([a08b8c1](https://github.com/EthanJWright/foundryvtt-importer/commit/a08b8c18b5e112d3bf488d863347bad1c3f6aff9))
+* extract challenge rating and xp ([05bbc05](https://github.com/EthanJWright/foundryvtt-importer/commit/05bbc059957883736bf54b3e6cf77a3f03340b7e))
+* extract speed ([9e80fd4](https://github.com/EthanJWright/foundryvtt-importer/commit/9e80fd40dad3afd232f1883ee8be95a93095b6da))
+* extract stats ([3b9437a](https://github.com/EthanJWright/foundryvtt-importer/commit/3b9437aef03042efa8bccba75978875b5f27de82))
+* find where skills start in text ([bfeb4aa](https://github.com/EthanJWright/foundryvtt-importer/commit/bfeb4aac7e44886f57087ee80176f23df150a2e4))
+* function to find first action index ([07b8964](https://github.com/EthanJWright/foundryvtt-importer/commit/07b89642712394cbc63ed8bd25f9218f9c23fb58))
+* made feature parsing much more dynamic ([8bbd5ed](https://github.com/EthanJWright/foundryvtt-importer/commit/8bbd5ede372d2fa8caf83ba20e51c7249a34bd39))
+* parse abilities in format of abil new line value ([8a0316d](https://github.com/EthanJWright/foundryvtt-importer/commit/8a0316d59f0ec0e4cdeab7c693629ea178fb06fd))
+* parse features ([153d5a0](https://github.com/EthanJWright/foundryvtt-importer/commit/153d5a0cc97695432e3f6cae61f36af56d1a64bb))
+* parsing of abilities, stats, health, ac ([4559d3c](https://github.com/EthanJWright/foundryvtt-importer/commit/4559d3c262256cc849e08874a61a70972ab2f4f7))
+* scaffolding for actor implementation ([b9f768f](https://github.com/EthanJWright/foundryvtt-importer/commit/b9f768fa85ea9989f22b0251098d69f65cc09187))
+* starting to bind conversion to foundry api ([c434e9d](https://github.com/EthanJWright/foundryvtt-importer/commit/c434e9d51ceccb556f64cdcb8497e4bd4575151e))
+
+
+### Bug Fixes
+
+* able to build swashbuckler with feats and items ([859f989](https://github.com/EthanJWright/foundryvtt-importer/commit/859f98934b4512598af607121f7eab77f4873120))
+* add weapon info ([8deb6f7](https://github.com/EthanJWright/foundryvtt-importer/commit/8deb6f7812bccb0a5ee116044e62ff8b037d5f80))
+* adding other files related to binding ([033f8d1](https://github.com/EthanJWright/foundryvtt-importer/commit/033f8d13a4910d130156407598c5cb5f366044fc))
+* adding sidebar impl ([88bf0c4](https://github.com/EthanJWright/foundryvtt-importer/commit/88bf0c43c41c221bed0c89d0fbdb5d049c2f41f9))
+* adjusting weapon attack formula ([2432f55](https://github.com/EthanJWright/foundryvtt-importer/commit/2432f553e7b0da6718f6e4e7cadc3ec8f2bdb263))
+* allow multiple feature headers ([eb15180](https://github.com/EthanJWright/foundryvtt-importer/commit/eb1518058ca285495f31b564da8e8139140576e6))
+* filling out module.json ([87f67bb](https://github.com/EthanJWright/foundryvtt-importer/commit/87f67bbe827cb38212370d38255b3c59d112e58c))
+* handle monsters with no specific armor type ([b35eb90](https://github.com/EthanJWright/foundryvtt-importer/commit/b35eb90540d3011729b1dc54d4ddce7e3067063b))
+* refactor to make reaction easier ([a6ca766](https://github.com/EthanJWright/foundryvtt-importer/commit/a6ca76683c64bab606aecaf1500890710f332540))
+* remove any ([02c231e](https://github.com/EthanJWright/foundryvtt-importer/commit/02c231e56fa93a8ded3398099fc78bbf9c6352fe))
+* removing reference to get weapon ability ([4ac49a4](https://github.com/EthanJWright/foundryvtt-importer/commit/4ac49a4faa0f4537eb217281e20580b963cc1a89))
+* removing requirement for skills ([943b779](https://github.com/EthanJWright/foundryvtt-importer/commit/943b779c2d1b1a19ddc5de3eb873c82849ff2141))
+* rename to features ([0627ced](https://github.com/EthanJWright/foundryvtt-importer/commit/0627cedc0084569b74d11b0cf79fbcebe1f5263e))
+* returning formula string as well ([9c43ccd](https://github.com/EthanJWright/foundryvtt-importer/commit/9c43ccd14ce86337dbe24691d1d2f02390a951dc))
+* spacing, only use all feature collection ([2e7317f](https://github.com/EthanJWright/foundryvtt-importer/commit/2e7317f408c918b0e6937d4d2607e9d24eb87809))
+* specifically matching on actions as line contents ([1210d55](https://github.com/EthanJWright/foundryvtt-importer/commit/1210d559404c6e965d9856e64a6128a3c1794ff6))
+* this seemed to work on last release, so rolling back ([d10021a](https://github.com/EthanJWright/foundryvtt-importer/commit/d10021aaa5d6b7fd20ee5b50698015976a584f6b))
+* typo ([7504c81](https://github.com/EthanJWright/foundryvtt-importer/commit/7504c8113058b1c7129525ab2bdece1f0cb3d2d4))
+* underscoring unused events ([05a222a](https://github.com/EthanJWright/foundryvtt-importer/commit/05a222aede6048e0a50bf396c4cadec2481c6533))
+* update foundry version ([595dbd5](https://github.com/EthanJWright/foundryvtt-importer/commit/595dbd595b64bcfd70f696500f3c7d8253ad1469))
+* updating docs ([f6e113c](https://github.com/EthanJWright/foundryvtt-importer/commit/f6e113c4f3a197c07d01eb2855aaaeb15f4a3004))
+* updating release flow to use main ([89caae8](https://github.com/EthanJWright/foundryvtt-importer/commit/89caae890e0d2c0a0b3620b02dd4dc3289af83bf))
+* verify feature names are at start of line ([44e2fd8](https://github.com/EthanJWright/foundryvtt-importer/commit/44e2fd84e635da536c2f5de411bc8030590075a2))
+
 ### 0.0.1 (2021-12-01)
 
 
