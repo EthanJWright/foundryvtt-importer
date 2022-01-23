@@ -4,8 +4,8 @@ import { UserData } from './importForm';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
-  const { allFeatures } = actor;
-  const preparedItems = featureCollectionToItems(allFeatures, { abilities: actor.stats });
+  const { features } = actor;
+  const preparedItems = featureCollectionToItems(features, { abilities: actor.stats });
   console.log(`Prepared items: ${JSON.stringify(preparedItems, null, 2)}`);
   const foundryActor = await Actor.create({
     name: actor.name,

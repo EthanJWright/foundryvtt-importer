@@ -153,10 +153,10 @@ describe('Parse Text', () => {
     expect(actor.armorClass.type).toBe('leather armor');
     expect(actor.speed).toEqual(30);
     expect(actor.skills.length).toEqual(3);
-    expect(actor.allFeatures[0].description).toBe(
+    expect(actor.features[0].description).toBe(
       'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
     );
-    expect(actor.allFeatures.length).toEqual(5);
+    expect(actor.features.length).toEqual(5);
   });
 
   it('should parse a nimblewright into an actor', () => {
@@ -171,9 +171,9 @@ describe('Parse Text', () => {
     expect(actor.armorClass.type).toBe('natural armor');
     expect(actor.speed).toEqual(60);
     expect(actor.skills.length).toEqual(2);
-    expect(actor.allFeatures.length).toEqual(8);
-    expect(actor.allFeatures[0].name).toBe('Magic Resistance');
-    expect(actor.allFeatures[0].description).toBe(
+    expect(actor.features.length).toEqual(8);
+    expect(actor.features[0].name).toBe('Magic Resistance');
+    expect(actor.features[0].description).toBe(
       'The nimblewright has advantage on saving throws against spells and other magical effects.',
     );
   });
@@ -197,8 +197,8 @@ describe('Parse Text', () => {
     expect(actor?.rating?.cr).toEqual(3);
     expect(actor?.rating?.xp).toEqual(700);
     expect(actor.skills.length).toEqual(3);
-    expect(actor.allFeatures.length).toEqual(5);
-    expect(actor.allFeatures[0].description).toBe(
+    expect(actor.features.length).toEqual(5);
+    expect(actor.features[0].description).toBe(
       'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
     );
   });

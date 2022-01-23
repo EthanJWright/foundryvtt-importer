@@ -53,7 +53,7 @@ export interface ImportActor {
   stats: Abilities;
   speed: number;
   skills: Skill[];
-  allFeatures: Feature[];
+  features: Feature[];
 }
 
 export interface Formula {
@@ -510,6 +510,6 @@ export function textToActor(input: string): ImportActor {
     stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
     skills,
-    allFeatures: getAllFeatures(input),
+    features: getAllFeatures(input),
   };
 }

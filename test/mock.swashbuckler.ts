@@ -52,7 +52,7 @@ export const swashbuckler: ImportActor = {
       bonus: 6,
     },
   ],
-  allFeatures: [
+  features: [
     {
       name: 'Lightfooted',
       description: '. The swashbuckler can take the Dash or Disengageaction as a bonus action on each of its turns.',
