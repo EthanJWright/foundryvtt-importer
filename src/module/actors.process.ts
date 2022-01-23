@@ -39,10 +39,16 @@ export interface Health {
   max: number;
 }
 
+export interface Rating {
+  cr?: number;
+  xp: number;
+}
+
 export interface ImportActor {
   name: string;
   biography: string;
   health: Health;
+  rating?: Rating;
   armorClass: ArmorClass;
   stats: Abilities;
   speed: number;
@@ -448,6 +454,18 @@ function getBiography(lines: string[]): string {
   return lines[firstBioIndex].trim();
 }
 
+function getChallenge(challengeLine: string): Rating {
+  // challengeLine : Challenge 1 (200 XP)
+  // get the first number in the line
+  const cr = Number(challengeLine.split(' ')[1]);
+  // get the number in the parentheses
+  const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', ''));
+  return {
+    cr,
+    xp,
+  };
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   let featureLines = input.split('\n\n');
@@ -458,6 +476,12 @@ export function textToActor(input: string): ImportActor {
   const acLine = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
   if (!acLine || typeof acLine !== 'string') {
     throw new Error('Could not find AC line');
+  }
+
+  const challengeLine = lines.find((line) => line.includes('Challenge'));
+  let rating = undefined;
+  if (challengeLine) {
+    rating = getChallenge(challengeLine);
   }
 
   const sections = parseFeatureSections(input);
@@ -478,6 +502,7 @@ export function textToActor(input: string): ImportActor {
 
   return {
     name: lines[0].trim(),
+    rating,
     biography: getBiography(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
     armorClass: parseAC(acLine),

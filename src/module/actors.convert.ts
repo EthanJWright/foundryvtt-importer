@@ -263,13 +263,17 @@ export function featureCollectionToItems(
   return [...featuresToItems(actions, abilities), ...featuresToItems(features, abilities), ...extras];
 }
 
-export function actorToFifth({ stats, armorClass, health, speed, biography, skills }: ImportActor) {
+export function actorToFifth({ stats, armorClass, health, speed, biography, skills, rating }: ImportActor) {
   return {
     abilities: convertAbilities(stats),
     attributes: convertAttributes({ armorClass, health, speed }),
     details: {
       biography: {
         value: biography,
+      },
+      cr: rating?.cr,
+      xp: {
+        value: rating?.xp,
       },
     },
     skills: convertSkills(skills),

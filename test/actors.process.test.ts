@@ -192,6 +192,11 @@ describe('Parse Text', () => {
     expect(actor.armorClass.value).toEqual(17);
     expect(actor.armorClass.type).toBe('leather armor');
     expect(actor.speed).toEqual(30);
+    expect(actor?.rating).toBeDefined();
+    expect(actor?.rating?.cr).toBeDefined();
+    expect(actor?.rating?.xp).toBeDefined();
+    expect(actor?.rating?.cr).toEqual(3);
+    expect(actor?.rating?.xp).toEqual(700);
     expect(actor.skills.length).toEqual(3);
     expect(actor.features.length).toEqual(2);
     expect(actor.features[0].description).toBe(
