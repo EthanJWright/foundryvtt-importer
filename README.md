@@ -26,9 +26,17 @@ Reddit.
 
 **NOTE**
 
-Importing Reddit table collections is great when paired with the [Table Ninja](https://github.com/Adriannom/fvtt-module-table-ninja) module.
+Importing Reddit table collections are great when paired with the [Table Ninja](https://github.com/Adriannom/fvtt-module-table-ninja) module.
 
 ---
+
+### Actors
+
+Import actors from text based monster blocks. I currently either copy my pdf to
+text, or use a pdf tool (like zathura) that allows me to copy blocks of text.
+
+Paste the block of text into the clipboard utility, and a best effort monster
+will be generated matching the text.
 
 ### Journals
 
@@ -240,6 +248,57 @@ goods.csv
 07-08|Bricks
 09-10|Books
 11-12|Cloth
+```
+
+## Actors
+
+Actors can be created by copying the text of a mosnter block into the clipboard
+tool.
+
+The tool is designed to handle several standard formats of monster blocks, and
+attempts to resolve as many elements as possible into Foundry Actor items.
+
+An example monster block could look like the below Swashbuckler:
+
+
+```txt
+Swashbuckler
+Armor Class 17 (leather armor)
+Hit Points 66 (12d8 + 12)
+Speed 30 ft.Armor Class 12 (15 with mage armor)
+Hit Points 78 (12d8 + 24)
+Speed 30 ft.
+Medium humanoid (any race), any non-lawful alignment
+STR
+12 (+1)
+DEX
+18 (+4)
+CON
+12 (+1)
+INT
+14 (+2)
+WIS
+11 (+0)
+Medium humanoid (any race), any alignment
+CHA
+15 (+2)
+Skills Acrobatics +8, Athletics +5, Persuasion +6
+Senses passive Perception 10
+Languages any one language (usually Common)
+Challenge 3 (700 XP)
+Lightfooted. The swashbuckler can take the Dash or Disengage
+action as a bonus action on each of its turns.
+Suave Defense. While the swashbuckler is wearing light or no
+armor and wielding no shield, its AC includes its Charisma
+modifier.
+Actions
+Multiattack. The swashbuckler makes three attacks: one with
+a dagger and two with its rapier.
+Dagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5
+ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing
+damage.
+Rapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.
+Hit: 8 (1d8 + 4) piercing damage.
 ```
 
 ## Journals

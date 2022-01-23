@@ -4,6 +4,7 @@ import { processInputJSON } from './journal';
 import { processTableJSON } from './table';
 import { renderSidebarButtons } from './renderSidebarButtons';
 import CONSTANTS from './constants';
+import { processActorInput } from './actor';
 
 Hooks.on('renderSidebarTab', (settings: Settings) => {
   if (!(game as Game)?.user?.isGM) return;
@@ -12,6 +13,7 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
     renderSidebarButtons(settings, 'journal', processInputJSON);
   }
   renderSidebarButtons(settings, 'tables', processTableJSON);
+  renderSidebarButtons(settings, 'actors', processActorInput);
 });
 
 // Initialize module
