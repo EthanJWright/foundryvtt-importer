@@ -53,9 +53,6 @@ export interface ImportActor {
   stats: Abilities;
   speed: number;
   skills: Skill[];
-  features: Feature[];
-  actions: Feature[];
-  reactions: Feature[];
   allFeatures: Feature[];
 }
 
@@ -339,9 +336,9 @@ interface Section {
 function reduceToFeatures(acc: string[], curr: string) {
   const names = getFeatureNames(curr);
   if (names || acc.length === 0) {
-    acc.push(curr);
+    acc.push(curr.trim());
   } else {
-    acc[acc.length - 1] = acc[acc.length - 1] + curr;
+    acc[acc.length - 1] = acc[acc.length - 1] + ' ' + curr.trim();
   }
   return acc;
 }
@@ -350,7 +347,7 @@ function featureStringsToFeatures(line: string) {
   const fetchedName = getFeatureNames(line);
   let name;
   if (!fetchedName) name = 'Unknown Name';
-  else name = fetchedName;
+  else name = fetchedName.trim();
 
   let cleanLine = line.replace(name, '').trim();
   if (cleanLine.startsWith('.')) cleanLine = cleanLine.substring(1);
@@ -497,15 +494,6 @@ export function textToActor(input: string): ImportActor {
     rating = getChallenge(challengeLine);
   }
 
-  const sections = parseFeatureSections(input);
-  const { features: actions } = featureFromSection(sections, 'Actions');
-  const reactionSection = featureFromSection(sections, 'Reactions');
-  let { features: reactions } = reactionSection;
-  if (reactionSection.name === 'No matching feature') {
-    reactions = [];
-  }
-  const { features } = featureFromSection(sections, 'Features');
-
   let skills: Skill[] = [];
   try {
     skills = parseSkills(lines);
@@ -522,9 +510,6 @@ export function textToActor(input: string): ImportActor {
     stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
     skills,
-    features,
-    actions,
-    reactions,
     allFeatures: getAllFeatures(input),
   };
 }

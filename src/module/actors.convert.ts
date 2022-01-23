@@ -255,13 +255,7 @@ export interface FeatureCollection {
 interface ActorData {
   abilities: Abilities;
 }
-export function featureCollectionToItems(
-  allFeatures: Feature[],
-  { features, actions, reactions }: FeatureCollection,
-  { abilities }: ActorData,
-): FifthItem[] {
-  /* const extras = reactions ? featuresToItems(reactions, abilities) : [];
-  return [...featuresToItems(actions, abilities), ...featuresToItems(features, abilities), ...extras]; */
+export function featureCollectionToItems(allFeatures: Feature[], { abilities }: ActorData): FifthItem[] {
   return featuresToItems(allFeatures, abilities);
 }
 
