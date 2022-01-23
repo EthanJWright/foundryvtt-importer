@@ -26,7 +26,7 @@ Reddit.
 
 **NOTE**
 
-Importing Reddit table collections is great when paired with the [Table Ninja](https://github.com/Adriannom/fvtt-module-table-ninja) module.
+Importing Reddit table collections are great when paired with the [Table Ninja](https://github.com/Adriannom/fvtt-module-table-ninja) module.
 
 ---
 
