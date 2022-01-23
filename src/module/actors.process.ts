@@ -117,16 +117,19 @@ export function parseFormula(line: string, regexStart: RegExp) {
 export function parseAC(acString: string): ArmorClass {
   // acString: Armor Class 17 (natural armor)
   // get string from between parentheses
-  const acArray = acString.match(/\(([^)]+)\)/);
-  if (!acArray || acArray.length < 2) {
-    throw new Error(`Could not parse AC from string: ${acString}`);
+  let ac = 'Natural Armor';
+  if (acString.includes('(')) {
+    const acArray = acString.match(/\(([^)]+)\)/);
+    if (!acArray || acArray.length < 1) {
+      throw new Error(`Could not parse armor type from string: ${acString} | array was: ${acArray}`);
+    }
+    // pull formula from match
+    ac = acArray.length > 1 ? acArray[1] : 'Natural Armor';
   }
-  // pull formula from match
-  const ac = acArray[1];
   // find number in string
   const acNumber = acString.match(/\d+/);
   if (!acNumber || acNumber.length < 1) {
-    throw new Error(`Could not parse AC from string: ${acString}`);
+    throw new Error(`Could not parse AC from string: ${acString} | number was: ${acNumber}`);
   }
   return {
     value: Number(acNumber[0]),
