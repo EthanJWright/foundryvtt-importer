@@ -12,8 +12,12 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
   if (config.journalImporter) {
     renderSidebarButtons(settings, 'journal', processInputJSON);
   }
-  renderSidebarButtons(settings, 'tables', processTableJSON);
-  renderSidebarButtons(settings, 'actors', processActorInput);
+  if (config.tableImporter) {
+    renderSidebarButtons(settings, 'tables', processTableJSON);
+  }
+  if (config.actorImporter) {
+    renderSidebarButtons(settings, 'actors', processActorInput);
+  }
 });
 
 // Initialize module

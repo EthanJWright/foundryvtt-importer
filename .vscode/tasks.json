@@ -11,6 +11,24 @@
       "type": "shell",
       "command": "npm run build:watch",
       "problemMatcher": []
+    },
+    {
+      "label": "📦 Bump minor package version",
+      "type": "shell",
+      "command": "npm run bump-version -- --release=minor",
+      "problemMatcher": []
+    },
+    {
+      "label": "📦 Bump major package version",
+      "type": "shell",
+      "command": "npm run bump-version -- --release=major",
+      "problemMatcher": []
+    },
+    {
+      "label": "📦 Patch the package version",
+      "type": "shell",
+      "command": "npm run bump-version -- --release=patch",
+      "problemMatcher": []
     }
   ]
 }
