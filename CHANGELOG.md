@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.0.4...v0.1.1) (2022-01-24)
+
+
+### Features
+
+* add setting for actor importer in config ([dd58bf8](https://github.com/EthanJWright/foundryvtt-importer/commit/dd58bf8227cdc98f6229dbd74931f630d5c48822))
+* configure table button through settings ([a8ab2a1](https://github.com/EthanJWright/foundryvtt-importer/commit/a8ab2a176b38b4eeda180099d8348be0467e6282))
+* starting 0.1.0 release ([d5d2deb](https://github.com/EthanJWright/foundryvtt-importer/commit/d5d2deb614f48819d50a6cf802adc8efde80d760))
+
+
+### Bug Fixes
+
+* be more explicit in folder depth docs ([9c01ed1](https://github.com/EthanJWright/foundryvtt-importer/commit/9c01ed1ad7461c45dbdef7dd26e071c17ec152eb))
+
 ### [0.0.4](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.0.3...v0.0.4) (2022-01-23)
 
 
