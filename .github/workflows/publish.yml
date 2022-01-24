@@ -106,5 +106,5 @@ jobs:
         with:
           allowUpdates: false
           name: ${{steps.extract_version.outputs.version}}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           artifacts: './src/module.json, ./module.zip'
