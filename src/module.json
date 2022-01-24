@@ -2,7 +2,7 @@
   "name": "foundryvtt-importer",
   "title": "foundryvtt-importer",
   "description": "import foundry entities from external sources",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "author": "EthanJWright",
   "authors": [
     {
@@ -28,7 +28,7 @@
   "socket": false,
   "url": "",
   "manifest": "https://github.com/EthanJWright/foundryvtt-importer/releases/latest/download/module.json",
-  "download": "https://host/path/to/0.1.0.zip",
+  "download": "https://github.com/EthanJWright/foundryvtt-importer/releases/download/v0.1.3/module.zip",
   "license": "GPL3",
   "readme": "",
   "bugs": "",
