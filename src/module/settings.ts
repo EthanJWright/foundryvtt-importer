@@ -7,17 +7,20 @@ export interface ClientSettingsReader {
 export class Config {
   folderDepth = 3;
   journalImporter = false;
+  tableImporter = true;
   actorImporter = true;
 
   static keys = {
     folderDepth: 'folderDepth',
     journalImporter: 'journalImporter',
+    tableImporter: 'tableImporter',
     actorImporter: 'actorImporter',
   };
 
   public load(s: ClientSettingsReader): Config {
     this.folderDepth = this.getSetting(s, Config.keys.folderDepth);
     this.journalImporter = this.getSetting(s, Config.keys.journalImporter);
+    this.tableImporter = this.getSetting(s, Config.keys.tableImporter);
     this.actorImporter = this.getSetting(s, Config.keys.actorImporter);
 
     return this;
@@ -53,6 +56,14 @@ export function registerSettings(): void {
       config: true,
       type: Boolean,
       default: false,
+    });
+    (game as Game)?.settings?.register(CONSTANTS.module.name, 'tableImporter', {
+      name: 'Table Importer',
+      hint: 'Display the table importer button. This imports tables pasted from reddit.com/r/BehindTheTables and other formats. (requires reload)',
+      scope: 'world',
+      config: true,
+      type: Boolean,
+      default: true,
     });
     (game as Game)?.settings?.register(CONSTANTS.module.name, 'actorImporter', {
       name: 'Actor Importer',

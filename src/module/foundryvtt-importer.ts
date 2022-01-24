@@ -12,7 +12,9 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
   if (config.journalImporter) {
     renderSidebarButtons(settings, 'journal', processInputJSON);
   }
-  renderSidebarButtons(settings, 'tables', processTableJSON);
+  if (config.tableImporter) {
+    renderSidebarButtons(settings, 'tables', processTableJSON);
+  }
   if (config.actorImporter) {
     renderSidebarButtons(settings, 'actors', processActorInput);
   }
