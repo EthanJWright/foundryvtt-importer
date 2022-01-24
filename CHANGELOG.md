@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.1.11...v0.1.12) (2022-01-24)
+
+
+### Features
+
+* adding actor demo ([de0214d](https://github.com/EthanJWright/foundryvtt-importer/commit/de0214d094ca664864be71f4e6fb91d39993d80f))
+
+
+### Bug Fixes
+
+* adding versionrc ([94ef3fb](https://github.com/EthanJWright/foundryvtt-importer/commit/94ef3fbdddabe6015c395639ec586cf02fff5f3b))
+* bumping lock ([a3001e2](https://github.com/EthanJWright/foundryvtt-importer/commit/a3001e22d8a76e66e690fe91ee6e26f3a3028dcc))
+* update docs ([83e71cd](https://github.com/EthanJWright/foundryvtt-importer/commit/83e71cd6cfe7f36a0eabe088708bd6bc8a49ca71))
+* updating actor form for clarity ([fdb4a01](https://github.com/EthanJWright/foundryvtt-importer/commit/fdb4a016a5aa9c88e058a08dc059c400107acfa4))
+* updating label for actor tab ([9d081fd](https://github.com/EthanJWright/foundryvtt-importer/commit/9d081fda139e6ea15f003113c66c15d05608bd4d))
+
 ### [0.1.11](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.1.10...v0.1.11) (2022-01-24)
 
 
