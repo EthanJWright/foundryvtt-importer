@@ -93,6 +93,13 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
 
+      - name: Bump version
+        uses: qzb/standard-version-action@v1.0.1
+
+      - name: Bump project version
+        run: npm run bump-version -- --release=patch
+
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
