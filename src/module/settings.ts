@@ -43,7 +43,7 @@ export function registerSettings(): void {
   else {
     (game as Game)?.settings?.register(CONSTANTS.module.name, 'folderDepth', {
       name: 'Folder Depth',
-      hint: 'Folders will only be created up to this depth',
+      hint: `Folders will only be created up to this depth. If this is set above ${CONST.FOLDER_MAX_DEPTH}, make sure you have a module like MoarFolders to increase the default depth.`,
       scope: 'world',
       config: true,
       type: Number,
