@@ -1,5 +1,7 @@
 # foundryvtt-importer
 
+Systems: 5e
+
 [![Checks](https://github.com/EthanJWright/foundryvtt-importer/workflows/Checks/badge.svg)](https://github.com/EthanJWright/foundryvtt-importer/actions)
 ![Latest Release Download Count](https://img.shields.io/github/downloads/EthanJWright/foundryvtt-importer/latest/module.zip)
 
@@ -26,6 +28,10 @@ Create foundry elements from external sources.
 
 ![Table Importing from Reddit](https://media4.giphy.com/media/qeiKk0SSvOPngZpca0/giphy.gif?cid=790b761108da49b64336e28d589d0dd28259b61333b5f74e&rid=giphy.gif&ct=g)
 
+## Support
+
+Currently supports the 5e game system, although the table importer will likely
+work system agnostic.
 
 ## Key Features
 
