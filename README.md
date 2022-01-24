@@ -64,10 +64,6 @@ will be generated matching the text.
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
 tool which attempts to process modules that may be found in DMs guild.
 
-## Examples
-
-![](./images/table-example.png)
-
 ## Tables
 
 Tables can be imported from a JSON file with a simple structure, a txt file, or
