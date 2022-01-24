@@ -7,6 +7,26 @@
 
 Create foundry elements from external sources.
 
+## Usage
+
+1. Press import button in tab you are trying to import
+2. Copy text of entry you are trying to import
+3. Paste in the clipboard text area
+4. Press okay
+5. Tweak and use imported data
+
+## Demos
+
+*Import a monster from a PDF*
+(using Zathura as my PDF reader)
+
+![Actor Importing from PDF](https://media0.giphy.com/media/0RYtEwdcfiB6zQURlK/giphy.gif?cid=790b7611c1b01d4886800fd3d18d238cb08b6d0b63bf3159&rid=giphy.gif&ct=g)
+
+*Import a table from reddit.com/r/BehindTheTables*
+
+![Table Importing from Reddit](https://media4.giphy.com/media/qeiKk0SSvOPngZpca0/giphy.gif?cid=790b761108da49b64336e28d589d0dd28259b61333b5f74e&rid=giphy.gif&ct=g)
+
+
 ## Key Features
 
 ### Tables
@@ -43,10 +63,6 @@ will be generated matching the text.
 
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
 tool which attempts to process modules that may be found in DMs guild.
-
-## Examples
-
-![](./images/table-example.png)
 
 ## Tables
 
@@ -369,5 +385,6 @@ Foundry.
 ## Plans for future implementation
 
 - Import journals from markdown directories (such as Obsidian)
+- Actor importing is basic, want to add fine tuning for Items & add Spells
 - Make settings more configurable (to hide unused elements)
 - Make parsers more modular to allow for easy extensibility
