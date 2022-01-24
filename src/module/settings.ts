@@ -7,15 +7,18 @@ export interface ClientSettingsReader {
 export class Config {
   folderDepth = 3;
   journalImporter = false;
+  actorImporter = true;
 
   static keys = {
     folderDepth: 'folderDepth',
     journalImporter: 'journalImporter',
+    actorImporter: 'actorImporter',
   };
 
   public load(s: ClientSettingsReader): Config {
     this.folderDepth = this.getSetting(s, Config.keys.folderDepth);
     this.journalImporter = this.getSetting(s, Config.keys.journalImporter);
+    this.actorImporter = this.getSetting(s, Config.keys.actorImporter);
 
     return this;
   }
@@ -50,6 +53,14 @@ export function registerSettings(): void {
       config: true,
       type: Boolean,
       default: false,
+    });
+    (game as Game)?.settings?.register(CONSTANTS.module.name, 'actorImporter', {
+      name: 'Actor Importer',
+      hint: 'Display the actor importer button. This imports clipboard text formatted like a monster stat block (copied from a PDF) (requires reload)',
+      scope: 'world',
+      config: true,
+      type: Boolean,
+      default: true,
     });
   }
 }
