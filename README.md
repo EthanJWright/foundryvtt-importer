@@ -7,6 +7,14 @@
 
 Create foundry elements from external sources.
 
+## Usage
+
+## Demos
+
+
+![](https://giphy.com/gifs/0RYtEwdcfiB6zQURlK)
+
+
 ## Key Features
 
 ### Tables
