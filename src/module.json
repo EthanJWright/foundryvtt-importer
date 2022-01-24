@@ -33,6 +33,6 @@
   "readme": "",
   "bugs": "",
   "changelog": "",
-  "system": [],
+  "system": ["dnd5e"],
   "library": false
 }
