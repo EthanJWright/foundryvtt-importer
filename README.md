@@ -12,7 +12,7 @@ Create foundry elements from external sources.
 ## Demos
 
 
-![](https://giphy.com/gifs/0RYtEwdcfiB6zQURlK)
+![Actor Importing from PDF](https://giphy.com/gifs/0RYtEwdcfiB6zQURlK)
 
 
 ## Key Features
