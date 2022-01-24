@@ -9,6 +9,12 @@ Create foundry elements from external sources.
 
 ## Usage
 
+1. Press import button in tab you are trying to import
+2. Copy text of entry you are trying to import
+3. Paste in the clipboard text area
+4. Press okay
+5. Tweak and use imported data
+
 ## Demos
 
 *Import a monster from a PDF*
@@ -383,5 +389,6 @@ Foundry.
 ## Plans for future implementation
 
 - Import journals from markdown directories (such as Obsidian)
+- Actor importing is basic, want to add fine tuning for Items & add Spells
 - Make settings more configurable (to hide unused elements)
 - Make parsers more modular to allow for easy extensibility
