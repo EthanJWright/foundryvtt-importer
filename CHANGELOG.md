@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.13](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.1.12...v0.1.13) (2022-01-26)
+
+
+### Bug Fixes
+
+* adding 5e system to package.json ([e7d108c](https://github.com/EthanJWright/foundryvtt-importer/commit/e7d108c0a1c093738940afa68e702e2081f50cd0))
+* fixing stat parsing discovered with user data ([45c5d79](https://github.com/EthanJWright/foundryvtt-importer/commit/45c5d7905f50df2d3e57305079c541ef66706489))
+
 ### [0.1.12](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.1.11...v0.1.12) (2022-01-24)
 
 
