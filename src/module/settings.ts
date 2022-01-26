@@ -9,12 +9,14 @@ export class Config {
   journalImporter = false;
   tableImporter = true;
   actorImporter = true;
+  itemImporter = true;
 
   static keys = {
     folderDepth: 'folderDepth',
     journalImporter: 'journalImporter',
     tableImporter: 'tableImporter',
     actorImporter: 'actorImporter',
+    itemImporter: 'itemImporter',
   };
 
   public load(s: ClientSettingsReader): Config {
@@ -22,6 +24,7 @@ export class Config {
     this.journalImporter = this.getSetting(s, Config.keys.journalImporter);
     this.tableImporter = this.getSetting(s, Config.keys.tableImporter);
     this.actorImporter = this.getSetting(s, Config.keys.actorImporter);
+    this.itemImporter = this.getSetting(s, Config.keys.itemImporter);
 
     return this;
   }
@@ -68,6 +71,14 @@ export function registerSettings(): void {
     (game as Game)?.settings?.register(CONSTANTS.module.name, 'actorImporter', {
       name: 'Actor Importer',
       hint: 'Display the actor importer button. This imports clipboard text formatted like a monster stat block (copied from a PDF) (requires reload)',
+      scope: 'world',
+      config: true,
+      type: Boolean,
+      default: true,
+    });
+    (game as Game)?.settings?.register(CONSTANTS.module.name, 'itemImporter', {
+      name: 'Item Importer',
+      hint: 'Display the item importer button. This imports clipboard text formatted like an Item or Spell (copied from a PDF) (requires reload)',
       scope: 'world',
       config: true,
       type: Boolean,
