@@ -156,13 +156,17 @@ function getDamageType(from: string): string | undefined {
 export function buildDamageParts(description: string) {
   // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
   const parsed = parseFormula(description, /Melee Weapon Attack: +/);
-  return [[parsed.str, getDamageType(parsed.afterFormula)]];
+  const fromString = parsed.afterFormula ? parsed.afterFormula : description;
+  return [[parsed.str, getDamageType(fromString)]];
 }
 
 export function buildAttackBonus(description: string, mod: number): number | undefined {
   // regex for + followed by one or two digits
   const attackMatch = description.match(/\+\d{1,2}/);
-  return !attackMatch ? undefined : parseInt(attackMatch[0].substring(1)) - mod;
+  if (attackMatch) {
+    const attackBonus = parseInt(attackMatch[0].substring(1), 0);
+    return attackBonus - mod;
+  }
 }
 
 export function buildReach(description: string) {

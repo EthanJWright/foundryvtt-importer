@@ -55,6 +55,13 @@ describe('extractStats', () => {
       },
     });
   });
+
+  it('Should parse a Goblin', () => {
+    const actorText =
+      'Goblin\nMedium humanoid (goblin), chaotic evil\nArmor Class 13 (natural armor)\nHit Points 52 (8d8 + 16)\nSpeed 40 ft.\nSTR DEX CON INT WIS CHA\n16 (+3) 12 (+1) 15 (+2) 6 (–2) 13 (+1) 7 (–2)\nSkills Athletics +5\nSenses darkvision 60 ft.';
+    const stats = parseStats(actorText.split('\n'));
+    expect(stats.str.value).toBe(16);
+  });
 });
 
 describe('Parse Skills', () => {

@@ -394,3 +394,5 @@ Foundry.
 - Actor importing is basic, want to add fine tuning for Items & add Spells
 - Make settings more configurable (to hide unused elements)
 - Make parsers more modular to allow for easy extensibility
+- Support for adding items/weapons/armor etc. Including from CSV.
+- Export to compendium. I can see people using this to import work from larger datasets and wanting to share or add them to modules.

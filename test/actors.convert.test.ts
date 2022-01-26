@@ -17,6 +17,12 @@ describe('buildDamage', () => {
     const built = buildDamageParts(rapier);
     expect(built).toEqual([['1d8 + 4', 'piercing']]);
   });
+
+  it('should build damage for a bite attack', () => {
+    const bite = 'Bite. Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 8 (2d4 + 3) piercing damage.';
+    const built = buildDamageParts(bite);
+    expect(built).toEqual([['2d4 + 3', 'piercing']]);
+  });
 });
 
 describe('buildAttackBonus', () => {
@@ -24,6 +30,12 @@ describe('buildAttackBonus', () => {
     const rapier = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.';
     const built = buildAttackBonus(rapier, 0);
     expect(built).toEqual(6);
+  });
+
+  it('should build attack bonus for a bite', () => {
+    const bite = 'Bite. Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 8 (2d4 + 3) piercing damage.';
+    const built = buildAttackBonus(bite, 0);
+    expect(built).toEqual(5);
   });
 });
 
