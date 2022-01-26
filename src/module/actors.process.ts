@@ -58,7 +58,7 @@ export interface ImportActor {
 
 export interface Formula {
   value: number;
-  str: string;
+  str?: string;
   min?: number;
   max?: number;
   mod?: number;
@@ -76,23 +76,25 @@ export function parseFormula(line: string, regexStart: RegExp) {
   const regexSplit = line.split(regexStart);
   const beforeRegex = regexSplit[0];
   const afterRegex = regexSplit[1];
-  if (!formulaArray || formulaArray.length < 2) {
-    throw new Error(`Could not parse formula from line: ${line}`);
-  }
-  // pull formula from match
-  const formula = formulaArray[1];
-
   let dieFormula = '';
   let change = '';
-  if (formula.includes('+')) {
-    dieFormula = formula.split('+')[0];
-    change = formula.split('+')[1];
-  } else if (formula.includes('-')) {
-    dieFormula = formula.split('-')[0];
-    change = '-' + formula.split('-')[1];
+  let formula = undefined;
+  if (!formulaArray || formulaArray.length < 2) {
+    console.log(`Could not parse formula from string: ${line}`);
   } else {
-    dieFormula = formula;
-    change = '0';
+    // pull formula from match
+    formula = formulaArray[1];
+
+    if (formula.includes('+')) {
+      dieFormula = formula.split('+')[0];
+      change = formula.split('+')[1];
+    } else if (formula.includes('-')) {
+      dieFormula = formula.split('-')[0];
+      change = '-' + formula.split('-')[1];
+    } else {
+      dieFormula = formula;
+      change = '0';
+    }
   }
 
   const numOfDice = dieFormula.split('d')[0];
@@ -100,7 +102,13 @@ export function parseFormula(line: string, regexStart: RegExp) {
 
   // get value after Hit Points string
   const hp = line.match(regexStart) || '10';
-  const formulaSplit: string[] = line.split(formula).map((item) => item.replace('(,', '').replace(')', ''));
+  let afterFormula: string | undefined;
+  let beforeFormula: string | undefined;
+  if (formula) {
+    const formulaSplit: string[] = line.split(formula).map((item) => item.replace('(,', '').replace(')', ''));
+    afterFormula = formulaSplit[1];
+    beforeFormula = formulaSplit[0];
+  }
   return {
     value: parseInt(hp[1], 10),
     min: Number(numOfDice) + Number(change),
@@ -109,8 +117,8 @@ export function parseFormula(line: string, regexStart: RegExp) {
     afterRegex,
     beforeRegex,
     mod: Number(change),
-    afterFormula: formulaSplit[1],
-    beforeFormula: formulaSplit[0],
+    afterFormula,
+    beforeFormula,
   };
 }
 
@@ -156,13 +164,41 @@ function parseAbilityScore(score: number, mod: string): Ability {
   };
 }
 
+function isAbilityLine(line: string) {
+  let isAbilityLine = true;
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('STR');
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('DEX');
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('CON');
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('INT');
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('WIS');
+  return isAbilityLine;
+}
+
+function extractAbilityValues(valueLine: string): { abilities: number[]; modifiers: string[] } {
+  const abilityValuesWithSpaces = valueLine.split(' ');
+  const abilityValues = abilityValuesWithSpaces.filter((item) => item.length > 0);
+  const abilities: number[] = [];
+  const modifiers: string[] = [];
+  abilityValues.forEach((value) => {
+    if (value.includes('(')) {
+      modifiers.push(value);
+    } else {
+      abilities.push(parseInt(value));
+    }
+    while (abilities.length > modifiers.length + 1) {
+      modifiers.push('(+0)');
+    }
+  });
+  return { abilities, modifiers };
+}
+
 export function parseStats(inputList: string[]) {
-  const abilityLine = inputList.find((line) => line.toUpperCase().includes('CHA'));
+  const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
     throw new Error('Could not find ability line');
   }
   const abilityIndex = inputList.indexOf(abilityLine);
-  const singleLine = abilityLine.includes('STR');
+  const singleLine = /str/i.test(abilityLine);
   if (singleLine) {
     // match 3 to 6 letters
     const abilityKeys = abilityLine.match(/\w{3,7}/g);
@@ -170,27 +206,9 @@ export function parseStats(inputList: string[]) {
       throw new Error('Could not find ability keys');
     }
     const valueLine = inputList[abilityIndex + 1];
-    // match 1 to 2 numbers
-    const abilityValuesWithMods = valueLine.match(/\d{1,2}/g);
-    if (!abilityValuesWithMods || abilityValuesWithMods.length < 6) {
-      throw new Error('Could not find ability values');
-    }
-    const abilityValues: number[] = [];
-    abilityValuesWithMods.forEach((value, index) => {
-      if (index % 2 === 0) {
-        abilityValues.push(Number(value));
-      }
-    });
-    // match + numbers in parentheses
-    const abilityModifiers = valueLine.match(/\(([+-]\d+)\)/g);
-    if (!abilityModifiers || abilityModifiers.length < 6) {
-      throw new Error('Could not find ability modifiers');
-    }
-    if (!abilityValues || abilityValues.length < 6) {
-      throw new Error('Could not find ability values');
-    }
+    const { abilities, modifiers } = extractAbilityValues(valueLine);
     const zipped = abilityKeys.reduce(
-      (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilityValues[i], abilityModifiers[i]) }),
+      (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
       {},
     );
     return zipped as Abilities;
