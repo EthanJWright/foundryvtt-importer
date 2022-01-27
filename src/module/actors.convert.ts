@@ -182,7 +182,17 @@ export function featureCollectionToItems(allFeatures: Feature[], { abilities }: 
   return featuresToItems(allFeatures, abilities);
 }
 
-export function actorToFifth({ stats, armorClass, health, speed, biography, skills, rating }: ImportActor) {
+export function actorToFifth({
+  stats,
+  armorClass,
+  health,
+  speed,
+  biography,
+  skills,
+  rating,
+  damageImmunities,
+  conditionImmunities,
+}: ImportActor) {
   return {
     abilities: convertAbilities(stats),
     attributes: convertAttributes({ armorClass, health, speed }),
@@ -193,6 +203,14 @@ export function actorToFifth({ stats, armorClass, health, speed, biography, skil
       cr: rating?.cr,
       xp: {
         value: rating?.xp,
+      },
+    },
+    traits: {
+      di: {
+        value: damageImmunities,
+      },
+      ci: {
+        value: conditionImmunities,
       },
     },
     skills: convertSkills(skills),

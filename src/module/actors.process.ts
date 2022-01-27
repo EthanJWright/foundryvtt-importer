@@ -84,7 +84,9 @@ export interface ImportActor {
   name: string;
   biography: string;
   damageImmunities: DamageType[];
+  damageResistances: DamageType[];
   conditionImmunities: Condition[];
+  conditionResistances: Condition[];
   health: Health;
   rating?: Rating;
   armorClass: ArmorClass;
@@ -597,6 +599,17 @@ function getDamageImmunities(lines: string[]) {
   const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
   return damageImmunityLine
     .replace('Damage Immunities', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((immunity) => immunity.trim()) as DamageType[];
+}
+
+function getDamageResistances(lines: string[]) {
+  const damageLine = lines.find((line) => line.toLowerCase().includes('damage resistances')) || '';
+  return damageLine
+    .replace('Damage Resistances', '')
+    .replace('and', '')
     .trim()
     .split(',')
     .map((immunity) => immunity.trim()) as DamageType[];
@@ -606,6 +619,17 @@ function getConditionImmunities(lines: string[]) {
   const conditionImmunityLine = lines.find((line) => line.toLowerCase().includes('condition immunities')) || '';
   return conditionImmunityLine
     .replace('Condition Immunities', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((condition) => condition.trim()) as Condition[];
+}
+
+function getConditionResistances(lines: string[]) {
+  const condition = lines.find((line) => line.toLowerCase().includes('condition resistances')) || '';
+  return condition
+    .replace('Condition Resistances', '')
+    .replace('and', '')
     .trim()
     .split(',')
     .map((condition) => condition.trim()) as Condition[];
@@ -651,7 +675,9 @@ export function textToActor(input: string): ImportActor {
     health: parseFormula(healthLine, /Hit Points (.*)/),
     armorClass: parseAC(acLine),
     damageImmunities: getDamageImmunities(lines),
+    damageResistances: getDamageResistances(lines),
     conditionImmunities: getConditionImmunities(lines),
+    conditionResistances: getConditionResistances(lines),
     stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
     skills,
