@@ -191,7 +191,9 @@ export function actorToFifth({
   skills,
   rating,
   damageImmunities,
+  damageResistances,
   conditionImmunities,
+  conditionResistances,
 }: ImportActor) {
   return {
     abilities: convertAbilities(stats),
@@ -211,6 +213,12 @@ export function actorToFifth({
       },
       ci: {
         value: conditionImmunities,
+      },
+      dr: {
+        value: damageResistances,
+      },
+      cr: {
+        value: conditionResistances,
       },
     },
     skills: convertSkills(skills),
