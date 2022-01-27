@@ -471,8 +471,15 @@ function reduceToFeatures(acc: string[], curr: string) {
   if (names || acc.length === 0) {
     acc.push(curr.trim());
   } else {
-    acc[acc.length - 1] = acc[acc.length - 1] + ' ' + curr.trim();
+    // if the line was a continuation, dont add a space
+    const bindWith = acc[acc.length - 1].endsWith('-') ? '' : ' ';
+    // if line ended with a - for a continuation, remove it
+    if (acc[acc.length - 1].endsWith('-')) {
+      acc[acc.length - 1] = acc[acc.length - 1].slice(0, -1);
+    }
+    acc[acc.length - 1] = acc[acc.length - 1].trim() + bindWith + curr.trim();
   }
+  acc[acc.length - 1] = acc[acc.length - 1].trim();
   return acc;
 }
 
@@ -708,10 +715,10 @@ function getSize(lines: string[]): Size {
   return size as Size;
 }
 
-function getLanguages(lines: string[]): Language[] {
+function getLanguages(lines: string[]): Languages {
   const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
-  return languages.map((language) => language.trim());
+  return languages.map((language) => language.trim().toLowerCase());
 }
 
 export function textToActor(input: string): ImportActor {

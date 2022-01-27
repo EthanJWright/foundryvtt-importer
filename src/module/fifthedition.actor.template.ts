@@ -170,6 +170,9 @@ export interface FifthEditionActor {
     };
   };
   traits?: {
+    languages: {
+      value: string[];
+    };
     size?: 'med' | 'large' | 'tiny';
     di?: {
       value: string[];

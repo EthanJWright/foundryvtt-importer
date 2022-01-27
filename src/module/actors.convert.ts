@@ -216,6 +216,7 @@ export function actorToFifth({
   conditionResistances,
   size,
   senses,
+  languages,
 }: ImportActor) {
   return {
     abilities: convertAbilities(stats),
@@ -231,6 +232,9 @@ export function actorToFifth({
     },
     traits: {
       size: convertSize(size),
+      languages: {
+        value: languages,
+      },
       di: {
         value: damageImmunities,
       },
