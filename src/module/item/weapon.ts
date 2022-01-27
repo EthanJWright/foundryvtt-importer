@@ -39,9 +39,13 @@ function getMaxAbility(abilities: Abilities): FifthStat {
 
 export function buildDamageParts(description: string) {
   // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
-  const parsed = parseFormula(description, /Melee Weapon Attack: +/);
-  const fromString = parsed.afterFormula ? parsed.afterFormula : description;
-  return [[parsed.str, getDamageType(fromString)]];
+  const uncleanParts = description.split('plus');
+  const parts = uncleanParts.map((part) => {
+    const parsed = parseFormula(part, /Melee Weapon Attack: +/);
+    const fromString = parsed.afterFormula ? parsed.afterFormula : part;
+    return [parsed.str, getDamageType(fromString)];
+  });
+  return parts;
 }
 
 export function featuresToItems(features: Feature[], abilities: Abilities): FifthItem[] {

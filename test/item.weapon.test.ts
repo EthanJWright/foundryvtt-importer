@@ -13,7 +13,7 @@ describe('buildDamage', () => {
     expect(built).toEqual([['2d4 + 3', 'piercing']]);
   });
 
-  it.skip('should build damage for an attack with multiple parts', () => {
+  it('should build damage for an attack with multiple parts', () => {
     const damageString =
       'Shortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poison damage.';
     const built = buildDamageParts(damageString);
