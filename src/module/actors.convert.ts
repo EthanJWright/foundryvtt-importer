@@ -1,4 +1,4 @@
-import { Abilities, ArmorClass, Feature, Health, ImportActor, Senses, Skill } from './actors.process';
+import { Abilities, ArmorClass, Feature, Health, ImportActor, Senses, Size, Skill } from './actors.process';
 import {
   FifthAbilities,
   FifthAttributes,
@@ -192,6 +192,16 @@ export function featureCollectionToItems(allFeatures: Feature[], { abilities }: 
   return featuresToItems(allFeatures, abilities);
 }
 
+function convertSize(size: Size) {
+  if (size === 'Tiny') return 'tiny';
+  if (size === 'Small') return 'sm';
+  if (size === 'Medium') return 'med';
+  if (size === 'Large') return 'lg';
+  if (size === 'Huge') return 'huge';
+  if (size === 'Gargantuan') return 'grg';
+  return 'med';
+}
+
 export function actorToFifth({
   stats,
   armorClass,
@@ -204,6 +214,7 @@ export function actorToFifth({
   damageResistances,
   conditionImmunities,
   conditionResistances,
+  size,
   senses,
 }: ImportActor) {
   return {
@@ -219,6 +230,7 @@ export function actorToFifth({
       },
     },
     traits: {
+      size: convertSize(size),
       di: {
         value: damageImmunities,
       },

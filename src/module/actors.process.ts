@@ -5,6 +5,8 @@ interface Ability {
   mod: number;
 }
 
+export type Languages = string[];
+
 export interface Abilities {
   str: Ability;
   dex: Ability;
@@ -90,9 +92,13 @@ export interface Senses {
   passivePerception?: number;
 }
 
+export type Size = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge' | 'Gargantuan';
+
 export interface ImportActor {
   name: string;
+  size: Size;
   senses: Senses;
+  languages: Languages;
   biography: string;
   damageImmunities: DamageType[];
   damageResistances: DamageType[];
@@ -685,6 +691,29 @@ export function getSenses(lines: string[]): Senses {
   return senses;
 }
 
+function getSize(lines: string[]): Size {
+  const candidateLines = lines.slice(0, 8);
+  const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
+  const size = sizes.find((size) => {
+    const sizeInLine =
+      candidateLines.findIndex((line) => {
+        const includes = line.toLowerCase().includes(size.toLowerCase());
+        return includes;
+      }) !== -1;
+    if (sizeInLine) {
+    }
+    return sizeInLine;
+  });
+  if (!size) return 'Medium';
+  return size as Size;
+}
+
+function getLanguages(lines: string[]): Language[] {
+  const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
+  const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
+  return languages.map((language) => language.trim());
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   let featureLines = input.split('\n\n');
@@ -714,6 +743,8 @@ export function textToActor(input: string): ImportActor {
     name: lines[0].trim(),
     rating,
     biography: getBiography(lines),
+    languages: getLanguages(lines),
+    size: getSize(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
     senses: getSenses(lines),
     armorClass: parseAC(acLine),
