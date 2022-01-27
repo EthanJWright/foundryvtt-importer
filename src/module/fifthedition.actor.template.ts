@@ -75,16 +75,24 @@ export interface FifthAttributes {
     units: 'ft';
     hover?: boolean;
   };
+  senses: {
+    darkvision?: number;
+    blindsight?: number;
+    tremorsense?: number;
+    truesight?: number;
+    units?: 'ft';
+  };
 }
 
 export type FifthStat = 'dex' | 'wis' | 'int' | 'str' | 'cha' | 'con';
 export interface FifthSkill {
-  value: number;
+  value?: number;
   ability: FifthStat;
-  bonuses?: {
-    check?: string;
-    passive?: string;
-  };
+  bonus?: number;
+  mod?: number;
+  passive?: number;
+  prof?: number;
+  total?: number;
 }
 
 export interface FifthSkills {
@@ -168,6 +176,14 @@ export interface FifthEditionActor {
       custom?: string;
     };
     dr?: {
+      value?: string[];
+      custom?: string;
+    };
+    ci?: {
+      value: string[];
+      custom?: string;
+    };
+    cr?: {
       value?: string[];
       custom?: string;
     };

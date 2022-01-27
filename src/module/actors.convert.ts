@@ -1,4 +1,4 @@
-import { Abilities, ArmorClass, Feature, Health, ImportActor, Skill } from './actors.process';
+import { Abilities, ArmorClass, Feature, Health, ImportActor, Senses, Skill } from './actors.process';
 import {
   FifthAbilities,
   FifthAttributes,
@@ -43,8 +43,15 @@ interface Attributes {
   health: Health;
   speed: number;
 }
-function convertAttributes({ armorClass, health, speed }: Attributes): FifthAttributes {
+function convertAttributes({ armorClass, health, speed }: Attributes, senses: Senses): FifthAttributes {
   return {
+    senses: {
+      darkvision: senses?.darkvision,
+      blindsight: senses?.blindsight,
+      tremorsense: senses?.tremorsense,
+      truesight: senses?.truesight,
+      units: 'ft',
+    },
     ac: {
       flat: armorClass.value,
       calc: 'flat',
@@ -63,13 +70,15 @@ function convertAttributes({ armorClass, health, speed }: Attributes): FifthAttr
 
 function buildSkill(skill: Skill, ability: FifthStat): FifthSkill {
   const fifthSkill: FifthSkill = {
-    value: skill.bonus,
+    value: skill.bonus ? 1 : 0,
+    mod: skill.bonus,
+    total: skill.bonus,
     ability,
   };
   return fifthSkill;
 }
 
-function convertSkills(skills: Skill[]): FifthSkills {
+function convertSkills(skills: Skill[], senses: Senses): FifthSkills {
   const fifthSkills: FifthSkills = {};
   skills.forEach((skill) => {
     const skillName = skill.name.toLowerCase().trim();
@@ -109,6 +118,7 @@ function convertSkills(skills: Skill[]): FifthSkills {
         break;
       case 'perception':
         fifthSkills.prc = buildSkill(skill, 'wis');
+        fifthSkills.prc.passive = senses.passivePerception;
         break;
       case 'performance':
         fifthSkills.prf = buildSkill(skill, 'cha');
@@ -194,10 +204,11 @@ export function actorToFifth({
   damageResistances,
   conditionImmunities,
   conditionResistances,
+  senses,
 }: ImportActor) {
   return {
     abilities: convertAbilities(stats),
-    attributes: convertAttributes({ armorClass, health, speed }),
+    attributes: convertAttributes({ armorClass, health, speed }, senses),
     details: {
       biography: {
         value: biography,
@@ -221,6 +232,6 @@ export function actorToFifth({
         value: conditionResistances,
       },
     },
-    skills: convertSkills(skills),
+    skills: convertSkills(skills, senses),
   };
 }
