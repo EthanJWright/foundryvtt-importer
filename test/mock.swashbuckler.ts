@@ -3,6 +3,7 @@ export const swashbuckler: ImportActor = {
   name: 'Swashbuckler',
   biography: 'Medium humanoid (any race), any non-lawful alignment',
   damageImmunities: [],
+  conditionImmunities: [],
   health: {
     value: 66,
     min: 24,

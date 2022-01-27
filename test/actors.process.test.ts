@@ -251,6 +251,7 @@ describe('Parse Text', () => {
     expect(actor.stats.str.value).toEqual(14);
     expect(actor.stats.str.mod).toEqual(2);
     expect(actor.damageImmunities).toEqual(['poison']);
+    expect(actor.conditionImmunities).toEqual(['charmed', 'frightened', 'poisoned']);
     expect(actor.features).toEqual(
       expect.arrayContaining([expect.objectContaining({ name: 'Poisonous Cloud (2/Day)' })]),
     );

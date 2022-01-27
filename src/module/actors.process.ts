@@ -84,6 +84,7 @@ export interface ImportActor {
   name: string;
   biography: string;
   damageImmunities: DamageType[];
+  conditionImmunities: Condition[];
   health: Health;
   rating?: Rating;
   armorClass: ArmorClass;
@@ -592,8 +593,22 @@ export function getChallenge(challengeLine: string): Rating {
   };
 }
 
-function getDamageImmunities(line: string) {
-  return line.replace('Damage Immunities', '').trim().split(',') as DamageType[];
+function getDamageImmunities(lines: string[]) {
+  const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
+  return damageImmunityLine
+    .replace('Damage Immunities', '')
+    .trim()
+    .split(',')
+    .map((immunity) => immunity.trim()) as DamageType[];
+}
+
+function getConditionImmunities(lines: string[]) {
+  const conditionImmunityLine = lines.find((line) => line.toLowerCase().includes('condition immunities')) || '';
+  return conditionImmunityLine
+    .replace('Condition Immunities', '')
+    .trim()
+    .split(',')
+    .map((condition) => condition.trim()) as Condition[];
 }
 
 export function getAllFeatures(text: string): Feature[] {
@@ -622,8 +637,6 @@ export function textToActor(input: string): ImportActor {
     rating = getChallenge(challengeLine);
   }
 
-  const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
-
   let skills: Skill[] = [];
   try {
     skills = parseSkills(lines);
@@ -637,7 +650,8 @@ export function textToActor(input: string): ImportActor {
     biography: getBiography(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
     armorClass: parseAC(acLine),
-    damageImmunities: getDamageImmunities(damageImmunityLine),
+    damageImmunities: getDamageImmunities(lines),
+    conditionImmunities: getConditionImmunities(lines),
     stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
     skills,
