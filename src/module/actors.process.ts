@@ -389,7 +389,9 @@ export function getFeatureNames(line: string): string | undefined {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
   const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
-  const matches = line.match(re);
+  // pull out any () as sometimes the name will end with (2/day). and throw off
+  // regex
+  const matches = line.replace(')', '').match(re);
   if (matches) {
     const name = line.split('.')[0];
     // If our regex didn't grab a match at the beginning of the line, return
