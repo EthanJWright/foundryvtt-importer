@@ -80,8 +80,19 @@ export type Condition =
   | 'stunned'
   | 'unconscious';
 
+export interface Senses {
+  darkvision?: number;
+  blindsight?: number;
+  tremorsense?: number;
+  truesight?: number;
+  units?: string;
+  special?: string;
+  passivePerception?: number;
+}
+
 export interface ImportActor {
   name: string;
+  senses: Senses;
   biography: string;
   damageImmunities: DamageType[];
   damageResistances: DamageType[];
@@ -643,6 +654,37 @@ export function getAllFeatures(text: string): Feature[] {
   return featureStrings.map(featureStringsToFeatures);
 }
 
+export function getSenses(lines: string[]): Senses {
+  const sensesLine = lines.find((line) => line.toLowerCase().includes('senses')) || '';
+  const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
+  const senses: Senses = {};
+  rawSenses.forEach((sense) => {
+    // get number from string of form darkvision 60ft
+    const number = sense.split(' ')[1].replace('ft', '');
+    switch (sense.split(' ')[0]) {
+      case 'darkvision':
+        senses.darkvision = Number(number);
+        break;
+      case 'blindsight':
+        senses.blindsight = Number(number);
+        break;
+      case 'tremorsense':
+        senses.tremorsense = Number(number);
+        break;
+      case 'truesight':
+        senses.truesight = Number(number);
+        break;
+      case 'passive perception':
+        senses.passivePerception = Number(number);
+        break;
+      default:
+        break;
+    }
+  });
+  senses.units = 'ft';
+  return senses;
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   let featureLines = input.split('\n\n');
@@ -673,6 +715,7 @@ export function textToActor(input: string): ImportActor {
     rating,
     biography: getBiography(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
+    senses: getSenses(lines),
     armorClass: parseAC(acLine),
     damageImmunities: getDamageImmunities(lines),
     damageResistances: getDamageResistances(lines),
