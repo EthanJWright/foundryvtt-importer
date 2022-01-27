@@ -44,9 +44,46 @@ export interface Rating {
   xp: number;
 }
 
+export type DamageType =
+  | 'poison'
+  | 'disease'
+  | 'magic'
+  | 'psychic'
+  | 'radiant'
+  | 'necrotic'
+  | 'bludgeoning'
+  | 'piercing'
+  | 'slashing'
+  | 'acid'
+  | 'cold'
+  | 'fire'
+  | 'force'
+  | 'lightning'
+  | 'necrotic'
+  | 'psychic'
+  | 'radiant'
+  | 'thunder';
+
+export type Condition =
+  | 'charmed'
+  | 'deafened'
+  | 'exhaustion'
+  | 'frightened'
+  | 'grappled'
+  | 'incapacitated'
+  | 'invisible'
+  | 'paralyzed'
+  | 'petrified'
+  | 'poisoned'
+  | 'prone'
+  | 'restrained'
+  | 'stunned'
+  | 'unconscious';
+
 export interface ImportActor {
   name: string;
   biography: string;
+  damageImmunities: DamageType[];
   health: Health;
   rating?: Rating;
   armorClass: ArmorClass;
@@ -555,6 +592,10 @@ export function getChallenge(challengeLine: string): Rating {
   };
 }
 
+function getDamageImmunities(line: string) {
+  return line.replace('Damage Immunities', '').trim().split(',') as DamageType[];
+}
+
 export function getAllFeatures(text: string): Feature[] {
   const lines = text.split('\n');
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
@@ -581,6 +622,8 @@ export function textToActor(input: string): ImportActor {
     rating = getChallenge(challengeLine);
   }
 
+  const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
+
   let skills: Skill[] = [];
   try {
     skills = parseSkills(lines);
@@ -594,6 +637,7 @@ export function textToActor(input: string): ImportActor {
     biography: getBiography(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
     armorClass: parseAC(acLine),
+    damageImmunities: getDamageImmunities(damageImmunityLine),
     stats: tryStatParsers(lines),
     speed: parseSpeed(lines),
     skills,

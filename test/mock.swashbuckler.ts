@@ -2,6 +2,7 @@ import { ImportActor } from '../src/module/actors.process';
 export const swashbuckler: ImportActor = {
   name: 'Swashbuckler',
   biography: 'Medium humanoid (any race), any non-lawful alignment',
+  damageImmunities: [],
   health: {
     value: 66,
     min: 24,
