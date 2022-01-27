@@ -171,7 +171,17 @@ function isAbilityLine(line: string) {
   isAbilityLine = isAbilityLine && line.toUpperCase().includes('CON');
   isAbilityLine = isAbilityLine && line.toUpperCase().includes('INT');
   isAbilityLine = isAbilityLine && line.toUpperCase().includes('WIS');
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('CHA');
   return isAbilityLine;
+}
+
+function containsAbility(line: string) {
+  const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+  return (
+    abilities.findIndex((ability) => {
+      return line.trim().toUpperCase() === ability;
+    }) !== -1
+  );
 }
 
 function extractAbilityValues(valueLine: string): { abilities: number[]; modifiers: string[] } {
@@ -192,6 +202,13 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
   return { abilities, modifiers };
 }
 
+function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[]): Abilities {
+  return abilityKeys.reduce(
+    (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
+    {},
+  ) as Abilities;
+}
+
 export function parseStats(inputList: string[]) {
   const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
@@ -207,11 +224,7 @@ export function parseStats(inputList: string[]) {
     }
     const valueLine = inputList[abilityIndex + 1];
     const { abilities, modifiers } = extractAbilityValues(valueLine);
-    const zipped = abilityKeys.reduce(
-      (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
-      {},
-    );
-    return zipped as Abilities;
+    return zipStats(abilityKeys, abilities, modifiers);
   }
   throw new Error('Could not parse ability line');
 }
@@ -232,7 +245,30 @@ function parseMod(line: string) {
   };
 }
 
+export function findStatBounds(input: string[]): { lastLine: number; firstLine: number } {
+  const lines = new Array(...input);
+  const firstLine = lines.findIndex((line) => {
+    return line.trim().toLowerCase() === 'str';
+  });
+  if (!firstLine) {
+    throw new Error('Could not find first line');
+  }
+  const remainingLines = lines.splice(firstLine, lines.length);
+  const lastLine =
+    remainingLines.findIndex((line) => {
+      const trimArray = line.trim().split(' ');
+      return trimArray.length > 3;
+    }) + firstLine;
+  if (!lastLine) {
+    throw new Error('Could not find last line');
+  }
+  return { firstLine, lastLine };
+}
+
 export function parseMultilineStats(lines: string[]): Abilities {
+  if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
+    throw new Error('Invalid format for multi line stat parsing.');
+  }
   return {
     str: parseMod(lines[indexOfAbility(lines, 'STR') + 1]),
     dex: parseMod(lines[indexOfAbility(lines, 'DEX') + 1]),
@@ -241,6 +277,23 @@ export function parseMultilineStats(lines: string[]): Abilities {
     wis: parseMod(lines[indexOfAbility(lines, 'WIS') + 1]),
     cha: parseMod(lines[indexOfAbility(lines, 'CHA') + 1]),
   };
+}
+
+export function getVerticalKeyValueStats(input: string[]) {
+  const { firstLine, lastLine } = findStatBounds(input);
+  const lines = input.slice(firstLine, lastLine);
+  const keyEndIndex = lines.findIndex((line) => {
+    return !containsAbility(line);
+  });
+  const keys = lines.slice(0, keyEndIndex).map((line) => line.trim().toLowerCase());
+  const values = lines.slice(keyEndIndex, keyEndIndex + 7).map((line) => line.trim().toLowerCase());
+  return { keys, values };
+}
+
+export function parseVerticalKeyValueStats(input: string[]): Abilities {
+  const { keys, values } = getVerticalKeyValueStats(input);
+  const { abilities, modifiers } = extractAbilityValues(values.join(' '));
+  return zipStats(keys, abilities, modifiers);
 }
 
 export function parseSpeed(lines: string[]) {
@@ -457,12 +510,16 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
   return firstMatch + 1;
 }
 
-function tryStatParsers(lines: string[]): Abilities {
+export function tryStatParsers(lines: string[]): Abilities {
   let stats: Abilities | undefined;
   try {
     stats = parseStats(lines);
   } catch (error) {
-    stats = parseMultilineStats(lines);
+    try {
+      stats = parseMultilineStats(lines);
+    } catch {
+      stats = parseVerticalKeyValueStats(lines);
+    }
   }
   if (!stats) throw new Error('could not parse stats.');
   return stats;
