@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.3](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.2...v0.2.3) (2022-01-28)
+
+
+### Bug Fixes
+
+* quick hotfix to module name for foundry hub ([13c8309](https://github.com/EthanJWright/foundryvtt-importer/commit/13c830900cf2a91536afa7032a4202bd594ae49f))
+
 ### [0.2.2](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.1...v0.2.2) (2022-01-28)
 
 
