@@ -106,7 +106,7 @@ export interface ImportActor {
   damageImmunities: DamageType[];
   damageResistances: DamageType[];
   conditionImmunities: Condition[];
-  conditionResistances: Condition[];
+  damageVulnerabilities: DamageType[];
   health: Health;
   rating?: Rating;
   armorClass: ArmorClass;
@@ -683,14 +683,14 @@ function getConditionImmunities(lines: string[]) {
     .map((condition) => condition.trim()) as Condition[];
 }
 
-function getConditionResistances(lines: string[]) {
-  const condition = lines.find((line) => line.toLowerCase().includes('condition resistances')) || '';
-  return condition
-    .replace('Condition Resistances', '')
+function getDamageVulnerabilities(lines: string[]) {
+  const damage = lines.find((line) => line.toLowerCase().includes('damage vulnerabilities')) || '';
+  return damage
+    .replace('Damage Vulnerabilities', '')
     .replace('and', '')
     .trim()
     .split(',')
-    .map((condition) => condition.trim()) as Condition[];
+    .map((condition) => condition.trim()) as DamageType[];
 }
 
 export function getAllFeatures(text: string): Feature[] {
@@ -836,7 +836,7 @@ export function textToActor(input: string): ImportActor {
     damageImmunities: getDamageImmunities(lines),
     damageResistances: getDamageResistances(lines),
     conditionImmunities: getConditionImmunities(lines),
-    conditionResistances: getConditionResistances(lines),
+    damageVulnerabilities: getDamageVulnerabilities(lines),
     stats: statsWithSaves,
     speed: parseSpeed(lines),
     skills,

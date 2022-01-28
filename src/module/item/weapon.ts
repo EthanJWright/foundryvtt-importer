@@ -81,7 +81,7 @@ interface Activation {
   condition?: string;
 }
 function getActivation(feature: Feature): Activation | undefined {
-  const { name, description } = feature;
+  const { description } = feature;
   if (/attack/i.test(description))
     return {
       type: 'action',

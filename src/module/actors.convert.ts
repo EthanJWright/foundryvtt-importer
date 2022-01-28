@@ -1,4 +1,15 @@
-import { Abilities, ArmorClass, Feature, Health, ImportActor, Senses, Size, Skill } from './actors.process';
+import {
+  Abilities,
+  ArmorClass,
+  Condition,
+  DamageType,
+  Feature,
+  Health,
+  ImportActor,
+  Senses,
+  Size,
+  Skill,
+} from './actors.process';
 import {
   FifthAbilities,
   FifthAttributes,
@@ -265,6 +276,41 @@ function convertLanguage(language: string) {
   return language;
 }
 
+function buildResistances(
+  damageImmunities: DamageType[],
+  conditionImmunities: Condition[],
+  damageResistances: DamageType[],
+  damageVulnerabilities: DamageType[],
+) {
+  let resistances = {};
+  if (damageImmunities.length > 0) {
+    resistances = {
+      ...resistances,
+      di: { value: damageImmunities },
+    };
+  }
+
+  if (conditionImmunities.length > 0) {
+    resistances = {
+      ...resistances,
+      ci: { value: conditionImmunities },
+    };
+  }
+  if (damageResistances.length > 0) {
+    resistances = {
+      ...resistances,
+      dr: { value: damageResistances },
+    };
+  }
+  if (damageVulnerabilities.length > 0) {
+    resistances = {
+      ...resistances,
+      dv: { value: damageVulnerabilities },
+    };
+  }
+  return resistances;
+}
+
 export function actorToFifth({
   stats,
   armorClass,
@@ -276,7 +322,7 @@ export function actorToFifth({
   damageImmunities,
   damageResistances,
   conditionImmunities,
-  conditionResistances,
+  damageVulnerabilities,
   size,
   senses,
   languages,
@@ -303,19 +349,9 @@ export function actorToFifth({
       languages: {
         value: languages.map(convertLanguage),
       },
-      di: {
-        value: damageImmunities,
-      },
-      ci: {
-        value: conditionImmunities,
-      },
-      dr: {
-        value: damageResistances,
-      },
-      cr: {
-        value: conditionResistances,
-      },
+
+      skills: convertSkills(skills, senses),
+      ...buildResistances(damageImmunities, conditionImmunities, damageResistances, damageVulnerabilities),
     },
-    skills: convertSkills(skills, senses),
   };
 }

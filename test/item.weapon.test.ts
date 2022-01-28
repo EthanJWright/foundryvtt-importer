@@ -33,6 +33,7 @@ describe('parseSpellSphere', () => {
   it('should parse a cone', () => {
     const text =
       'The dragon exhales poisonous gas in a 90-­-foot cone. Each creature in that area must make a DC 22 Constitution saving throw, taking 77 (22d6) poison damage on a failed save, or half as much damage on a successful one.';
+    expect(parseSpellCone(text)).toEqual(90);
   });
 });
 

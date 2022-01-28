@@ -5,7 +5,7 @@ export const swashbuckler: ImportActor = {
   damageImmunities: [],
   damageResistances: [],
   conditionImmunities: [],
-  conditionResistances: [],
+  damageVulnerabilities: [],
   languages: ['common'],
   type: 'any race',
   size: 'Medium',
