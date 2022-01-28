@@ -1,6 +1,6 @@
 {
-  "name": "foundryvtt-importer",
-  "title": "foundryvtt-importer",
+  "name": "Foundry VTT Content Parser",
+  "title": "Foundry VTT Content Parser",
   "description": "import foundry entities from external sources",
   "version": "0.1.13",
   "author": "EthanJWright",

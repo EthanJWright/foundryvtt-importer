@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "foundryvtt-importer",
+  "name": "Foundry VTT Content Parser",
   "version": "0.1.13",
   "description": "",
   "license": "",
