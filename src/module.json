@@ -1,5 +1,5 @@
 {
-  "name": "Foundry VTT Content Parser",
+  "name": "foundry-vtt-content-parser",
   "title": "Foundry VTT Content Parser",
   "description": "import foundry entities from external sources",
   "version": "0.2.2",
