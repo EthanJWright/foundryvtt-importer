@@ -30,6 +30,10 @@ describe('parseSpellSphere', () => {
       'Poison gas fills a 20-foot-radius sphere centered on a point Big Bara can see within 50 feet of her. The gas spreads around corners and remains until the start of Big Bara’s next turn. Each creature that starts its turn in the gas must succeed on a DC 16 Constitution saving throw or be poisoned for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.';
     expect(parseSpellSphere(text)).toEqual(20);
   });
+  it('should parse a cone', () => {
+    const text =
+      'The dragon exhales poisonous gas in a 90-­-foot cone. Each creature in that area must make a DC 22 Constitution saving throw, taking 77 (22d6) poison damage on a failed save, or half as much damage on a successful one.';
+  });
 });
 
 describe('getRange', () => {

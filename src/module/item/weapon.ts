@@ -51,8 +51,9 @@ export function buildDamageParts(description: string) {
 }
 
 interface Range {
-  value: number;
+  value?: number;
   long?: number;
+  units?: string;
 }
 export function getRange(description: string): Range | undefined {
   if (description.includes('reach')) {
@@ -63,6 +64,9 @@ export function getRange(description: string): Range | undefined {
     const rangeStr = description.split('range')[1].split(' ')[0];
     const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
     return { value, long };
+  }
+  if (/cone/i.test(description)) {
+    return { units: 'self' };
   }
   if (/within/.test(description)) {
     const rangeStr = description.split('within')[1].split('ft')[0].trim();
@@ -124,6 +128,13 @@ export function parseSpellSphere(description: string) {
   return parseInt(lastItem.split('-')[0]);
 }
 
+export function parseSpellCone(description: string) {
+  // like 20-foot-radius sphere
+  const unitText = description.split('cone')[0].trim();
+  const lastItem = unitText.split(' ').pop() || '';
+  return parseInt(lastItem.split('-')[0]);
+}
+
 function actionTypeExtraData(actionType: string | undefined, { name, description }: Feature) {
   let building = {};
   if (!actionType) return building;
@@ -162,6 +173,17 @@ function actionTypeExtraData(actionType: string | undefined, { name, description
         units: 'ft',
       },
     };
+
+    if (/cone/i.test(description)) {
+      building = {
+        ...building,
+        target: {
+          type: 'cone',
+          value: parseSpellCone(description),
+          units: 'ft',
+        },
+      };
+    }
   }
 
   return building;
