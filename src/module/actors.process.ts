@@ -660,7 +660,8 @@ function getDamageImmunities(lines: string[]) {
     .replace('and', '')
     .trim()
     .split(',')
-    .map((immunity) => immunity.trim()) as DamageType[];
+    .map((immunity) => immunity.trim())
+    .filter((line) => line !== '') as DamageType[];
 }
 
 function getDamageResistances(lines: string[]) {
@@ -670,7 +671,8 @@ function getDamageResistances(lines: string[]) {
     .replace('and', '')
     .trim()
     .split(',')
-    .map((immunity) => immunity.trim()) as DamageType[];
+    .map((immunity) => immunity.trim())
+    .filter((line) => line !== '') as DamageType[];
 }
 
 function getConditionImmunities(lines: string[]) {
@@ -680,7 +682,8 @@ function getConditionImmunities(lines: string[]) {
     .replace('and', '')
     .trim()
     .split(',')
-    .map((condition) => condition.trim()) as Condition[];
+    .map((condition) => condition.trim())
+    .filter((line) => line !== '') as Condition[];
 }
 
 function getDamageVulnerabilities(lines: string[]) {
@@ -690,7 +693,8 @@ function getDamageVulnerabilities(lines: string[]) {
     .replace('and', '')
     .trim()
     .split(',')
-    .map((condition) => condition.trim()) as DamageType[];
+    .map((condition) => condition.trim())
+    .filter((line) => line !== '') as DamageType[];
 }
 
 export function getAllFeatures(text: string): Feature[] {

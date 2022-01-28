@@ -6,7 +6,7 @@ describe('Parsed Actor to 5th Structure', () => {
     const fifthSwashbuckler = actorToFifth(swashbuckler);
     expect(fifthSwashbuckler.attributes.hp.value).toEqual(66);
     expect(fifthSwashbuckler.attributes.ac.flat).toEqual(17);
-    if (!fifthSwashbuckler.skills.acr) throw new Error('Missing ACR');
+    if (!fifthSwashbuckler?.skills?.acr) throw new Error('Missing ACR');
     expect(fifthSwashbuckler.skills.acr.value).toEqual(1);
   });
 });
