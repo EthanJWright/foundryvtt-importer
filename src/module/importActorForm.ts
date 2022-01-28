@@ -1,3 +1,4 @@
+import CONSTANTS from './constants';
 import { Handler, HTMLImportData, UserData } from './importForm';
 
 export class importActorForm extends FormApplication {
@@ -32,7 +33,7 @@ export class importActorForm extends FormApplication {
       width: 400,
       top: window.innerHeight - window.innerHeight + 20,
       left: window.innerWidth - 710,
-      template: `modules/foundryvtt-importer/templates/importActorForm.hbs`,
+      template: `modules/${CONSTANTS.module.name}/templates/importActorForm.hbs`,
     });
   }
 }
