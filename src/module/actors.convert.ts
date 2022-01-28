@@ -202,6 +202,46 @@ function convertSize(size: Size) {
   return 'med';
 }
 
+function convertType(input: string) {
+  const type = input.toLowerCase();
+  let monsterType = 'unknown';
+  if (type === 'aberration') monsterType = 'aberration';
+  if (type === 'beast') monsterType = 'beast';
+  if (type === 'celestial') monsterType = 'celestial';
+  if (type === 'construct') monsterType = 'construct';
+  if (type === 'dragon') monsterType = 'dragon';
+  if (type === 'elemental') monsterType = 'elemental';
+  if (type === 'fey') monsterType = 'fey';
+  if (type === 'fiend') monsterType = 'fiend';
+  if (type === 'giant') monsterType = 'giant';
+  if (type === 'humanoid') monsterType = 'humanoid';
+  if (type === 'monstrosity') monsterType = 'monstrosity';
+  if (type === 'ooze') monsterType = 'ooze';
+  if (type === 'plant') monsterType = 'plant';
+  if (type === 'undead') monsterType = 'undead';
+  if (monsterType === 'unknown') {
+    return {
+      value: '',
+      subtype: '',
+      swarm: '',
+      custom: type.toLowerCase(),
+    };
+  } else {
+    return {
+      value: monsterType.toLowerCase(),
+      subtype: '',
+      swarm: '',
+      custom: '',
+    };
+  }
+}
+
+function convertLanguage(language: string) {
+  if (language === "thieves' cant") return 'cant';
+  if (language === 'deep speech') return 'deep';
+  return language;
+}
+
 export function actorToFifth({
   stats,
   armorClass,
@@ -217,11 +257,16 @@ export function actorToFifth({
   size,
   senses,
   languages,
+  alignment,
+  type,
 }: ImportActor) {
   return {
     abilities: convertAbilities(stats),
     attributes: convertAttributes({ armorClass, health, speed }, senses),
     details: {
+      race: type,
+      alignment,
+      type: convertType(type),
       biography: {
         value: biography,
       },
@@ -233,7 +278,7 @@ export function actorToFifth({
     traits: {
       size: convertSize(size),
       languages: {
-        value: languages,
+        value: languages.map(convertLanguage),
       },
       di: {
         value: damageImmunities,

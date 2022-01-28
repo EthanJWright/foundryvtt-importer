@@ -97,6 +97,8 @@ export type Size = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge' | 'Gargantuan'
 export interface ImportActor {
   name: string;
   size: Size;
+  type: string;
+  alignment: string;
   senses: Senses;
   languages: Languages;
   biography: string;
@@ -698,6 +700,22 @@ export function getSenses(lines: string[]): Senses {
   return senses;
 }
 
+function getDescriptionLine(lines: string[]): string {
+  const candidateLines = lines.slice(0, 8);
+  const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
+  let descriptionLine = '';
+  sizes.forEach((size) => {
+    const potentialMatch =
+      candidateLines.find((line) => {
+        return line.toLowerCase().includes(size.toLowerCase());
+      }) || '';
+    if (potentialMatch !== '') {
+      descriptionLine = potentialMatch;
+    }
+  });
+  return descriptionLine;
+}
+
 function getSize(lines: string[]): Size {
   const candidateLines = lines.slice(0, 8);
   const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
@@ -713,6 +731,29 @@ function getSize(lines: string[]): Size {
   });
   if (!size) return 'Medium';
   return size as Size;
+}
+
+function getType(lines: string[]): string {
+  const descriptionLine = getDescriptionLine(lines);
+  // get string between '(' and ')'
+  try {
+    const type = descriptionLine.split('(')[1].split(')')[0];
+    return type;
+  } catch (err) {
+    // If type isn't in parens, it may be after the comma
+    return descriptionLine.split(',')[0].trim().split(' ').pop() || '';
+  }
+}
+
+function capitalizeBeginings(str: string): string {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
+function getAlignment(lines: string[]): string {
+  const descriptionLine = getDescriptionLine(lines);
+  return capitalizeBeginings(descriptionLine.split(',')[1].trim().toLowerCase());
 }
 
 function getLanguages(lines: string[]): Languages {
@@ -749,6 +790,8 @@ export function textToActor(input: string): ImportActor {
   return {
     name: lines[0].trim(),
     rating,
+    type: getType(lines),
+    alignment: getAlignment(lines),
     biography: getBiography(lines),
     languages: getLanguages(lines),
     size: getSize(lines),

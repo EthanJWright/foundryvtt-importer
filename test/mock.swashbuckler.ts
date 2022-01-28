@@ -7,7 +7,9 @@ export const swashbuckler: ImportActor = {
   conditionImmunities: [],
   conditionResistances: [],
   languages: ['common'],
+  type: 'any race',
   size: 'Medium',
+  alignment: 'non-lawful alignment',
   senses: {},
   health: {
     value: 66,
