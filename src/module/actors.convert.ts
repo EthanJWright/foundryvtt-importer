@@ -349,9 +349,8 @@ export function actorToFifth({
       languages: {
         value: languages.map(convertLanguage),
       },
-
-      skills: convertSkills(skills, senses),
       ...buildResistances(damageImmunities, conditionImmunities, damageResistances, damageVulnerabilities),
     },
+    skills: convertSkills(skills, senses),
   };
 }
