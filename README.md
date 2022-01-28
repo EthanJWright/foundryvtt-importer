@@ -1,4 +1,4 @@
-# foundryvtt-importer
+# Foundry VTT Content Parser
 
 Systems: 5e
 

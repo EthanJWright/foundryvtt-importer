@@ -2,49 +2,55 @@ export interface FifthAbilities {
   str: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   dex: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   con: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   int: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   wis: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   cha: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
 }
@@ -75,16 +81,24 @@ export interface FifthAttributes {
     units: 'ft';
     hover?: boolean;
   };
+  senses: {
+    darkvision?: number;
+    blindsight?: number;
+    tremorsense?: number;
+    truesight?: number;
+    units?: 'ft';
+  };
 }
 
 export type FifthStat = 'dex' | 'wis' | 'int' | 'str' | 'cha' | 'con';
 export interface FifthSkill {
-  value: number;
+  value?: number;
   ability: FifthStat;
-  bonuses?: {
-    check?: string;
-    passive?: string;
-  };
+  bonus?: number;
+  mod?: number;
+  passive?: number;
+  prof?: number;
+  total?: number;
 }
 
 export interface FifthSkills {
@@ -162,12 +176,23 @@ export interface FifthEditionActor {
     };
   };
   traits?: {
+    languages: {
+      value: string[];
+    };
     size?: 'med' | 'large' | 'tiny';
     di?: {
       value: string[];
       custom?: string;
     };
     dr?: {
+      value?: string[];
+      custom?: string;
+    };
+    ci?: {
+      value: string[];
+      custom?: string;
+    };
+    cr?: {
       value?: string[];
       custom?: string;
     };

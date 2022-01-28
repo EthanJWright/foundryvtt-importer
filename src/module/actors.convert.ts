@@ -1,40 +1,73 @@
-import { Abilities, ArmorClass, Feature, Health, ImportActor, parseFormula, Skill } from './actors.process';
+import {
+  Abilities,
+  ArmorClass,
+  Condition,
+  DamageType,
+  Feature,
+  Health,
+  ImportActor,
+  Senses,
+  Size,
+  Skill,
+} from './actors.process';
 import {
   FifthAbilities,
   FifthAttributes,
-  FifthFeatureCost,
   FifthItem,
-  FifthItemType,
   FifthSkill,
   FifthSkills,
   FifthStat,
 } from './fifthedition.actor.template';
+import { featuresToItems } from './item/weapon';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {
   return {
     str: {
       value: str.value,
       proficient: 0,
+      bonuses: {
+        save: `${str.savingThrow}`,
+      },
     },
     dex: {
       value: dex.value,
       proficient: 0,
+      saveBonus: dex.savingThrow,
+      bonuses: {
+        save: `${dex.savingThrow}`,
+      },
     },
     con: {
       value: con.value,
       proficient: 0,
+      saveBonus: con.savingThrow,
+      bonuses: {
+        save: `${con.savingThrow}`,
+      },
     },
     int: {
       value: int.value,
       proficient: 0,
+      saveBonus: int.savingThrow,
+      bonuses: {
+        save: `${int.savingThrow}`,
+      },
     },
     wis: {
       value: wis.value,
       proficient: 0,
+      saveBonus: wis.savingThrow,
+      bonuses: {
+        save: `${wis.savingThrow}`,
+      },
     },
     cha: {
       value: cha.value,
       proficient: 0,
+      saveBonus: cha.savingThrow,
+      bonuses: {
+        save: `${cha.savingThrow}`,
+      },
     },
   };
 }
@@ -44,8 +77,15 @@ interface Attributes {
   health: Health;
   speed: number;
 }
-function convertAttributes({ armorClass, health, speed }: Attributes): FifthAttributes {
+function convertAttributes({ armorClass, health, speed }: Attributes, senses: Senses): FifthAttributes {
   return {
+    senses: {
+      darkvision: senses?.darkvision,
+      blindsight: senses?.blindsight,
+      tremorsense: senses?.tremorsense,
+      truesight: senses?.truesight,
+      units: 'ft',
+    },
     ac: {
       flat: armorClass.value,
       calc: 'flat',
@@ -64,13 +104,15 @@ function convertAttributes({ armorClass, health, speed }: Attributes): FifthAttr
 
 function buildSkill(skill: Skill, ability: FifthStat): FifthSkill {
   const fifthSkill: FifthSkill = {
-    value: skill.bonus,
+    value: skill.bonus ? 1 : 0,
+    mod: skill.bonus,
+    total: skill.bonus,
     ability,
   };
   return fifthSkill;
 }
 
-function convertSkills(skills: Skill[]): FifthSkills {
+function convertSkills(skills: Skill[], senses: Senses): FifthSkills {
   const fifthSkills: FifthSkills = {};
   skills.forEach((skill) => {
     const skillName = skill.name.toLowerCase().trim();
@@ -110,6 +152,7 @@ function convertSkills(skills: Skill[]): FifthSkills {
         break;
       case 'perception':
         fifthSkills.prc = buildSkill(skill, 'wis');
+        fifthSkills.prc.passive = senses.passivePerception;
         break;
       case 'performance':
         fifthSkills.prf = buildSkill(skill, 'cha');
@@ -134,30 +177,6 @@ function convertSkills(skills: Skill[]): FifthSkills {
     }
   });
   return fifthSkills;
-}
-
-function getDamageType(from: string): string | undefined {
-  if (from.includes('piercing')) return 'piercing';
-  if (from.includes('slashing')) return 'slashing';
-  if (from.includes('bludgeoning')) return 'bludgeoning';
-  if (from.includes('fire')) return 'fire';
-  if (from.includes('cold')) return 'cold';
-  if (from.includes('lightning')) return 'lightning';
-  if (from.includes('acid')) return 'acid';
-  if (from.includes('poison')) return 'poison';
-  if (from.includes('psychic')) return 'psychic';
-  if (from.includes('radiant')) return 'radiant';
-  if (from.includes('thunder')) return 'thunder';
-  if (from.includes('force')) return 'force';
-  if (from.includes('necrotic')) return 'necrotic';
-  if (from.includes('psychic')) return 'psychic';
-}
-
-export function buildDamageParts(description: string) {
-  // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
-  const parsed = parseFormula(description, /Melee Weapon Attack: +/);
-  const fromString = parsed.afterFormula ? parsed.afterFormula : description;
-  return [[parsed.str, getDamageType(fromString)]];
 }
 
 export function buildAttackBonus(description: string, mod: number): number | undefined {
@@ -194,53 +213,6 @@ export function buildReach(description: string) {
   };
 }
 
-function getActionType(description: string): string | undefined {
-  if (/melee/i.test(description)) return 'mwak';
-  if (/ranged/.test(description)) return 'rwak';
-  return undefined;
-}
-
-function getItemType(description: string): FifthItemType {
-  let itemType: FifthItemType = 'feat';
-  if (/melee weapon attack/i.test(description)) itemType = 'weapon';
-  if (/ranged weapon attack/i.test(description)) itemType = 'weapon';
-  if (/melee or ranged weapon attack/i.test(description)) itemType = 'weapon';
-  return itemType;
-}
-
-function getMaxAbility(abilities: Abilities): FifthStat {
-  if (abilities.str.mod > abilities.dex.mod) return 'str';
-  return 'dex';
-}
-
-export function featuresToItems(features: Feature[], abilities: Abilities): FifthItem[] {
-  return features.map((feature) => {
-    let activationType: FifthFeatureCost = 'none';
-    const itemType: FifthItemType = getItemType(feature.description);
-    if (feature.description.includes('action')) activationType = 'action';
-    if (feature.description.includes('bonus action')) activationType = 'bonus';
-
-    const damage = itemType === 'weapon' ? { parts: buildDamageParts(feature.description) } : {};
-    const ability = getMaxAbility(abilities);
-
-    return {
-      name: feature.name,
-      type: itemType,
-      data: {
-        description: {
-          value: feature.description,
-        },
-        activation: {
-          type: activationType,
-        },
-        damage,
-        actionType: getActionType(feature.description),
-        ability,
-      },
-    };
-  });
-}
-
 export interface FeatureCollection {
   features: Feature[];
   actions: Feature[];
@@ -254,11 +226,117 @@ export function featureCollectionToItems(allFeatures: Feature[], { abilities }: 
   return featuresToItems(allFeatures, abilities);
 }
 
-export function actorToFifth({ stats, armorClass, health, speed, biography, skills, rating }: ImportActor) {
+function convertSize(size: Size) {
+  if (size === 'Tiny') return 'tiny';
+  if (size === 'Small') return 'sm';
+  if (size === 'Medium') return 'med';
+  if (size === 'Large') return 'lg';
+  if (size === 'Huge') return 'huge';
+  if (size === 'Gargantuan') return 'grg';
+  return 'med';
+}
+
+function convertType(input: string) {
+  const type = input.toLowerCase();
+  let monsterType = 'unknown';
+  if (/aberration/i.test(type)) monsterType = 'aberration';
+  if (/beast/i.test(type)) monsterType = 'beast';
+  if (/celestial/i.test(type)) monsterType = 'celestial';
+  if (/construct/i.test(type)) monsterType = 'construct';
+  if (/dragon/i.test(type)) monsterType = 'dragon';
+  if (/elemental/i.test(type)) monsterType = 'elemental';
+  if (/fey/i.test(type)) monsterType = 'fey';
+  if (/fiend/i.test(type)) monsterType = 'fiend';
+  if (/giant/i.test(type)) monsterType = 'giant';
+  if (/humanoid/i.test(type)) monsterType = 'humanoid';
+  if (/monstrosity/i.test(type)) monsterType = 'monstrosity';
+  if (/ooze/i.test(type)) monsterType = 'ooze';
+  if (/plant/i.test(type)) monsterType = 'plant';
+  if (/undead/i.test(type)) monsterType = 'undead';
+  if (monsterType === 'unknown') {
+    if (/warforged/i.test(type)) monsterType = 'humanoid';
+    return {
+      value: monsterType,
+      subtype: '',
+      swarm: '',
+      custom: type.toLowerCase(),
+    };
+  } else {
+    return {
+      value: monsterType.toLowerCase(),
+      subtype: '',
+      swarm: '',
+      custom: '',
+    };
+  }
+}
+
+function convertLanguage(language: string) {
+  if (language === "thieves' cant") return 'cant';
+  if (language === 'deep speech') return 'deep';
+  return language;
+}
+
+function buildResistances(
+  damageImmunities: DamageType[],
+  conditionImmunities: Condition[],
+  damageResistances: DamageType[],
+  damageVulnerabilities: DamageType[],
+) {
+  let resistances = {};
+  if (damageImmunities.length > 0) {
+    resistances = {
+      ...resistances,
+      di: { value: damageImmunities },
+    };
+  }
+
+  if (conditionImmunities.length > 0) {
+    resistances = {
+      ...resistances,
+      ci: { value: conditionImmunities },
+    };
+  }
+  if (damageResistances.length > 0) {
+    resistances = {
+      ...resistances,
+      dr: { value: damageResistances },
+    };
+  }
+  if (damageVulnerabilities.length > 0) {
+    resistances = {
+      ...resistances,
+      dv: { value: damageVulnerabilities },
+    };
+  }
+  return resistances;
+}
+
+export function actorToFifth({
+  stats,
+  armorClass,
+  health,
+  speed,
+  biography,
+  skills,
+  rating,
+  damageImmunities,
+  damageResistances,
+  conditionImmunities,
+  damageVulnerabilities,
+  size,
+  senses,
+  languages,
+  alignment,
+  type,
+}: ImportActor) {
   return {
     abilities: convertAbilities(stats),
-    attributes: convertAttributes({ armorClass, health, speed }),
+    attributes: convertAttributes({ armorClass, health, speed }, senses),
     details: {
+      race: type,
+      alignment,
+      type: convertType(type),
       biography: {
         value: biography,
       },
@@ -267,6 +345,13 @@ export function actorToFifth({ stats, armorClass, health, speed, biography, skil
         value: rating?.xp,
       },
     },
-    skills: convertSkills(skills),
+    traits: {
+      size: convertSize(size),
+      languages: {
+        value: languages.map(convertLanguage),
+      },
+      ...buildResistances(damageImmunities, conditionImmunities, damageResistances, damageVulnerabilities),
+    },
+    skills: convertSkills(skills, senses),
   };
 }

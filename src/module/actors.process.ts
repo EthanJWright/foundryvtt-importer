@@ -3,7 +3,10 @@ const FEATURE_HEADERS = ['Actions', 'Reactions'];
 interface Ability {
   value: number;
   mod: number;
+  savingThrow: number;
 }
+
+export type Languages = string[];
 
 export interface Abilities {
   str: Ability;
@@ -44,9 +47,66 @@ export interface Rating {
   xp: number;
 }
 
+export type DamageType =
+  | 'poison'
+  | 'disease'
+  | 'magic'
+  | 'psychic'
+  | 'radiant'
+  | 'necrotic'
+  | 'bludgeoning'
+  | 'piercing'
+  | 'slashing'
+  | 'acid'
+  | 'cold'
+  | 'fire'
+  | 'force'
+  | 'lightning'
+  | 'necrotic'
+  | 'psychic'
+  | 'radiant'
+  | 'thunder';
+
+export type Condition =
+  | 'charmed'
+  | 'deafened'
+  | 'exhaustion'
+  | 'frightened'
+  | 'grappled'
+  | 'incapacitated'
+  | 'invisible'
+  | 'paralyzed'
+  | 'petrified'
+  | 'poisoned'
+  | 'prone'
+  | 'restrained'
+  | 'stunned'
+  | 'unconscious';
+
+export interface Senses {
+  darkvision?: number;
+  blindsight?: number;
+  tremorsense?: number;
+  truesight?: number;
+  units?: string;
+  special?: string;
+  passivePerception?: number;
+}
+
+export type Size = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge' | 'Gargantuan';
+
 export interface ImportActor {
   name: string;
+  size: Size;
+  type: string;
+  alignment: string;
+  senses: Senses;
+  languages: Languages;
   biography: string;
+  damageImmunities: DamageType[];
+  damageResistances: DamageType[];
+  conditionImmunities: Condition[];
+  damageVulnerabilities: DamageType[];
   health: Health;
   rating?: Rating;
   armorClass: ArmorClass;
@@ -161,6 +221,7 @@ function parseAbilityScore(score: number, mod: string): Ability {
   return {
     value: score,
     mod: Number(modNumber),
+    savingThrow: 0,
   };
 }
 
@@ -171,7 +232,17 @@ function isAbilityLine(line: string) {
   isAbilityLine = isAbilityLine && line.toUpperCase().includes('CON');
   isAbilityLine = isAbilityLine && line.toUpperCase().includes('INT');
   isAbilityLine = isAbilityLine && line.toUpperCase().includes('WIS');
+  isAbilityLine = isAbilityLine && line.toUpperCase().includes('CHA');
   return isAbilityLine;
+}
+
+function containsAbility(line: string) {
+  const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+  return (
+    abilities.findIndex((ability) => {
+      return line.trim().toUpperCase() === ability;
+    }) !== -1
+  );
 }
 
 function extractAbilityValues(valueLine: string): { abilities: number[]; modifiers: string[] } {
@@ -192,6 +263,13 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
   return { abilities, modifiers };
 }
 
+function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[]): Abilities {
+  return abilityKeys.reduce(
+    (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
+    {},
+  ) as Abilities;
+}
+
 export function parseStats(inputList: string[]) {
   const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
@@ -207,11 +285,7 @@ export function parseStats(inputList: string[]) {
     }
     const valueLine = inputList[abilityIndex + 1];
     const { abilities, modifiers } = extractAbilityValues(valueLine);
-    const zipped = abilityKeys.reduce(
-      (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
-      {},
-    );
-    return zipped as Abilities;
+    return zipStats(abilityKeys, abilities, modifiers);
   }
   throw new Error('Could not parse ability line');
 }
@@ -229,10 +303,34 @@ function parseMod(line: string) {
   return {
     value: Number(components[0]),
     mod: Number(components[1].replace('(', '').replace(')', '')),
+    savingThrow: 0,
   };
 }
 
+export function findStatBounds(input: string[]): { lastLine: number; firstLine: number } {
+  const lines = new Array(...input);
+  const firstLine = lines.findIndex((line) => {
+    return line.trim().toLowerCase() === 'str';
+  });
+  if (!firstLine) {
+    throw new Error('Could not find first line');
+  }
+  const remainingLines = lines.splice(firstLine, lines.length);
+  const lastLine =
+    remainingLines.findIndex((line) => {
+      const trimArray = line.trim().split(' ');
+      return trimArray.length > 3;
+    }) + firstLine;
+  if (!lastLine) {
+    throw new Error('Could not find last line');
+  }
+  return { firstLine, lastLine };
+}
+
 export function parseMultilineStats(lines: string[]): Abilities {
+  if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
+    throw new Error('Invalid format for multi line stat parsing.');
+  }
   return {
     str: parseMod(lines[indexOfAbility(lines, 'STR') + 1]),
     dex: parseMod(lines[indexOfAbility(lines, 'DEX') + 1]),
@@ -241,6 +339,23 @@ export function parseMultilineStats(lines: string[]): Abilities {
     wis: parseMod(lines[indexOfAbility(lines, 'WIS') + 1]),
     cha: parseMod(lines[indexOfAbility(lines, 'CHA') + 1]),
   };
+}
+
+export function getVerticalKeyValueStats(input: string[]) {
+  const { firstLine, lastLine } = findStatBounds(input);
+  const lines = input.slice(firstLine, lastLine);
+  const keyEndIndex = lines.findIndex((line) => {
+    return !containsAbility(line);
+  });
+  const keys = lines.slice(0, keyEndIndex).map((line) => line.trim().toLowerCase());
+  const values = lines.slice(keyEndIndex, keyEndIndex + 7).map((line) => line.trim().toLowerCase());
+  return { keys, values };
+}
+
+export function parseVerticalKeyValueStats(input: string[]): Abilities {
+  const { keys, values } = getVerticalKeyValueStats(input);
+  const { abilities, modifiers } = extractAbilityValues(values.join(' '));
+  return zipStats(keys, abilities, modifiers);
 }
 
 export function parseSpeed(lines: string[]) {
@@ -277,6 +392,35 @@ export function parseSkills(lines: string[]): Skill[] {
     };
   });
   return skills;
+}
+
+function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
+  const savingThrowsLine = lines.find((line) => line.toUpperCase().includes('SAVING THROWS'));
+  if (!savingThrowsLine) {
+    return abilities;
+  }
+  const savingThrowsArray = savingThrowsLine.replace('Saving Throws', '').trim().split(' ');
+  const abilityList = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+  savingThrowsArray.forEach((check, index) => {
+    if (abilityList.includes(check.toLowerCase())) {
+      const strNumber = savingThrowsArray[index + 1].replace('+', '');
+      const parsedNumber = parseInt(strNumber);
+      if (check.toLowerCase() === 'str') {
+        abilities.str.savingThrow = parsedNumber - abilities.str.mod;
+      } else if (check.toLowerCase() === 'dex') {
+        abilities.dex.savingThrow = parsedNumber - abilities.dex.mod;
+      } else if (check.toLowerCase() === 'con') {
+        abilities.con.savingThrow = parsedNumber - abilities.con.mod;
+      } else if (check.toLowerCase() === 'int') {
+        abilities.int.savingThrow = parsedNumber - abilities.int.mod;
+      } else if (check.toLowerCase() === 'wis') {
+        abilities.wis.savingThrow = parsedNumber - abilities.wis.mod;
+      } else if (check.toLowerCase() === 'cha') {
+        abilities.cha.savingThrow = parsedNumber - abilities.cha.mod;
+      }
+    }
+  });
+  return abilities;
 }
 
 export function parseStandardCSV(lines: string[], name: string): Set {
@@ -336,7 +480,9 @@ export function getFeatureNames(line: string): string | undefined {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
   const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
-  const matches = line.match(re);
+  // pull out any () as sometimes the name will end with (2/day). and throw off
+  // regex
+  const matches = line.replace(')', '').match(re);
   if (matches) {
     const name = line.split('.')[0];
     // If our regex didn't grab a match at the beginning of the line, return
@@ -359,8 +505,15 @@ function reduceToFeatures(acc: string[], curr: string) {
   if (names || acc.length === 0) {
     acc.push(curr.trim());
   } else {
-    acc[acc.length - 1] = acc[acc.length - 1] + ' ' + curr.trim();
+    // if the line was a continuation, dont add a space
+    const bindWith = acc[acc.length - 1].endsWith('-') ? '' : ' ';
+    // if line ended with a - for a continuation, remove it
+    if (acc[acc.length - 1].endsWith('-')) {
+      acc[acc.length - 1] = acc[acc.length - 1].slice(0, -1);
+    }
+    acc[acc.length - 1] = acc[acc.length - 1].trim() + bindWith + curr.trim();
   }
+  acc[acc.length - 1] = acc[acc.length - 1].trim();
   return acc;
 }
 
@@ -457,12 +610,16 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
   return firstMatch + 1;
 }
 
-function tryStatParsers(lines: string[]): Abilities {
+export function tryStatParsers(lines: string[]): Abilities {
   let stats: Abilities | undefined;
   try {
     stats = parseStats(lines);
   } catch (error) {
-    stats = parseMultilineStats(lines);
+    try {
+      stats = parseMultilineStats(lines);
+    } catch {
+      stats = parseVerticalKeyValueStats(lines);
+    }
   }
   if (!stats) throw new Error('could not parse stats.');
   return stats;
@@ -496,12 +653,149 @@ export function getChallenge(challengeLine: string): Rating {
   };
 }
 
+function getDamageImmunities(lines: string[]) {
+  const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
+  return damageImmunityLine
+    .replace('Damage Immunities', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((immunity) => immunity.trim())
+    .filter((line) => line !== '') as DamageType[];
+}
+
+function getDamageResistances(lines: string[]) {
+  const damageLine = lines.find((line) => line.toLowerCase().includes('damage resistances')) || '';
+  return damageLine
+    .replace('Damage Resistances', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((immunity) => immunity.trim())
+    .filter((line) => line !== '') as DamageType[];
+}
+
+function getConditionImmunities(lines: string[]) {
+  const conditionImmunityLine = lines.find((line) => line.toLowerCase().includes('condition immunities')) || '';
+  return conditionImmunityLine
+    .replace('Condition Immunities', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((condition) => condition.trim())
+    .filter((line) => line !== '') as Condition[];
+}
+
+function getDamageVulnerabilities(lines: string[]) {
+  const damage = lines.find((line) => line.toLowerCase().includes('damage vulnerabilities')) || '';
+  return damage
+    .replace('Damage Vulnerabilities', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((condition) => condition.trim())
+    .filter((line) => line !== '') as DamageType[];
+}
+
 export function getAllFeatures(text: string): Feature[] {
   const lines = text.split('\n');
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
   return featureStrings.map(featureStringsToFeatures);
+}
+
+export function getSenses(lines: string[]): Senses {
+  const sensesLine = lines.find((line) => line.toLowerCase().includes('senses')) || '';
+  const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
+  const senses: Senses = {};
+  rawSenses.forEach((sense) => {
+    // get number from string of form darkvision 60ft
+    const number = sense.split(' ')[1].replace('ft', '');
+    switch (sense.split(' ')[0]) {
+      case 'darkvision':
+        senses.darkvision = Number(number);
+        break;
+      case 'blindsight':
+        senses.blindsight = Number(number);
+        break;
+      case 'tremorsense':
+        senses.tremorsense = Number(number);
+        break;
+      case 'truesight':
+        senses.truesight = Number(number);
+        break;
+      case 'passive perception':
+        senses.passivePerception = Number(number);
+        break;
+      default:
+        break;
+    }
+  });
+  senses.units = 'ft';
+  return senses;
+}
+
+function getDescriptionLine(lines: string[]): string {
+  const candidateLines = lines.slice(0, 8);
+  const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
+  let descriptionLine = '';
+  sizes.forEach((size) => {
+    const potentialMatch =
+      candidateLines.find((line) => {
+        return line.toLowerCase().includes(size.toLowerCase());
+      }) || '';
+    if (potentialMatch !== '') {
+      descriptionLine = potentialMatch;
+    }
+  });
+  return descriptionLine;
+}
+
+function getSize(lines: string[]): Size {
+  const candidateLines = lines.slice(0, 8);
+  const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
+  const size = sizes.find((size) => {
+    const sizeInLine =
+      candidateLines.findIndex((line) => {
+        const includes = line.toLowerCase().includes(size.toLowerCase());
+        return includes;
+      }) !== -1;
+    if (sizeInLine) {
+    }
+    return sizeInLine;
+  });
+  if (!size) return 'Medium';
+  return size as Size;
+}
+
+function getType(lines: string[]): string {
+  const descriptionLine = getDescriptionLine(lines);
+  // get string between '(' and ')'
+  try {
+    const type = descriptionLine.split('(')[1].split(')')[0];
+    return type;
+  } catch (err) {
+    // If type isn't in parens, it may be after the comma
+    return descriptionLine.split(',')[0].trim().split(' ').pop() || '';
+  }
+}
+
+function capitalizeBeginings(str: string): string {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+}
+
+function getAlignment(lines: string[]): string {
+  const descriptionLine = getDescriptionLine(lines);
+  return capitalizeBeginings(descriptionLine.split(',')[1].trim().toLowerCase());
+}
+
+function getLanguages(lines: string[]): Languages {
+  const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
+  const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
+  return languages.map((language) => language.trim().toLowerCase());
 }
 
 export function textToActor(input: string): ImportActor {
@@ -529,13 +823,25 @@ export function textToActor(input: string): ImportActor {
     console.log('Could not parse skills');
   }
 
+  const stats = tryStatParsers(lines);
+  const statsWithSaves = addSavingThrows(lines, stats);
+
   return {
     name: lines[0].trim(),
     rating,
+    type: getType(lines),
+    alignment: getAlignment(lines),
     biography: getBiography(lines),
+    languages: getLanguages(lines),
+    size: getSize(lines),
     health: parseFormula(healthLine, /Hit Points (.*)/),
+    senses: getSenses(lines),
     armorClass: parseAC(acLine),
-    stats: tryStatParsers(lines),
+    damageImmunities: getDamageImmunities(lines),
+    damageResistances: getDamageResistances(lines),
+    conditionImmunities: getConditionImmunities(lines),
+    damageVulnerabilities: getDamageVulnerabilities(lines),
+    stats: statsWithSaves,
     speed: parseSpeed(lines),
     skills,
     features: getAllFeatures(input),
