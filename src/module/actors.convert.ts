@@ -239,23 +239,24 @@ function convertSize(size: Size) {
 function convertType(input: string) {
   const type = input.toLowerCase();
   let monsterType = 'unknown';
-  if (type === 'aberration') monsterType = 'aberration';
-  if (type === 'beast') monsterType = 'beast';
-  if (type === 'celestial') monsterType = 'celestial';
-  if (type === 'construct') monsterType = 'construct';
-  if (type === 'dragon') monsterType = 'dragon';
-  if (type === 'elemental') monsterType = 'elemental';
-  if (type === 'fey') monsterType = 'fey';
-  if (type === 'fiend') monsterType = 'fiend';
-  if (type === 'giant') monsterType = 'giant';
-  if (type === 'humanoid') monsterType = 'humanoid';
-  if (type === 'monstrosity') monsterType = 'monstrosity';
-  if (type === 'ooze') monsterType = 'ooze';
-  if (type === 'plant') monsterType = 'plant';
-  if (type === 'undead') monsterType = 'undead';
+  if (/aberration/i.test(type)) monsterType = 'aberration';
+  if (/beast/i.test(type)) monsterType = 'beast';
+  if (/celestial/i.test(type)) monsterType = 'celestial';
+  if (/construct/i.test(type)) monsterType = 'construct';
+  if (/dragon/i.test(type)) monsterType = 'dragon';
+  if (/elemental/i.test(type)) monsterType = 'elemental';
+  if (/fey/i.test(type)) monsterType = 'fey';
+  if (/fiend/i.test(type)) monsterType = 'fiend';
+  if (/giant/i.test(type)) monsterType = 'giant';
+  if (/humanoid/i.test(type)) monsterType = 'humanoid';
+  if (/monstrosity/i.test(type)) monsterType = 'monstrosity';
+  if (/ooze/i.test(type)) monsterType = 'ooze';
+  if (/plant/i.test(type)) monsterType = 'plant';
+  if (/undead/i.test(type)) monsterType = 'undead';
   if (monsterType === 'unknown') {
+    if (/warforged/i.test(type)) monsterType = 'humanoid';
     return {
-      value: '',
+      value: monsterType,
       subtype: '',
       swarm: '',
       custom: type.toLowerCase(),
