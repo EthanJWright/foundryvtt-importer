@@ -3,6 +3,7 @@ const FEATURE_HEADERS = ['Actions', 'Reactions'];
 interface Ability {
   value: number;
   mod: number;
+  savingThrow: number;
 }
 
 export type Languages = string[];
@@ -220,6 +221,7 @@ function parseAbilityScore(score: number, mod: string): Ability {
   return {
     value: score,
     mod: Number(modNumber),
+    savingThrow: 0,
   };
 }
 
@@ -301,6 +303,7 @@ function parseMod(line: string) {
   return {
     value: Number(components[0]),
     mod: Number(components[1].replace('(', '').replace(')', '')),
+    savingThrow: 0,
   };
 }
 
@@ -389,6 +392,35 @@ export function parseSkills(lines: string[]): Skill[] {
     };
   });
   return skills;
+}
+
+function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
+  const savingThrowsLine = lines.find((line) => line.toUpperCase().includes('SAVING THROWS'));
+  if (!savingThrowsLine) {
+    return abilities;
+  }
+  const savingThrowsArray = savingThrowsLine.replace('Saving Throws', '').trim().split(' ');
+  const abilityList = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+  savingThrowsArray.forEach((check, index) => {
+    if (abilityList.includes(check.toLowerCase())) {
+      const strNumber = savingThrowsArray[index + 1].replace('+', '');
+      const parsedNumber = parseInt(strNumber);
+      if (check.toLowerCase() === 'str') {
+        abilities.str.savingThrow = parsedNumber - abilities.str.mod;
+      } else if (check.toLowerCase() === 'dex') {
+        abilities.dex.savingThrow = parsedNumber - abilities.dex.mod;
+      } else if (check.toLowerCase() === 'con') {
+        abilities.con.savingThrow = parsedNumber - abilities.con.mod;
+      } else if (check.toLowerCase() === 'int') {
+        abilities.int.savingThrow = parsedNumber - abilities.int.mod;
+      } else if (check.toLowerCase() === 'wis') {
+        abilities.wis.savingThrow = parsedNumber - abilities.wis.mod;
+      } else if (check.toLowerCase() === 'cha') {
+        abilities.cha.savingThrow = parsedNumber - abilities.cha.mod;
+      }
+    }
+  });
+  return abilities;
 }
 
 export function parseStandardCSV(lines: string[], name: string): Set {
@@ -787,6 +819,9 @@ export function textToActor(input: string): ImportActor {
     console.log('Could not parse skills');
   }
 
+  const stats = tryStatParsers(lines);
+  const statsWithSaves = addSavingThrows(lines, stats);
+
   return {
     name: lines[0].trim(),
     rating,
@@ -802,7 +837,7 @@ export function textToActor(input: string): ImportActor {
     damageResistances: getDamageResistances(lines),
     conditionImmunities: getConditionImmunities(lines),
     conditionResistances: getConditionResistances(lines),
-    stats: tryStatParsers(lines),
+    stats: statsWithSaves,
     speed: parseSpeed(lines),
     skills,
     features: getAllFeatures(input),

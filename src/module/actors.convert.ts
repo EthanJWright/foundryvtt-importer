@@ -14,26 +14,49 @@ export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): F
     str: {
       value: str.value,
       proficient: 0,
+      bonuses: {
+        save: `${str.savingThrow}`,
+      },
     },
     dex: {
       value: dex.value,
       proficient: 0,
+      saveBonus: dex.savingThrow,
+      bonuses: {
+        save: `${dex.savingThrow}`,
+      },
     },
     con: {
       value: con.value,
       proficient: 0,
+      saveBonus: con.savingThrow,
+      bonuses: {
+        save: `${con.savingThrow}`,
+      },
     },
     int: {
       value: int.value,
       proficient: 0,
+      saveBonus: int.savingThrow,
+      bonuses: {
+        save: `${int.savingThrow}`,
+      },
     },
     wis: {
       value: wis.value,
       proficient: 0,
+      saveBonus: wis.savingThrow,
+      bonuses: {
+        save: `${wis.savingThrow}`,
+      },
     },
     cha: {
       value: cha.value,
       proficient: 0,
+      saveBonus: cha.savingThrow,
+      bonuses: {
+        save: `${cha.savingThrow}`,
+      },
     },
   };
 }

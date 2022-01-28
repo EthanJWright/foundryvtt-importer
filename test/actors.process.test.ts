@@ -47,26 +47,32 @@ describe('extractStats', () => {
       str: {
         value: 12,
         mod: 1,
+        savingThrow: 0,
       },
       dex: {
         value: 18,
         mod: 4,
+        savingThrow: 0,
       },
       con: {
         value: 12,
         mod: 1,
+        savingThrow: 0,
       },
       int: {
         value: 14,
         mod: 2,
+        savingThrow: 0,
       },
       wis: {
         value: 11,
         mod: 0,
+        savingThrow: 0,
       },
       cha: {
         value: 15,
         mod: 2,
+        savingThrow: 0,
       },
     });
   });
@@ -261,6 +267,8 @@ describe('Parse Text', () => {
     expect(actor.name).toBe('Big Bara');
     expect(actor.alignment).toBe('Neutral Evil');
     expect(actor.languages).toEqual(['common']);
+    expect(actor.stats.con?.savingThrow).toEqual(4);
+    expect(actor.stats.wis?.savingThrow).toEqual(4);
     expect(actor.type).toEqual('warforged');
     expect(actor.size).toBe('Medium');
     expect(actor.health.value).toEqual(117);
@@ -290,26 +298,32 @@ describe('parseMultiLineStates', () => {
       str: {
         value: 12,
         mod: 1,
+        savingThrow: 0,
       },
       dex: {
         value: 18,
         mod: 4,
+        savingThrow: 0,
       },
       con: {
         value: 12,
         mod: 1,
+        savingThrow: 0,
       },
       int: {
         value: 14,
         mod: 2,
+        savingThrow: 0,
       },
       wis: {
         value: 11,
         mod: 0,
+        savingThrow: 0,
       },
       cha: {
         value: 15,
         mod: 2,
+        savingThrow: 0,
       },
     });
   });

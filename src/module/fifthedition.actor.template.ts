@@ -2,49 +2,55 @@ export interface FifthAbilities {
   str: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   dex: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   con: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   int: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   wis: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
   cha: {
     value: number;
     proficient: number;
+    saveBonus?: number;
     bonuses?: {
-      check: string;
-      save: string;
+      check?: string;
+      save?: string;
     };
   };
 }
