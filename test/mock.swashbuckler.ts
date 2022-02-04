@@ -2,6 +2,15 @@ import { ImportActor } from '../src/module/actors.process';
 export const swashbuckler: ImportActor = {
   name: 'Swashbuckler',
   biography: 'Medium humanoid (any race), any non-lawful alignment',
+  damageImmunities: [],
+  damageResistances: [],
+  conditionImmunities: [],
+  damageVulnerabilities: [],
+  languages: ['common'],
+  type: 'any race',
+  size: 'Medium',
+  alignment: 'non-lawful alignment',
+  senses: {},
   health: {
     value: 66,
     min: 24,
@@ -15,26 +24,32 @@ export const swashbuckler: ImportActor = {
     str: {
       value: 12,
       mod: 1,
+      savingThrow: 0,
     },
     dex: {
       value: 18,
       mod: 4,
+      savingThrow: 0,
     },
     con: {
       value: 12,
       mod: 1,
+      savingThrow: 0,
     },
     int: {
       value: 14,
       mod: 2,
+      savingThrow: 0,
     },
     wis: {
       value: 11,
       mod: 0,
+      savingThrow: 0,
     },
     cha: {
       value: 15,
       mod: 2,
+      savingThrow: 0,
     },
   },
   speed: 30,

@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.3...v0.2.4) (2022-01-28)
+
+
+### Bug Fixes
+
+* updating constants ([98ecca1](https://github.com/EthanJWright/foundryvtt-importer/commit/98ecca1de92a736f13881c08902ef2347c4bd013))
+
+### [0.2.3](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.2...v0.2.3) (2022-01-28)
+
+
+### Bug Fixes
+
+* quick hotfix to module name for foundry hub ([13c8309](https://github.com/EthanJWright/foundryvtt-importer/commit/13c830900cf2a91536afa7032a4202bd594ae49f))
+
+### [0.2.2](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.1...v0.2.2) (2022-01-28)
+
+
+### Bug Fixes
+
+* module path breaking bug ([39402ec](https://github.com/EthanJWright/foundryvtt-importer/commit/39402ec07617f53dcf46b79a1729f8cdb89021b8))
+
+### [0.2.1](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.1.13...v0.2.1) (2022-01-28)
+
+
+### Features
+
+* add condition immunity ([eeaf97a](https://github.com/EthanJWright/foundryvtt-importer/commit/eeaf97a4bb504068fe3846c9a3d82a5590b60b5e))
+* add languages, fix bug in feature building ([96e3510](https://github.com/EthanJWright/foundryvtt-importer/commit/96e3510fe2e7c0b4d0f16a5a9337669deffca169))
+* add more sophisticated item parsing ([ca75043](https://github.com/EthanJWright/foundryvtt-importer/commit/ca75043545f12dcacfca8eb2d49c7a9bd39ab50a))
+* add parser for adventure league stat format ([43144f6](https://github.com/EthanJWright/foundryvtt-importer/commit/43144f68b9415913045379b55411da2c3f6d78bc))
+* add parsing for multiple damage parts ([68d0fa3](https://github.com/EthanJWright/foundryvtt-importer/commit/68d0fa3126110c73dc84a22556fe91d7275cfca2))
+* add size parsing ([2f480ca](https://github.com/EthanJWright/foundryvtt-importer/commit/2f480caea5a50f01430cd46be5394cd17f83eadf))
+* adding alignment and type (type bug for custom) ([888f491](https://github.com/EthanJWright/foundryvtt-importer/commit/888f491e26345e27f9b3eba19f5a8bd643166da2))
+* adding cone spell parsing ([c49d550](https://github.com/EthanJWright/foundryvtt-importer/commit/c49d550b3694237a9b2d920149176d2756d7b9a3))
+* adding one off mappings for abnormal types, just warforged so far ([0920f11](https://github.com/EthanJWright/foundryvtt-importer/commit/0920f11112c75418df376d3abacb73613087d99a))
+* adding resistance parsing ([1e514bf](https://github.com/EthanJWright/foundryvtt-importer/commit/1e514bff7d32b9c0b388eebca565d806e43a0e85))
+* extract senses from text ([eaf5a5e](https://github.com/EthanJWright/foundryvtt-importer/commit/eaf5a5e70518cab919f9ae3ad418ede3fdca1257))
+* handle ability scores ([9765234](https://github.com/EthanJWright/foundryvtt-importer/commit/9765234ceb9ab1ec6528d21c5f668b358a29d4cd))
+* parse out damage immunities ([8a1eb93](https://github.com/EthanJWright/foundryvtt-importer/commit/8a1eb93b9beee153fd7d5aa1e80ad2463a1bd692))
+
+
+### Bug Fixes
+
+* add item parsing file ([1b91cae](https://github.com/EthanJWright/foundryvtt-importer/commit/1b91caee0cb0f1850def42d37de07cb10d0ac0ef))
+* adding damage vulnerability ([d41aee5](https://github.com/EthanJWright/foundryvtt-importer/commit/d41aee55c9aae8204eaa1da41724e6568e3bf9d9))
+* adding import for test ([4916c9c](https://github.com/EthanJWright/foundryvtt-importer/commit/4916c9c19c581aa90abcfd309dc523ad528e8e8c))
+* adding in high level adventure parse test ([7dbf9bc](https://github.com/EthanJWright/foundryvtt-importer/commit/7dbf9bc1f99203aac2bc191644713c23999323dc))
+* bug parsing when parens in name ([09d8964](https://github.com/EthanJWright/foundryvtt-importer/commit/09d8964733290ced89bcdf8bd87f933514581689))
+* dropping empty strings from conditions ([bd4a444](https://github.com/EthanJWright/foundryvtt-importer/commit/bd4a444b04cb3c75baf41b7391fdb49fb092efce))
+* plug in resistances ([75db979](https://github.com/EthanJWright/foundryvtt-importer/commit/75db979e140bbc42e6679060c2b2d13375516159))
+* refactor to pull item parsing into its own dir ([25bde97](https://github.com/EthanJWright/foundryvtt-importer/commit/25bde97c436d4f856bf07de37e62c1648f4f0ca5))
+* skill inclusion in stats ([49f12e8](https://github.com/EthanJWright/foundryvtt-importer/commit/49f12e833954d0b43267352578d0a6aaadb1b04f))
+* skills was moved to wrong place ([f1fffd4](https://github.com/EthanJWright/foundryvtt-importer/commit/f1fffd419252491d8e3f89d4581b935517c78776))
+
 ### [0.1.13](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.1.12...v0.1.13) (2022-01-26)
 
 

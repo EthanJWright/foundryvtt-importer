@@ -1,3 +1,5 @@
+import CONSTANTS from './constants';
+
 export interface HTMLImportData {
   jsonfile: string;
 }
@@ -40,7 +42,7 @@ export class importJSONForm extends FormApplication {
       width: 400,
       top: window.innerHeight - window.innerHeight + 20,
       left: window.innerWidth - 710,
-      template: `modules/foundryvtt-importer/templates/importForm.hbs`,
+      template: `modules/${CONSTANTS.module.name}/templates/importForm.hbs`,
     });
   }
 }

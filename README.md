@@ -1,6 +1,4 @@
-# foundryvtt-importer
-
-Systems: 5e
+# Foundry VTT Content Parser
 
 [![Checks](https://github.com/EthanJWright/foundryvtt-importer/workflows/Checks/badge.svg)](https://github.com/EthanJWright/foundryvtt-importer/actions)
 ![Latest Release Download Count](https://img.shields.io/github/downloads/EthanJWright/foundryvtt-importer/latest/module.zip)
