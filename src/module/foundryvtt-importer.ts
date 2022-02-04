@@ -18,6 +18,10 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
   if (config.actorImporter) {
     renderSidebarButtons(settings, 'actors', processActorInput);
   }
+
+  if (config.itemImporter) {
+    renderSidebarButtons(settings, 'items', processActorInput);
+  }
 });
 
 // Initialize module
