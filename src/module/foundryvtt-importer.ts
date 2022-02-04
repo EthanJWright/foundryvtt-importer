@@ -5,6 +5,7 @@ import { processTableJSON } from './table';
 import { renderSidebarButtons } from './renderSidebarButtons';
 import CONSTANTS from './constants';
 import { processActorInput } from './actor';
+import { processItemInput } from './item/input';
 
 Hooks.on('renderSidebarTab', (settings: Settings) => {
   if (!(game as Game)?.user?.isGM) return;
@@ -20,7 +21,7 @@ Hooks.on('renderSidebarTab', (settings: Settings) => {
   }
 
   if (config.itemImporter) {
-    renderSidebarButtons(settings, 'items', processActorInput);
+    renderSidebarButtons(settings, 'items', processItemInput);
   }
 });
 
