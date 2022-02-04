@@ -19,10 +19,15 @@ function parseName(input: string): string {
   return input.split('\n')[0].trim();
 }
 
-function parseType(input: string): ItemType {
+export function parseType(input: string): ItemType {
   if (/weapon/i.test(input)) return 'weapon';
   if (/armor/i.test(input)) return 'equipment';
   if (/unil the next dawn/i.test(input)) return 'consumable';
+  if (/beginning at/i.test(input)) return 'feat';
+  if (/starting at/i.test(input)) return 'feat';
+  if (/melee weapon attack/i.test(input)) return 'weapon';
+  if (/ranged weapon attack/i.test(input)) return 'weapon';
+  if (/melee or ranged weapon attack/i.test(input)) return 'weapon';
   return 'consumable';
 }
 

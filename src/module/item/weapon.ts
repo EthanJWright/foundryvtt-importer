@@ -1,5 +1,6 @@
 import { Abilities, Feature, parseFormula } from '../actors.process';
 import { ActionType, FifthFeatureCost, FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
+import { parseType } from './process';
 
 function getDamageType(from: string): string | undefined {
   if (from.includes('piercing')) return 'piercing';
@@ -24,14 +25,6 @@ function getActionType(description: string): ActionType {
   if (/spell save/i.test(description)) return 'save';
   if (/saving throw/i.test(description)) return 'save';
   return undefined;
-}
-
-function getItemType(description: string): FifthItemType {
-  let itemType: FifthItemType = 'feat';
-  if (/melee weapon attack/i.test(description)) itemType = 'weapon';
-  if (/ranged weapon attack/i.test(description)) itemType = 'weapon';
-  if (/melee or ranged weapon attack/i.test(description)) itemType = 'weapon';
-  return itemType;
 }
 
 function getMaxAbility(abilities: Abilities): FifthStat {
@@ -188,8 +181,8 @@ function actionTypeExtraData(actionType: string | undefined, { name, description
   return building;
 }
 
-export function parsedToItem(name: string, description: string, ability: string): FifthItem {
-  const itemType: FifthItemType = getItemType(description);
+export function parsedToItem(name: string, description: string, ability?: string): FifthItem {
+  const itemType: FifthItemType = parseType(description);
 
   const damage = itemType === 'weapon' ? { parts: buildDamageParts(description) } : {};
   const actionType = getActionType(description);
