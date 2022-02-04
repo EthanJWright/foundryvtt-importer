@@ -1,5 +1,5 @@
 import { Abilities, Feature, parseFormula } from '../actors.process';
-import { FifthFeatureCost, FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
+import { ActionType, FifthFeatureCost, FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
 
 function getDamageType(from: string): string | undefined {
   if (from.includes('piercing')) return 'piercing';
@@ -18,7 +18,7 @@ function getDamageType(from: string): string | undefined {
   if (from.includes('psychic')) return 'psychic';
 }
 
-function getActionType(description: string): string | undefined {
+function getActionType(description: string): ActionType {
   if (/melee/i.test(description)) return 'mwak';
   if (/ranged/i.test(description)) return 'rwak';
   if (/spell save/i.test(description)) return 'save';
@@ -80,8 +80,7 @@ interface Activation {
   cost?: number;
   condition?: string;
 }
-function getActivation(feature: Feature): Activation | undefined {
-  const { description } = feature;
+function getActivation(description: string): Activation | undefined {
   if (/attack/i.test(description))
     return {
       type: 'action',
@@ -189,29 +188,30 @@ function actionTypeExtraData(actionType: string | undefined, { name, description
   return building;
 }
 
-export function featuresToItems(features: Feature[], abilities: Abilities): FifthItem[] {
-  return features.map((feature) => {
-    const itemType: FifthItemType = getItemType(feature.description);
+export function parsedToItem(name: string, description: string, ability: string): FifthItem {
+  const itemType: FifthItemType = getItemType(description);
 
-    const damage = itemType === 'weapon' ? { parts: buildDamageParts(feature.description) } : {};
-    const ability = getMaxAbility(abilities);
-    const actionType = getActionType(feature.description);
+  const damage = itemType === 'weapon' ? { parts: buildDamageParts(description) } : {};
+  const actionType = getActionType(description);
 
-    return {
-      name: feature.name,
-      type: itemType,
-      data: {
-        description: {
-          value: feature.description,
-        },
-        activation: getActivation(feature),
-        damage,
-        actionType,
-        range: getRange(feature.description),
-        ability,
-        attackBonus: 0,
-        ...actionTypeExtraData(actionType, feature),
+  return {
+    name,
+    type: itemType,
+    data: {
+      description: {
+        value: description,
       },
-    };
-  });
+      activation: getActivation(description),
+      damage,
+      actionType,
+      range: getRange(description),
+      ability,
+      attackBonus: 0,
+      ...actionTypeExtraData(actionType, { name, description }),
+    },
+  };
+}
+
+export function featuresToItems(features: Feature[], abilities: Abilities): FifthItem[] {
+  return features.map((feature) => parsedToItem(feature.name, feature.description, getMaxAbility(abilities)));
 }

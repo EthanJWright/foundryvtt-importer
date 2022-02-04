@@ -138,6 +138,9 @@ export type FifthItemType =
   | 'spell'
   | 'feat'
   | 'backpack';
+
+export type ActionType = 'mwak' | 'rwak' | 'save' | undefined;
+
 export interface FifthItem {
   name: string;
   type: FifthItemType;
@@ -153,10 +156,21 @@ export interface FifthItem {
       cost?: number;
       condition?: string;
     };
+    damage?: {
+      parts?: (string | undefined)[][];
+    };
+    actionType?: ActionType;
     duration?: {
       value: number;
       units: string;
     };
+    range?: {
+      value?: number;
+      units?: string;
+      long?: number;
+    };
+    ability?: string;
+    attackBonus?: number;
     target?: {
       value: number;
       width?: number;
