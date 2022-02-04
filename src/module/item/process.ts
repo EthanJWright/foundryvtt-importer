@@ -20,8 +20,10 @@ function parseName(input: string): string {
 }
 
 function parseType(input: string): ItemType {
-  const type = 'consumable';
-  return type;
+  if (/weapon/i.test(input)) return 'weapon';
+  if (/armor/i.test(input)) return 'equipment';
+  if (/unil the next dawn/i.test(input)) return 'consumable';
+  return 'consumable';
 }
 
 function parseRarity(input: string): ItemRarity {
