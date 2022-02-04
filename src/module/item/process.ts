@@ -33,6 +33,7 @@ function scrubDescription(description: string, extraItems: string[]): string {
 export function processItem(input: string): FifthItem {
   const type = parseType(input);
   const name = parseName(input);
+  // TODO: fix issue where type and rarity and such are still in the description
   const description = scrubDescription(input, [name, type]);
   switch (type) {
     case 'weapon':
