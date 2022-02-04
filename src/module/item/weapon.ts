@@ -181,7 +181,7 @@ function actionTypeExtraData(actionType: string | undefined, { name, description
   return building;
 }
 
-export function parsedToItem(name: string, description: string, ability?: string): FifthItem {
+export function parsedToWeapon(name: string, description: string, ability?: string): FifthItem {
   const itemType: FifthItemType = parseType(description);
 
   const damage = itemType === 'weapon' ? { parts: buildDamageParts(description) } : {};
@@ -206,5 +206,5 @@ export function parsedToItem(name: string, description: string, ability?: string
 }
 
 export function featuresToItems(features: Feature[], abilities: Abilities): FifthItem[] {
-  return features.map((feature) => parsedToItem(feature.name, feature.description, getMaxAbility(abilities)));
+  return features.map((feature) => parsedToWeapon(feature.name, feature.description, getMaxAbility(abilities)));
 }

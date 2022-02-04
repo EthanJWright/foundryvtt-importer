@@ -1,4 +1,5 @@
-type ItemRarity = 'common' | 'uncommon' | 'rare' | 'legendary';
+import { FifthItem, ItemRarity } from '../fifthedition.actor.template';
+import { parsedToWeapon } from './weapon';
 
 interface ItemData {
   description: {
@@ -39,15 +40,24 @@ function parseRarity(input: string): ItemRarity {
   return 'common';
 }
 
-export function processItem(input: string): Item {
-  return {
-    name: parseName(input),
-    type: parseType(input),
-    data: {
-      description: {
-        value: '',
-      },
-      rarity: parseRarity(input),
-    },
-  };
+export function processItem(input: string): FifthItem {
+  const type = parseType(input);
+  const name = parseName(input);
+  const description = input.replace(name, '').trim();
+  switch (type) {
+    case 'weapon':
+    case 'feat':
+      return parsedToWeapon(name, description);
+    default:
+      return {
+        name,
+        type,
+        data: {
+          description: {
+            value: description,
+          },
+          rarity: parseRarity(input),
+        },
+      };
+  }
 }

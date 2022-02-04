@@ -127,6 +127,7 @@ export interface FifthItemDamage {
   versatile?: string;
 }
 
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'legendary';
 export type FifthFeatureCost = 'action' | 'bonus' | 'reaction' | 'legendary' | 'spell' | 'weapon' | 'none';
 export type FifthItemType =
   | 'weapon'
@@ -169,8 +170,9 @@ export interface FifthItem {
       units?: string;
       long?: number;
     };
-    ability?: string;
+    ability?: string | undefined;
     attackBonus?: number;
+    rarity?: ItemRarity;
     target?: {
       value: number;
       width?: number;
