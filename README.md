@@ -26,6 +26,9 @@ Create foundry elements from external sources.
 
 ![Table Importing from Reddit](https://media4.giphy.com/media/qeiKk0SSvOPngZpca0/giphy.gif?cid=790b761108da49b64336e28d589d0dd28259b61333b5f74e&rid=giphy.gif&ct=g)
 
+*Import an item from a PDF*
+![Item Importing from PDF](https://media3.giphy.com/media/geoyoPvqw6hSn3CJgQ/giphy.gif?cid=790b76113d7feb89632e00f526f0c16b20f63f8127036c60&rid=giphy.gif&ct=g)
+
 ## Support
 
 Currently supports the 5e game system, although the table importer will likely
@@ -62,6 +65,11 @@ text, or use a pdf tool (like zathura) that allows me to copy blocks of text.
 
 Paste the block of text into the clipboard utility, and a best effort monster
 will be generated matching the text.
+
+### Items
+
+Import items copied from text blocks from PDFs. Will best effort parse
+and generate an item based on the elements.
 
 ### Journals
 
