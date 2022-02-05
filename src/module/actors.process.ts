@@ -68,6 +68,7 @@ export type DamageType =
   | 'thunder';
 
 export type Condition =
+  | 'blinded'
   | 'charmed'
   | 'deafened'
   | 'exhaustion'
