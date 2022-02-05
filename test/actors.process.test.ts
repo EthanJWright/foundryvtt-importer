@@ -287,6 +287,15 @@ describe('Parse Text', () => {
       'Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poison damage.',
     );
   });
+
+  it('should parse sphythronar sac', () => {
+    // test for issue https://github.com/EthanJWright/foundryvtt-importer/issues/25
+    const actorText =
+      'Spythronar Sac\nTiny aberration, unaligned\nArmor Class 5\nHit Points 1 (1d4 – 1)\nSpeed 0 ft.\nSTR DEX CON INT WIS CHA\n1 (–5) 1 (–5) 8 (–1) 1 (–5) 3 (–4) 1 (–5)\nCondition Immunities blinded, charmed, deafened,\nexhaustion, frightened, paralyzed, petrified, poisoned,\nprone, restrained, unconscious\nSenses tremorsense 10 ft. (blind beyond this radius),\npassive Perception 6\nLanguages —\nChallenge 0 (10 XP) Proficiency Bonus +2\nFalse Appearance. The spythronar sac appears to be\na tangled ball of string, twigs, and dirt. Someone who\ncan see the sac can identify it with a successful DC 15\nIntelligence (Arcana or Nature) check.\nFragile. A creature who enters the spythronar sac’s\nspace must succeed on a DC 10 Dexterity saving throw,\nor the sac is destroyed.\nLightning Release. When the spythronar sac is\ndestroyed, it releases lightning in a 10-foot radius. A\ncreature who destroyed the sac by entering its space\nreceives no saving throw. Other creatures in that area\nmust succeed on a DC 10 Dexterity saving throw or\ntake 4 (1d8) lightning damage. Each spythronar swarm\nand web in this area instead gains advantage on its\nnext attack roll.\nShocking Birth. When a spythronar sac takes lightning\ndamage from a source other than another spythronar,\nit hatches, transforming into a spythronar swarm with\nhalf the normal hit points. This swarm rolls initiative and\nenters the combat.';
+    const actor = textToActor(actorText);
+    expect(actor.name).toBe('Spythronar Sac');
+    expect(actor.senses.tremorsense).toEqual(10);
+  });
 });
 
 describe('parseMultiLineStates', () => {
