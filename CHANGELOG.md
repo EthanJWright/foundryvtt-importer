@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.5...v0.2.6) (2022-02-05)
+
+
+### Bug Fixes
+
+* adding blinded to condition list ([d6ac945](https://github.com/EthanJWright/foundryvtt-importer/commit/d6ac9457765eabcebf119e478be14aff19a1cb37))
+* parse all conditions ([4dac096](https://github.com/EthanJWright/foundryvtt-importer/commit/4dac096240c5631b6eeee603a18dc33587719944))
+* parsing and testing special sense ([a9e6703](https://github.com/EthanJWright/foundryvtt-importer/commit/a9e670324be9041183434d141089645d2b9e3eb2))
+* preload file based on CONSTANTS ([b4d123e](https://github.com/EthanJWright/foundryvtt-importer/commit/b4d123ee66efd4b215fc2b9f89b3215723cfde74))
+* refactor all conditions to use aggregate parser ([1a56bf4](https://github.com/EthanJWright/foundryvtt-importer/commit/1a56bf415398dbed938326f686a187b9ebd1497a))
+* removing extra logs ([bf73ab8](https://github.com/EthanJWright/foundryvtt-importer/commit/bf73ab880abfa25db4deb2ead87d19808cdf3ebc))
+* sense parsing when there is special info ([99c0fc0](https://github.com/EthanJWright/foundryvtt-importer/commit/99c0fc05f165753655041c2c9d6c87e8648071ee))
+* stat parsing handles multiple - chars ([d968075](https://github.com/EthanJWright/foundryvtt-importer/commit/d968075decdc4232327ad2676a1597bf6abda479))
+
 ### [0.2.5](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.4...v0.2.5) (2022-02-05)
 
 
