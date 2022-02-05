@@ -710,26 +710,38 @@ export function getSenses(lines: string[]): Senses {
   const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
   const senses: Senses = {};
   rawSenses.forEach((sense) => {
-    // get number from string of form darkvision 60ft
-    const number = sense.split(' ')[1].replace('ft', '');
-    switch (sense.split(' ')[0]) {
-      case 'darkvision':
-        senses.darkvision = Number(number);
-        break;
-      case 'blindsight':
-        senses.blindsight = Number(number);
-        break;
-      case 'tremorsense':
-        senses.tremorsense = Number(number);
-        break;
-      case 'truesight':
-        senses.truesight = Number(number);
-        break;
-      case 'passive perception':
-        senses.passivePerception = Number(number);
-        break;
-      default:
-        break;
+    if (sense === '') return;
+    try {
+      let [text, special] = [sense, ''];
+      // remove parens and get text inside
+      if (sense.includes('(')) {
+        [text, special] = sense.split('(');
+        senses.special = special.replace(')', '');
+      }
+      // get number from string of form darkvision 60ft
+      const number = text.split(' ')[1].replace('ft', '');
+      const senseText = sense.split(' ')[0];
+      switch (senseText) {
+        case 'darkvision':
+          senses.darkvision = Number(number);
+          break;
+        case 'blindsight':
+          senses.blindsight = Number(number);
+          break;
+        case 'tremorsense':
+          senses.tremorsense = Number(number);
+          break;
+        case 'truesight':
+          senses.truesight = Number(number);
+          break;
+        case 'passive perception':
+          senses.passivePerception = Number(number);
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.log(`Could not parse senses line: ${sense} | error ${error}`);
     }
   });
   senses.units = 'ft';

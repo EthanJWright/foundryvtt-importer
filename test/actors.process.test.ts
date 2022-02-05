@@ -295,6 +295,7 @@ describe('Parse Text', () => {
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Spythronar Sac');
     expect(actor.senses.tremorsense).toEqual(10);
+    expect(actor.senses.special).toEqual('blind beyond this radius');
   });
 });
 
