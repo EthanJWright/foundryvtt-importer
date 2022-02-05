@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.4...v0.2.5) (2022-02-05)
+
+
+### Features
+
+* add item rarity parsing ([e95dbda](https://github.com/EthanJWright/foundryvtt-importer/commit/e95dbdac78718b8e3a4b6a1ad95cf82e9bb2d599))
+* adding basic item parsing ([176ac7d](https://github.com/EthanJWright/foundryvtt-importer/commit/176ac7d209228dff049312a27e3cce4c1ad7fb29))
+* adding config button for an item importer ([9cbeddd](https://github.com/EthanJWright/foundryvtt-importer/commit/9cbeddd31814e781653df1d019a6255929b23ed0))
+
+
+### Bug Fixes
+
+* better type parsing ([0189606](https://github.com/EthanJWright/foundryvtt-importer/commit/01896062b7b142735555efb5e1bd6622767bb2bb))
+* bind ui to parser ([13db246](https://github.com/EthanJWright/foundryvtt-importer/commit/13db2464a49e480accbc702481d64edab942b63f))
+* bug in parsing actor type ([5c62c7f](https://github.com/EthanJWright/foundryvtt-importer/commit/5c62c7fa28cada6150d24001ec5addc0c5f3816d))
+* cleaning how description is generated ([b1d87cb](https://github.com/EthanJWright/foundryvtt-importer/commit/b1d87cbab88acd7278d22d454abc04bd2686f76d))
+* hooking up weapon parsing to item parser ([729b94f](https://github.com/EthanJWright/foundryvtt-importer/commit/729b94f595c9cfdfcf2c374a54ccca8c090ec30c))
+* how uses are added ([26d25bc](https://github.com/EthanJWright/foundryvtt-importer/commit/26d25bc139535ef7911f9e38d9492e501fec408b))
+* removed circular deps ([75234df](https://github.com/EthanJWright/foundryvtt-importer/commit/75234df58abf744a2d9905d6fffb868f3b61bf3c))
+* removing deprecated method ([ef76773](https://github.com/EthanJWright/foundryvtt-importer/commit/ef76773ad5ec9f048501d58c5ba60dc21b7276ac))
+* sharing item type ([be20d5b](https://github.com/EthanJWright/foundryvtt-importer/commit/be20d5b2d9281ec328631c1c8c69a1cbdc097cd1))
+
 ### [0.2.4](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.3...v0.2.4) (2022-01-28)
 
 
