@@ -12,16 +12,26 @@ export type ItemType =
   | 'feat'
   | 'backpack';
 
-export function parseType(input: string): ItemType {
+export function parseType(description: string): ItemType {
+  if (/weapon/i.test(description)) return 'weapon';
+  if (/armor/i.test(description)) return 'equipment';
+  if (/unil the next dawn/i.test(description)) return 'consumable';
+  if (/beginning at/i.test(description)) return 'feat';
+  if (/starting at/i.test(description)) return 'feat';
+  if (/melee weapon attack/i.test(description)) return 'weapon';
+  if (/ranged weapon attack/i.test(description)) return 'weapon';
+  if (/melee or ranged weapon attack/i.test(description)) return 'weapon';
+  return 'consumable';
+}
+
+export function parseTypeFromActorFeature(input: string): ItemType {
   if (/weapon/i.test(input)) return 'weapon';
-  if (/armor/i.test(input)) return 'equipment';
-  if (/unil the next dawn/i.test(input)) return 'consumable';
   if (/beginning at/i.test(input)) return 'feat';
   if (/starting at/i.test(input)) return 'feat';
   if (/melee weapon attack/i.test(input)) return 'weapon';
   if (/ranged weapon attack/i.test(input)) return 'weapon';
   if (/melee or ranged weapon attack/i.test(input)) return 'weapon';
-  return 'consumable';
+  return 'feat';
 }
 
 function getDamageType(from: string): string | undefined {
@@ -174,6 +184,7 @@ function actionTypeExtraData(actionType: string | undefined, { name, description
       uses: {
         per: 'day',
         value: perDay,
+        max: perDay,
       },
     };
   }
@@ -204,7 +215,7 @@ function actionTypeExtraData(actionType: string | undefined, { name, description
 }
 
 export function parsedToWeapon(name: string, description: string, ability?: string): FifthItem {
-  const itemType: FifthItemType = parseType(description);
+  const itemType: FifthItemType = parseTypeFromActorFeature(description);
 
   const damage = itemType === 'weapon' ? { parts: buildDamageParts(description) } : {};
   const actionType = getActionType(description);
