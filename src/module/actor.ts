@@ -4,10 +4,8 @@ import { UserData } from './importForm';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
-  console.log(`Internal Actor: ${JSON.stringify(actor, null, 2)}`);
   const { features } = actor;
   const preparedItems = featureCollectionToItems(features, { abilities: actor.stats });
-  console.log(`Prepared items: ${JSON.stringify(preparedItems, null, 2)}`);
   const convertedActor = actorToFifth(actor);
   console.log(`Converted actor: ${JSON.stringify(convertedActor, null, 2)}`);
   const foundryActor = await Actor.create({
