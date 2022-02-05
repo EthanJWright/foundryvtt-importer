@@ -1,63 +1,14 @@
 import { Abilities, Feature, parseFormula } from '../actors.process';
-import { ActionType, FifthFeatureCost, FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
-
-export type ItemType =
-  | 'weapon'
-  | 'equipment'
-  | 'consumable'
-  | 'tool'
-  | 'loot'
-  | 'class'
-  | 'spell'
-  | 'feat'
-  | 'backpack';
-
-export function parseType(description: string): ItemType {
-  if (/weapon/i.test(description)) return 'weapon';
-  if (/armor/i.test(description)) return 'equipment';
-  if (/unil the next dawn/i.test(description)) return 'consumable';
-  if (/beginning at/i.test(description)) return 'feat';
-  if (/starting at/i.test(description)) return 'feat';
-  if (/melee weapon attack/i.test(description)) return 'weapon';
-  if (/ranged weapon attack/i.test(description)) return 'weapon';
-  if (/melee or ranged weapon attack/i.test(description)) return 'weapon';
-  return 'consumable';
-}
-
-export function parseTypeFromActorFeature(input: string): ItemType {
-  if (/weapon/i.test(input)) return 'weapon';
-  if (/beginning at/i.test(input)) return 'feat';
-  if (/starting at/i.test(input)) return 'feat';
-  if (/melee weapon attack/i.test(input)) return 'weapon';
-  if (/ranged weapon attack/i.test(input)) return 'weapon';
-  if (/melee or ranged weapon attack/i.test(input)) return 'weapon';
-  return 'feat';
-}
-
-function getDamageType(from: string): string | undefined {
-  if (from.includes('piercing')) return 'piercing';
-  if (from.includes('slashing')) return 'slashing';
-  if (from.includes('bludgeoning')) return 'bludgeoning';
-  if (from.includes('fire')) return 'fire';
-  if (from.includes('cold')) return 'cold';
-  if (from.includes('lightning')) return 'lightning';
-  if (from.includes('acid')) return 'acid';
-  if (from.includes('poison')) return 'poison';
-  if (from.includes('psychic')) return 'psychic';
-  if (from.includes('radiant')) return 'radiant';
-  if (from.includes('thunder')) return 'thunder';
-  if (from.includes('force')) return 'force';
-  if (from.includes('necrotic')) return 'necrotic';
-  if (from.includes('psychic')) return 'psychic';
-}
-
-function getActionType(description: string): ActionType {
-  if (/melee/i.test(description)) return 'mwak';
-  if (/ranged/i.test(description)) return 'rwak';
-  if (/spell save/i.test(description)) return 'save';
-  if (/saving throw/i.test(description)) return 'save';
-  return undefined;
-}
+import { FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
+import {
+  parseActionType,
+  parseActivation,
+  parseDamageType,
+  parseRange,
+  parseSpellCone,
+  parseSpellSphere,
+  parseTypeFromActorFeature,
+} from './parsers';
 
 function getMaxAbility(abilities: Abilities): FifthStat {
   if (abilities.str.mod > abilities.dex.mod) return 'str';
@@ -70,69 +21,9 @@ export function buildDamageParts(description: string) {
   const parts = uncleanParts.map((part) => {
     const parsed = parseFormula(part, /Melee Weapon Attack: +/);
     const fromString = parsed.afterFormula ? parsed.afterFormula : part;
-    return [parsed.str, getDamageType(fromString)];
+    return [parsed.str, parseDamageType(fromString)];
   });
   return parts;
-}
-
-interface Range {
-  value?: number;
-  long?: number;
-  units?: string;
-}
-export function getRange(description: string): Range | undefined {
-  if (description.includes('reach')) {
-    const value = parseInt(description.split('reach')[1].split(' ')[0]);
-    return { value };
-  }
-  if (description.includes('range')) {
-    const rangeStr = description.split('range')[1].split(' ')[0];
-    const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
-    return { value, long };
-  }
-  if (/cone/i.test(description)) {
-    return { units: 'self' };
-  }
-  if (/within/.test(description)) {
-    const rangeStr = description.split('within')[1].split('ft')[0].trim();
-    const value = parseInt(rangeStr);
-    return { value };
-  }
-}
-
-interface Activation {
-  type: FifthFeatureCost;
-  cost?: number;
-  condition?: string;
-}
-function getActivation(description: string): Activation | undefined {
-  if (/attack/i.test(description))
-    return {
-      type: 'action',
-      cost: 1,
-    };
-
-  if (description.includes('action'))
-    return {
-      type: 'action',
-      cost: 1,
-    };
-  if (description.includes('bonus action'))
-    return {
-      type: 'bonus',
-      cost: 1,
-    };
-
-  if (description.includes('spell save'))
-    return {
-      type: 'action',
-      cost: 1,
-    };
-  if (description.includes('saving throw'))
-    return {
-      type: 'action',
-      cost: 1,
-    };
 }
 
 function abilityToLongShort(ability: string) {
@@ -143,20 +34,6 @@ function abilityToLongShort(ability: string) {
   if (/wis/i.test(ability)) return ['wis', 'wisdom'];
   if (/cha/i.test(ability)) return ['cha', 'charisma'];
   return ['', ''];
-}
-
-export function parseSpellSphere(description: string) {
-  // like 20-foot-radius sphere
-  const unitText = description.split('radius')[0].trim();
-  const lastItem = unitText.split(' ').pop() || '';
-  return parseInt(lastItem.split('-')[0]);
-}
-
-export function parseSpellCone(description: string) {
-  // like 20-foot-radius sphere
-  const unitText = description.split('cone')[0].trim();
-  const lastItem = unitText.split(' ').pop() || '';
-  return parseInt(lastItem.split('-')[0]);
 }
 
 function actionTypeExtraData(actionType: string | undefined, { name, description }: Feature) {
@@ -218,7 +95,7 @@ export function parsedToWeapon(name: string, description: string, ability?: stri
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
 
   const damage = itemType === 'weapon' ? { parts: buildDamageParts(description) } : {};
-  const actionType = getActionType(description);
+  const actionType = parseActionType(description);
 
   return {
     name,
@@ -227,10 +104,10 @@ export function parsedToWeapon(name: string, description: string, ability?: stri
       description: {
         value: description,
       },
-      activation: getActivation(description),
+      activation: parseActivation(description),
       damage,
       actionType,
-      range: getRange(description),
+      range: parseRange(description),
       ability,
       attackBonus: 0,
       ...actionTypeExtraData(actionType, { name, description }),
