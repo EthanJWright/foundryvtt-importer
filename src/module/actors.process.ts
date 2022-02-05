@@ -649,32 +649,6 @@ export function getChallenge(challengeLine: string): Rating {
   };
 }
 
-function getDamageImmunities(lines: string[]) {
-  const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
-  return damageImmunityLine
-    .replace('Damage Immunities', '')
-    .replace('and', '')
-    .trim()
-    .split(',')
-    .map((immunity) => immunity.trim())
-    .filter((line) => line !== '') as DamageType[];
-}
-
-function getDamageResistances(lines: string[]) {
-  const damageLine = lines.find((line) => line.toLowerCase().includes('damage resistances')) || '';
-  return damageLine
-    .replace('Damage Resistances', '')
-    .replace('and', '')
-    .trim()
-    .split(',')
-    .map((immunity) => immunity.trim())
-    .filter((line) => line !== '') as DamageType[];
-}
-
-function containsMoreItems(line: string) {
-  return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
-}
-
 function getListRelated(to: string, inStrings: string[]) {
   const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to)) || -1;
   if (conditionImmunityLineIndex === -1) return;
@@ -686,6 +660,34 @@ function getListRelated(to: string, inStrings: string[]) {
     iter++;
   }
   return conditionImmunityLine;
+}
+
+function getDamageImmunities(lines: string[]) {
+  const damageImmunityLine = getListRelated('damage immunities', lines);
+  if (!damageImmunityLine) return [];
+  return damageImmunityLine
+    .replace('Damage Immunities', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((immunity) => immunity.trim())
+    .filter((line) => line !== '') as DamageType[];
+}
+
+function getDamageResistances(lines: string[]) {
+  const damageLine = getListRelated('damage resistances', lines);
+  if (!damageLine) return [];
+  return damageLine
+    .replace('Damage Resistances', '')
+    .replace('and', '')
+    .trim()
+    .split(',')
+    .map((immunity) => immunity.trim())
+    .filter((line) => line !== '') as DamageType[];
+}
+
+function containsMoreItems(line: string) {
+  return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
 }
 
 function getConditionImmunities(lines: string[]) {
@@ -701,7 +703,8 @@ function getConditionImmunities(lines: string[]) {
 }
 
 function getDamageVulnerabilities(lines: string[]) {
-  const damage = lines.find((line) => line.toLowerCase().includes('damage vulnerabilities')) || '';
+  const damage = getListRelated('damage vulnerabilities', lines);
+  if (!damage) return [];
   return damage
     .replace('Damage Vulnerabilities', '')
     .replace('and', '')
