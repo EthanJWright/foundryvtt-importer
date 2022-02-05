@@ -86,6 +86,7 @@ export interface FifthAttributes {
     blindsight?: number;
     tremorsense?: number;
     truesight?: number;
+    special?: string;
     units?: 'ft';
   };
 }

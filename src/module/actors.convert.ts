@@ -84,6 +84,7 @@ function convertAttributes({ armorClass, health, speed }: Attributes, senses: Se
       blindsight: senses?.blindsight,
       tremorsense: senses?.tremorsense,
       truesight: senses?.truesight,
+      special: senses?.special,
       units: 'ft',
     },
     ac: {
