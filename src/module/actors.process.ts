@@ -771,14 +771,11 @@ function getSize(lines: string[]): Size {
 
 function getType(lines: string[]): string {
   const descriptionLine = getDescriptionLine(lines);
-  // get string between '(' and ')'
-  try {
-    const type = descriptionLine.split('(')[1].split(')')[0];
-    return type;
-  } catch (err) {
-    // If type isn't in parens, it may be after the comma
-    return descriptionLine.split(',')[0].trim().split(' ').pop() || '';
+  // type is in string before parens and before comma
+  if (descriptionLine.includes('(')) {
+    return descriptionLine.split('(')[0].trim().split(' ').pop() || '';
   }
+  return descriptionLine.split(',')[0].trim().split(' ').pop() || '';
 }
 
 function capitalizeBeginings(str: string): string {

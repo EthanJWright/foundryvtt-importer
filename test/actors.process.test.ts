@@ -269,7 +269,7 @@ describe('Parse Text', () => {
     expect(actor.languages).toEqual(['common']);
     expect(actor.stats.con?.savingThrow).toEqual(4);
     expect(actor.stats.wis?.savingThrow).toEqual(4);
-    expect(actor.type).toEqual('warforged');
+    expect(actor.type).toEqual('humanoid');
     expect(actor.size).toBe('Medium');
     expect(actor.health.value).toEqual(117);
     expect(actor.stats.str.value).toEqual(14);
