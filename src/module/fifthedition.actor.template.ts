@@ -127,6 +127,7 @@ export interface FifthItemDamage {
   versatile?: string;
 }
 
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'legendary';
 export type FifthFeatureCost = 'action' | 'bonus' | 'reaction' | 'legendary' | 'spell' | 'weapon' | 'none';
 export type FifthItemType =
   | 'weapon'
@@ -138,6 +139,9 @@ export type FifthItemType =
   | 'spell'
   | 'feat'
   | 'backpack';
+
+export type ActionType = 'mwak' | 'rwak' | 'save' | undefined;
+
 export interface FifthItem {
   name: string;
   type: FifthItemType;
@@ -153,10 +157,22 @@ export interface FifthItem {
       cost?: number;
       condition?: string;
     };
+    damage?: {
+      parts?: (string | undefined)[][];
+    };
+    actionType?: ActionType;
     duration?: {
       value: number;
       units: string;
     };
+    range?: {
+      value?: number;
+      units?: string;
+      long?: number;
+    };
+    ability?: string | undefined;
+    attackBonus?: number;
+    rarity?: ItemRarity;
     target?: {
       value: number;
       width?: number;
