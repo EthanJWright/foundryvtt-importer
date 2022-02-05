@@ -76,6 +76,14 @@ and generate an item based on the elements.
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
 tool which attempts to process modules that may be found in DMs guild.
 
+## Have an issue?
+
+Open an issue [here](https://github.com/EthanJWright/foundryvtt-importer/issues) and follow the template.
+
+Sample data that I have for testing parsers is limited. If you have
+sample data that is not working, please open an issue and I can add it
+to my tests and update the parsers.
+
 ## Tables
 
 Tables can be imported from a JSON file with a simple structure, a txt file, or
