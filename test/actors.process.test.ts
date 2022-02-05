@@ -100,6 +100,20 @@ describe('extractStats', () => {
     expect(stats.str.value).toBe(14);
     expect(stats.str.mod).toBe(2);
   });
+
+  it('should parse stats of a spythronar sac', () => {
+    const actorText =
+      'Spythronar Sac\nTiny aberration, unaligned\nArmor Class 5\nHit Points 1 (1d4 – 1)\nSpeed 0 ft.\nSTR DEX CON INT WIS CHA\n1 (–5) 1 (–5) 8 (–1) 1 (–5) 3 (–4) 1 (–5)\nCondition Immunities blinded, charmed, deafened,\nexhaustion, frightened, paralyzed, petrified, poisoned,\nprone, restrained, unconscious\nSenses tremorsense 10 ft. (blind beyond this radius),\npassive Perception 6\nLanguages —\nChallenge 0 (10 XP) Proficiency Bonus +2\nFalse Appearance. The spythronar sac appears to be\na tangled ball of string, twigs, and dirt. Someone who\ncan see the sac can identify it with a successful DC 15\nIntelligence (Arcana or Nature) check.\nFragile. A creature who enters the spythronar sac’s\nspace must succeed on a DC 10 Dexterity saving throw,\nor the sac is destroyed.\nLightning Release. When the spythronar sac is\ndestroyed, it releases lightning in a 10-foot radius. A\ncreature who destroyed the sac by entering its space\nreceives no saving throw. Other creatures in that area\nmust succeed on a DC 10 Dexterity saving throw or\ntake 4 (1d8) lightning damage. Each spythronar swarm\nand web in this area instead gains advantage on its\nnext attack roll.\nShocking Birth. When a spythronar sac takes lightning\ndamage from a source other than another spythronar,\nit hatches, transforming into a spythronar swarm with\nhalf the normal hit points. This swarm rolls initiative and\nenters the combat.';
+    const stats = tryStatParsers(actorText.split('\n'));
+    expect(stats).toStrictEqual({
+      str: { value: 1, mod: -5, savingThrow: 0 },
+      dex: { value: 1, mod: -5, savingThrow: 0 },
+      con: { value: 8, mod: -1, savingThrow: 0 },
+      int: { value: 1, mod: -5, savingThrow: 0 },
+      wis: { value: 3, mod: -4, savingThrow: 0 },
+      cha: { value: 1, mod: -5, savingThrow: 0 },
+    });
+  });
 });
 
 describe('Parse Skills', () => {
@@ -296,6 +310,14 @@ describe('Parse Text', () => {
     expect(actor.name).toBe('Spythronar Sac');
     expect(actor.senses.tremorsense).toEqual(10);
     expect(actor.senses.special).toEqual('blind beyond this radius');
+    expect(actor.stats).toStrictEqual({
+      str: { value: 1, mod: -5, savingThrow: 0 },
+      dex: { value: 1, mod: -5, savingThrow: 0 },
+      con: { value: 8, mod: -1, savingThrow: 0 },
+      int: { value: 1, mod: -5, savingThrow: 0 },
+      wis: { value: 3, mod: -4, savingThrow: 0 },
+      cha: { value: 1, mod: -5, savingThrow: 0 },
+    });
   });
 });
 

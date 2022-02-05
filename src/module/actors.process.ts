@@ -206,21 +206,17 @@ export function parseAC(acString: string): ArmorClass {
 }
 
 function parseAbilityScore(score: number, mod: string): Ability {
-  // score: 12
-  // mod: (+2)
-  // get string from between parentheses
-  const modNumberArray = mod.match(/\d+/);
-  if (!modNumberArray || modNumberArray.length < 1) {
-    throw new Error(`Could not parse ability score from string: ${mod}`);
+  let modNumber = 0;
+  if (mod.includes('-') || mod.includes('–')) {
+    // extract number from the string
+    const modNumberString = mod.match(/\d+/) || '0';
+    modNumber = -1 * Number(modNumberString[0]);
+  } else {
+    modNumber = Number(mod);
   }
-  let modNumber = modNumberArray[0];
-  if (mod.includes('-')) {
-    modNumber = '-' + modNumber;
-  }
-
   return {
     value: score,
-    mod: Number(modNumber),
+    mod: modNumber,
     savingThrow: 0,
   };
 }
@@ -252,7 +248,7 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
   const modifiers: string[] = [];
   abilityValues.forEach((value) => {
     if (value.includes('(')) {
-      modifiers.push(value);
+      modifiers.push(value.replace('(', '').replace(')', '').trim());
     } else {
       abilities.push(parseInt(value));
     }
