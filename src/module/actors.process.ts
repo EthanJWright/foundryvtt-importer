@@ -68,6 +68,7 @@ export type DamageType =
   | 'thunder';
 
 export type Condition =
+  | 'blinded'
   | 'charmed'
   | 'deafened'
   | 'exhaustion'
@@ -206,21 +207,17 @@ export function parseAC(acString: string): ArmorClass {
 }
 
 function parseAbilityScore(score: number, mod: string): Ability {
-  // score: 12
-  // mod: (+2)
-  // get string from between parentheses
-  const modNumberArray = mod.match(/\d+/);
-  if (!modNumberArray || modNumberArray.length < 1) {
-    throw new Error(`Could not parse ability score from string: ${mod}`);
+  let modNumber = 0;
+  if (mod.includes('-') || mod.includes('–')) {
+    // extract number from the string
+    const modNumberString = mod.match(/\d+/) || '0';
+    modNumber = -1 * Number(modNumberString[0]);
+  } else {
+    modNumber = Number(mod);
   }
-  let modNumber = modNumberArray[0];
-  if (mod.includes('-')) {
-    modNumber = '-' + modNumber;
-  }
-
   return {
     value: score,
-    mod: Number(modNumber),
+    mod: modNumber,
     savingThrow: 0,
   };
 }
@@ -252,7 +249,7 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
   const modifiers: string[] = [];
   abilityValues.forEach((value) => {
     if (value.includes('(')) {
-      modifiers.push(value);
+      modifiers.push(value.replace('(', '').replace(')', '').trim());
     } else {
       abilities.push(parseInt(value));
     }
@@ -653,8 +650,22 @@ export function getChallenge(challengeLine: string): Rating {
   };
 }
 
+function getListRelated(to: string, inStrings: string[]) {
+  const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to)) || -1;
+  if (conditionImmunityLineIndex === -1) return;
+  let conditionImmunityLine = inStrings[conditionImmunityLineIndex];
+  const remainingLines = inStrings.slice(conditionImmunityLineIndex + 1);
+  let iter = 0;
+  while (containsMoreItems(remainingLines[iter])) {
+    conditionImmunityLine = conditionImmunityLine + ' ' + remainingLines[iter];
+    iter++;
+  }
+  return conditionImmunityLine;
+}
+
 function getDamageImmunities(lines: string[]) {
-  const damageImmunityLine = lines.find((line) => line.toLowerCase().includes('damage immunities')) || '';
+  const damageImmunityLine = getListRelated('damage immunities', lines);
+  if (!damageImmunityLine) return [];
   return damageImmunityLine
     .replace('Damage Immunities', '')
     .replace('and', '')
@@ -665,7 +676,8 @@ function getDamageImmunities(lines: string[]) {
 }
 
 function getDamageResistances(lines: string[]) {
-  const damageLine = lines.find((line) => line.toLowerCase().includes('damage resistances')) || '';
+  const damageLine = getListRelated('damage resistances', lines);
+  if (!damageLine) return [];
   return damageLine
     .replace('Damage Resistances', '')
     .replace('and', '')
@@ -675,8 +687,13 @@ function getDamageResistances(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
+function containsMoreItems(line: string) {
+  return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
+}
+
 function getConditionImmunities(lines: string[]) {
-  const conditionImmunityLine = lines.find((line) => line.toLowerCase().includes('condition immunities')) || '';
+  const conditionImmunityLine = getListRelated('condition immunities', lines);
+  if (!conditionImmunityLine) return [];
   return conditionImmunityLine
     .replace('Condition Immunities', '')
     .replace('and', '')
@@ -687,7 +704,8 @@ function getConditionImmunities(lines: string[]) {
 }
 
 function getDamageVulnerabilities(lines: string[]) {
-  const damage = lines.find((line) => line.toLowerCase().includes('damage vulnerabilities')) || '';
+  const damage = getListRelated('damage vulnerabilities', lines);
+  if (!damage) return [];
   return damage
     .replace('Damage Vulnerabilities', '')
     .replace('and', '')
@@ -710,26 +728,38 @@ export function getSenses(lines: string[]): Senses {
   const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
   const senses: Senses = {};
   rawSenses.forEach((sense) => {
-    // get number from string of form darkvision 60ft
-    const number = sense.split(' ')[1].replace('ft', '');
-    switch (sense.split(' ')[0]) {
-      case 'darkvision':
-        senses.darkvision = Number(number);
-        break;
-      case 'blindsight':
-        senses.blindsight = Number(number);
-        break;
-      case 'tremorsense':
-        senses.tremorsense = Number(number);
-        break;
-      case 'truesight':
-        senses.truesight = Number(number);
-        break;
-      case 'passive perception':
-        senses.passivePerception = Number(number);
-        break;
-      default:
-        break;
+    if (sense === '') return;
+    try {
+      let [text, special] = [sense, ''];
+      // remove parens and get text inside
+      if (sense.includes('(')) {
+        [text, special] = sense.split('(');
+        senses.special = special.replace(')', '');
+      }
+      // get number from string of form darkvision 60ft
+      const number = text.split(' ')[1].replace('ft', '');
+      const senseText = sense.split(' ')[0];
+      switch (senseText) {
+        case 'darkvision':
+          senses.darkvision = Number(number);
+          break;
+        case 'blindsight':
+          senses.blindsight = Number(number);
+          break;
+        case 'tremorsense':
+          senses.tremorsense = Number(number);
+          break;
+        case 'truesight':
+          senses.truesight = Number(number);
+          break;
+        case 'passive perception':
+          senses.passivePerception = Number(number);
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.log(`Could not parse senses line: ${sense} | error ${error}`);
     }
   });
   senses.units = 'ft';

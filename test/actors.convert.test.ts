@@ -1,5 +1,6 @@
 import { actorToFifth, buildAttackBonus, buildReach } from '../src/module/actors.convert';
 import { swashbuckler } from './mock.swashbuckler';
+import { spythronar } from './mock.spythronarsac';
 
 describe('Parsed Actor to 5th Structure', () => {
   it('should convert a swashbuckler', () => {
@@ -8,6 +9,12 @@ describe('Parsed Actor to 5th Structure', () => {
     expect(fifthSwashbuckler.attributes.ac.flat).toEqual(17);
     if (!fifthSwashbuckler?.skills?.acr) throw new Error('Missing ACR');
     expect(fifthSwashbuckler.skills.acr.value).toEqual(1);
+  });
+
+  it('should convert a spythronar sac', () => {
+    const fifthSpy = actorToFifth(spythronar);
+    expect(fifthSpy.attributes.hp.value).toEqual(1);
+    expect(fifthSpy.attributes.senses.special).toEqual('blind beyond this radius');
   });
 });
 
