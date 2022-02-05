@@ -671,8 +671,26 @@ function getDamageResistances(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
+function containsMoreItems(line: string) {
+  return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
+}
+
+function getListRelated(to: string, inStrings: string[]) {
+  const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to)) || -1;
+  if (conditionImmunityLineIndex === -1) return;
+  let conditionImmunityLine = inStrings[conditionImmunityLineIndex];
+  const remainingLines = inStrings.slice(conditionImmunityLineIndex + 1);
+  let iter = 0;
+  while (containsMoreItems(remainingLines[iter])) {
+    conditionImmunityLine = conditionImmunityLine + ' ' + remainingLines[iter];
+    iter++;
+  }
+  return conditionImmunityLine;
+}
+
 function getConditionImmunities(lines: string[]) {
-  const conditionImmunityLine = lines.find((line) => line.toLowerCase().includes('condition immunities')) || '';
+  const conditionImmunityLine = getListRelated('condition immunities', lines);
+  if (!conditionImmunityLine) return [];
   return conditionImmunityLine
     .replace('Condition Immunities', '')
     .replace('and', '')

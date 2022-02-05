@@ -318,6 +318,19 @@ describe('Parse Text', () => {
       wis: { value: 3, mod: -4, savingThrow: 0 },
       cha: { value: 1, mod: -5, savingThrow: 0 },
     });
+    expect(actor.conditionImmunities).toEqual([
+      'blinded',
+      'charmed',
+      'deafened',
+      'exhaustion',
+      'frightened',
+      'paralyzed',
+      'petrified',
+      'poisoned',
+      'prone',
+      'restrained',
+      'unconscious',
+    ]);
   });
 });
 
