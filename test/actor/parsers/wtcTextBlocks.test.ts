@@ -25,6 +25,7 @@ import {
   parseACWTC,
   parseDamageImmunitiesWTC,
   parseDamageResistancesWTC,
+  parseConditionImmunitiesWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -195,6 +196,19 @@ describe('damageResistancesParsers', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseDamageResistancesWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('conditionImmunities', () => {
+  it('should parse a valid condition immunities string', () => {
+    const conditionImmunities = parseConditionImmunitiesWTC(['Condition Immunities charmed, frightened, poisoned']);
+    expect(conditionImmunities).toStrictEqual(['charmed', 'frightened', 'poisoned']);
+  });
+  it('should throw an error when not passed a valid condition immunities string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseConditionImmunitiesWTC(invalid);
     }).toThrow();
   });
 });

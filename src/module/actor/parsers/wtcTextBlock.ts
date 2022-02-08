@@ -610,7 +610,7 @@ function containsMoreItems(line: string) {
 
 export function parseConditionImmunitiesWTC(lines: string[]) {
   const conditionImmunityLine = getListRelated('condition immunities', lines);
-  if (!conditionImmunityLine) return [];
+  if (!conditionImmunityLine) throw new Error('could not parse condition immunities');
   return conditionImmunityLine
     .replace('Condition Immunities', '')
     .replace('and', '')
