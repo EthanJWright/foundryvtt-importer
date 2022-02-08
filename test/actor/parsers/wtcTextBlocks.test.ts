@@ -24,6 +24,7 @@ import {
   parseSizeWTC,
   parseACWTC,
   parseDamageImmunitiesWTC,
+  parseDamageResistancesWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -181,6 +182,19 @@ describe('parseDamageImmunities', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseDamageImmunitiesWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('damageResistancesParsers', () => {
+  it('should parse a valid damage resistances string', () => {
+    const damageResistances = parseDamageResistancesWTC(['Damage Resistances fire, poison']);
+    expect(damageResistances).toStrictEqual(['fire', 'poison']);
+  });
+  it('should throw an error when not passed a valid damage resistances string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseDamageResistancesWTC(invalid);
     }).toThrow();
   });
 });

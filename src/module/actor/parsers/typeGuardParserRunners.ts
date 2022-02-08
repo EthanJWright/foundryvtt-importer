@@ -136,11 +136,17 @@ export function tryParseDamageImmunities(parsers: ActorParser[], lines: string[]
 }
 
 export function tryParseDamageResistances(parsers: ActorParser[], lines: string[]): DamageType[] {
-  const damageResistances = tryParsers(parsers, lines);
-  if (!Array.isArray(damageResistances)) {
-    throw new Error(`Could not parse damage resistances: ${damageResistances}`);
+  try {
+    const damageResistances = tryParsers(parsers, lines);
+    if (!Array.isArray(damageResistances)) {
+      // Damage resistances are optional
+      return [];
+    }
+    return damageResistances as DamageType[];
+  } catch (_) {
+    // Damage resistances are optional
+    return [];
   }
-  return damageResistances as DamageType[];
 }
 
 export function tryParseConditionImmunities(parsers: ActorParser[], lines: string[]): Condition[] {
