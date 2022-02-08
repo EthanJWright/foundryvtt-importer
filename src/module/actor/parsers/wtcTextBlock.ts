@@ -2,7 +2,6 @@ import {
   Abilities,
   Ability,
   ActorType,
-  ActorTypes,
   Alignment,
   ArmorClass,
   Biography,
@@ -11,14 +10,12 @@ import {
   Feature,
   Group,
   Health,
-  ImportActor,
   Languages,
   Name,
   Rating,
   Senses,
   Size,
   Skill,
-  Speed,
 } from '../interfaces';
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
