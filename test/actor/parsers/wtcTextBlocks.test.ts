@@ -16,8 +16,22 @@ import {
   tryStatParsers,
   parseSensesWTC,
   parseHealthWTC,
+  parseNameWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
+
+describe('nameParse', () => {
+  it('should parse a name', () => {
+    const text = ['Nimblewright'];
+    expect(parseNameWTC(text)).toEqual('Nimblewright');
+  });
+
+  it('should throw when passed an invalid name', () => {
+    const text: string[] = [];
+    expect(() => parseNameWTC(text)).toThrow();
+  });
+});
+
 describe('parseHealth', () => {
   it('should parse a valid health string', () => {
     const health = parseGenericFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);
