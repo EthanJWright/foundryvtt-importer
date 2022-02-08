@@ -2,6 +2,7 @@ import {
   Abilities,
   Ability,
   ActorType,
+  ActorTypes,
   Alignment,
   ArmorClass,
   Biography,
@@ -535,7 +536,7 @@ function parseBiographyWTC(lines: string[]): Biography {
   return lines[firstBioIndex].trim();
 }
 
-export function parseChallengeWTC(lines: string[]): Rating {
+export function parseRatingWTC(lines: string[]): Rating {
   const challengeLine = lines.find((line) => line.includes('Challenge'));
   if (!challengeLine) throw new Error('could not parse challenge');
   // challengeLine : Challenge 1 (200 XP)
@@ -730,18 +731,38 @@ function parseLanguagesWTC(lines: string[]): Languages {
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
 }
-export type ActorParser = (input: string[]) => ActorType;
+export type ParserOutput = ActorTypes;
+export type ActorParser = (input: string[]) => ParserOutput;
 
-function tryParsers(parsers: ActorParser[], input: string[]): ActorType {
+function tryParsers(parsers: ActorParser[], input: string[]): ParserOutput {
+  const parserErrors = [];
   for (const parser of parsers) {
     try {
       const result = parser(input);
       return result;
     } catch (error) {
-      console.log(`Could not parse ${input} with ${parser} | error ${error}`);
+      parserErrors.push(error);
     }
   }
-  return '';
+  throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
+}
+
+function tryNameParse(parsers: ActorParser[], lines: string[]): Name {
+  const name = tryParsers(parsers, lines);
+  if (typeof name !== 'string') {
+    throw new Error(`Could not parse name: ${name}`);
+  }
+  return name;
+}
+
+function tryRatingParse(parsers: ActorParser[], lines: string[]): Rating {
+  const rating = tryParsers(parsers, lines);
+  if (!(rating as Rating).xp) {
+    return {
+      xp: 0,
+    };
+  }
+  return rating as Rating;
 }
 
 export function textToActor(input: string): ImportActor {
@@ -762,8 +783,8 @@ export function textToActor(input: string): ImportActor {
   const statsWithSaves = addSavingThrows(lines, stats);
 
   return {
-    name: tryParsers([parseNameWTC], lines),
-    rating: parseChallengeWTC(lines),
+    name: tryNameParse([parseNameWTC], lines),
+    rating: tryRatingParse([parseRatingWTC], lines),
     type: parseTypeWTC(lines),
     alignment: parseAlignmentWTC(lines),
     biography: parseBiographyWTC(lines),

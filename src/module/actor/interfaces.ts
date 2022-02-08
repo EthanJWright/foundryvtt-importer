@@ -115,6 +115,7 @@ export type ActorTypes =
   | Skill
   | ArmorClass
   | Feature
+  | Rating
   | Health;
 
 export interface ImportActor {
@@ -130,7 +131,7 @@ export interface ImportActor {
   conditionImmunities: Condition[];
   damageVulnerabilities: DamageType[];
   health: Health;
-  rating?: Rating;
+  rating: Rating;
   armorClass: ArmorClass;
   stats: Abilities;
   speed: number;

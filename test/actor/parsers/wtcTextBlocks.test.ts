@@ -11,7 +11,7 @@ import {
   parseMultilineStats,
   getFeatureNames,
   parseFeaturesWTC,
-  parseChallengeWTC,
+  parseRatingWTC,
   findStatBounds,
   getVerticalKeyValueStats,
   tryStatParsers,
@@ -394,7 +394,7 @@ describe('getAllFeatures', () => {
 describe('getChallenge', () => {
   it('should get a challenge rating that is a fraction', () => {
     const input = 'Challenge 1/8 (25 XP))';
-    const rating = parseChallengeWTC([input]);
+    const rating = parseRatingWTC([input]);
     expect(rating).toEqual({ cr: 0.125, xp: 25 });
   });
 });
