@@ -22,6 +22,7 @@ import {
   parseBiographyWTC,
   parseLanguagesWTC,
   parseSizeWTC,
+  parseACWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -150,6 +151,22 @@ describe('parseSenses', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseSensesWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseAC', () => {
+  it('should parse a valid ac string', () => {
+    const ac = parseACWTC(['Armor Class 18 (natural armor, Imposing Majesty)']);
+    expect(ac).toStrictEqual({
+      value: 18,
+      type: 'natural armor, Imposing Majesty',
+    });
+  });
+  it('should throw an error when not passed a valid ac string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseACWTC(invalid);
     }).toThrow();
   });
 });

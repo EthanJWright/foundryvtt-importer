@@ -88,7 +88,7 @@ export function parseNameWTC(lines: string[]): Name {
 }
 
 export function parseACWTC(lines: string[]): ArmorClass {
-  const acString = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
+  const acString = lines.find((line) => line.includes('Armor Class'));
   if (!acString || typeof acString !== 'string') {
     throw new Error('Could not find AC line');
   }
