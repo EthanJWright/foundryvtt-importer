@@ -7,9 +7,9 @@ import {
   Health,
   ImportActor,
   Senses,
-  Size,
   Skill,
-} from './actors.process';
+  Size,
+} from './actor/interfaces';
 import {
   FifthAbilities,
   FifthAttributes,

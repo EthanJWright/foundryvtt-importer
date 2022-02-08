@@ -1,6 +1,5 @@
 import {
   parseStatsWTC,
-  parseGenericFormula,
   parseSkillsWTC,
   parseFeaturesFromBlock,
   findFirstSectionIndex,
@@ -31,6 +30,7 @@ import {
   parseSpeedWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
+import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
 
 describe('nameParse', () => {
   it('should parse a name', () => {

@@ -1,4 +1,5 @@
-import { Abilities, Feature, parseFormula } from '../actors.process';
+import { Abilities, Feature } from '../actor/interfaces';
+import { parseGenericFormula } from '../actor/parsers/generic';
 import { FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
 import {
   parseActionType,
@@ -19,7 +20,7 @@ export function buildDamageParts(description: string) {
   // description = 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.'
   const uncleanParts = description.split('plus');
   const parts = uncleanParts.map((part) => {
-    const parsed = parseFormula(part, /Melee Weapon Attack: +/);
+    const parsed = parseGenericFormula(part, /Melee Weapon Attack: +/);
     const fromString = parsed.afterFormula ? parsed.afterFormula : part;
     return [parsed.str, parseDamageType(fromString)];
   });
