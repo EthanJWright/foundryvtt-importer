@@ -65,7 +65,7 @@ export function parseGenericFormula(line: string, regexStart: RegExp) {
     beforeFormula = formulaSplit[0];
   }
   return {
-    value: parseInt(hp[1], 10),
+    value: parseInt(hp[1]),
     min: Number(numOfDice) + Number(change),
     max: Number(numOfDice) * Number(dieSize) + Number(change),
     str: formula,
