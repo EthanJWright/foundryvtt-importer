@@ -16,7 +16,7 @@ import {
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
 
-export function parseFormula(line: string, regexStart: RegExp) {
+export function parseFormulaWTC(line: string, regexStart: RegExp) {
   // line: Hit Points 66 (12d8 + 12)
   // get string from between parentheses
   // match = (12d8 + 12),12d8 + 12
@@ -70,7 +70,7 @@ export function parseFormula(line: string, regexStart: RegExp) {
   };
 }
 
-export function parseAC(acString: string): ArmorClass {
+export function parseACWTC(acString: string): ArmorClass {
   // acString: Armor Class 17 (natural armor)
   // get string from between parentheses
   let ac = 'Natural Armor';
@@ -154,7 +154,7 @@ function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[
   ) as Abilities;
 }
 
-export function parseStats(inputList: string[]) {
+export function parseStatsWTC(inputList: string[]) {
   const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
     throw new Error('Could not find ability line');
@@ -242,7 +242,7 @@ export function parseVerticalKeyValueStats(input: string[]): Abilities {
   return zipStats(keys, abilities, modifiers);
 }
 
-export function parseSpeed(lines: string[]) {
+export function parseSpeedWTC(lines: string[]) {
   const speedLine = lines.find((line) => line.toUpperCase().includes('SPEED'));
   if (!speedLine) {
     throw new Error('Could not find speed line');
@@ -254,7 +254,7 @@ export function parseSpeed(lines: string[]) {
   return Number(speed[0]);
 }
 
-export function parseSkills(lines: string[]): Skill[] {
+export function parseSkillsWTC(lines: string[]): Skill[] {
   let skillLine = lines.find((line) => line.toUpperCase().includes('SKILL'));
   if (!skillLine) {
     throw new Error('Could not find skill line');
@@ -331,7 +331,7 @@ function extractFeature(checking: string): Feature | undefined {
   return undefined;
 }
 
-export function parseFeatures(lines: string[], startIndex: number): Feature[] {
+export function parseFeaturesFromBlock(lines: string[], startIndex: number): Feature[] {
   const features: Feature[] = [];
   for (let i = startIndex; i < lines.length; i++) {
     const checking = lines[i];
@@ -497,7 +497,7 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
 export function tryStatParsers(lines: string[]): Abilities {
   let stats: Abilities | undefined;
   try {
-    stats = parseStats(lines);
+    stats = parseStatsWTC(lines);
   } catch (error) {
     try {
       stats = parseMultilineStats(lines);
@@ -508,7 +508,7 @@ export function tryStatParsers(lines: string[]): Abilities {
   if (!stats) throw new Error('could not parse stats.');
   return stats;
 }
-function getBiography(lines: string[]): string {
+function parseBiographyWTC(lines: string[]): string {
   let firstBioIndex = 0;
   lines.forEach((line: string, index: number) => {
     if (firstBioIndex === 0 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
@@ -550,7 +550,7 @@ function getListRelated(to: string, inStrings: string[]) {
   return conditionImmunityLine;
 }
 
-function getDamageImmunities(lines: string[]) {
+function parseDamageImmunitiesWTC(lines: string[]) {
   const damageImmunityLine = getListRelated('damage immunities', lines);
   if (!damageImmunityLine) return [];
   return damageImmunityLine
@@ -562,7 +562,7 @@ function getDamageImmunities(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-function getDamageResistances(lines: string[]) {
+function parseDamageResistancesWTC(lines: string[]) {
   const damageLine = getListRelated('damage resistances', lines);
   if (!damageLine) return [];
   return damageLine
@@ -578,7 +578,7 @@ function containsMoreItems(line: string) {
   return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
 }
 
-function getConditionImmunities(lines: string[]) {
+function parseConditionImmunitiesWTC(lines: string[]) {
   const conditionImmunityLine = getListRelated('condition immunities', lines);
   if (!conditionImmunityLine) return [];
   return conditionImmunityLine
@@ -590,7 +590,7 @@ function getConditionImmunities(lines: string[]) {
     .filter((line) => line !== '') as Condition[];
 }
 
-function getDamageVulnerabilities(lines: string[]) {
+function parseDamageVulnerabilitiesWTC(lines: string[]) {
   const damage = getListRelated('damage vulnerabilities', lines);
   if (!damage) return [];
   return damage
@@ -602,7 +602,7 @@ function getDamageVulnerabilities(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-export function getAllFeatures(text: string): Feature[] {
+export function parseFeaturesWTC(text: string): Feature[] {
   const lines = text.split('\n');
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
   const featureLines = lines.slice(firstFeatureLine);
@@ -610,7 +610,7 @@ export function getAllFeatures(text: string): Feature[] {
   return featureStrings.map(featureStringsToFeatures);
 }
 
-export function getSenses(lines: string[]): Senses {
+export function parseSensesWTC(lines: string[]): Senses {
   const sensesLine = lines.find((line) => line.toLowerCase().includes('senses')) || '';
   const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
   const senses: Senses = {};
@@ -669,7 +669,7 @@ function getDescriptionLine(lines: string[]): string {
   return descriptionLine;
 }
 
-function getSize(lines: string[]): Size {
+function parseSizeWTC(lines: string[]): Size {
   const candidateLines = lines.slice(0, 8);
   const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
   const size = sizes.find((size) => {
@@ -686,7 +686,7 @@ function getSize(lines: string[]): Size {
   return size as Size;
 }
 
-function getType(lines: string[]): string {
+function parseTypeWTC(lines: string[]): string {
   const descriptionLine = getDescriptionLine(lines);
   // type is in string before parens and before comma
   if (descriptionLine.includes('(')) {
@@ -701,12 +701,12 @@ function capitalizeBeginings(str: string): string {
   });
 }
 
-function getAlignment(lines: string[]): string {
+function parseAlignmentWTC(lines: string[]): string {
   const descriptionLine = getDescriptionLine(lines);
   return capitalizeBeginings(descriptionLine.split(',')[1].trim().toLowerCase());
 }
 
-function getLanguages(lines: string[]): Languages {
+function parseLanguagesWTC(lines: string[]): Languages {
   const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
@@ -733,7 +733,7 @@ export function textToActor(input: string): ImportActor {
 
   let skills: Skill[] = [];
   try {
-    skills = parseSkills(lines);
+    skills = parseSkillsWTC(lines);
   } catch (error) {
     console.log('Could not parse skills');
   }
@@ -744,21 +744,21 @@ export function textToActor(input: string): ImportActor {
   return {
     name: lines[0].trim(),
     rating,
-    type: getType(lines),
-    alignment: getAlignment(lines),
-    biography: getBiography(lines),
-    languages: getLanguages(lines),
-    size: getSize(lines),
-    health: parseFormula(healthLine, /Hit Points (.*)/),
-    senses: getSenses(lines),
-    armorClass: parseAC(acLine),
-    damageImmunities: getDamageImmunities(lines),
-    damageResistances: getDamageResistances(lines),
-    conditionImmunities: getConditionImmunities(lines),
-    damageVulnerabilities: getDamageVulnerabilities(lines),
+    type: parseTypeWTC(lines),
+    alignment: parseAlignmentWTC(lines),
+    biography: parseBiographyWTC(lines),
+    languages: parseLanguagesWTC(lines),
+    size: parseSizeWTC(lines),
+    health: parseFormulaWTC(healthLine, /Hit Points (.*)/),
+    senses: parseSensesWTC(lines),
+    armorClass: parseACWTC(acLine),
+    damageImmunities: parseDamageImmunitiesWTC(lines),
+    damageResistances: parseDamageResistancesWTC(lines),
+    conditionImmunities: parseConditionImmunitiesWTC(lines),
+    damageVulnerabilities: parseDamageVulnerabilitiesWTC(lines),
     stats: statsWithSaves,
-    speed: parseSpeed(lines),
+    speed: parseSpeedWTC(lines),
     skills,
-    features: getAllFeatures(input),
+    features: parseFeaturesWTC(input),
   };
 }
