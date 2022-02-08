@@ -17,6 +17,7 @@ import {
   parseSensesWTC,
   parseHealthWTC,
   parseNameWTC,
+  parseTypeWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -56,6 +57,19 @@ describe('parseHealth', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseHealthWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseType', () => {
+  it('should parse a valid type string', () => {
+    const type = parseTypeWTC(['Medium humanoid (warforged), neutral evil']);
+    expect(type).toBe('humanoid');
+  });
+  it('should throw an error when not passed a valid type string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseTypeWTC(invalid);
     }).toThrow();
   });
 });

@@ -712,9 +712,13 @@ export function parseTypeWTC(lines: string[]): ActorType {
   const descriptionLine = getDescriptionLine(lines);
   // type is in string before parens and before comma
   if (descriptionLine.includes('(')) {
-    return descriptionLine.split('(')[0].trim().split(' ').pop() || '';
+    const type = descriptionLine.split('(')[0].trim().split(' ').pop();
+    if (!type) throw new Error(`Could not parse type from ${descriptionLine}`);
+    return type as ActorType;
   }
-  return descriptionLine.split(',')[0].trim().split(' ').pop() || '';
+  const type = descriptionLine.split(',')[0].trim().split(' ').pop();
+  if (!type) throw new Error(`Could not parse type from ${descriptionLine}`);
+  return type;
 }
 
 function capitalizeBeginings(str: string): string {
