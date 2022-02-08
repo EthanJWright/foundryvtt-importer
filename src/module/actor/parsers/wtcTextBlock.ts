@@ -20,6 +20,25 @@ import {
   Skill,
   Speed,
 } from '../interfaces';
+import {
+  tryAlignmentParse,
+  tryBiographyParse,
+  tryHealthParse,
+  tryLanguageParse,
+  tryNameParse,
+  tryParseArmorClass,
+  tryParseConditionImmunities,
+  tryParseDamageImmunities,
+  tryParseDamageResistances,
+  tryParseDamageVulnerabilities,
+  tryParseSkills,
+  tryParseSpeed,
+  tryParseStats,
+  tryRatingParse,
+  trySensesParse,
+  trySizeParse,
+  tryTypeParse,
+} from './typeGuardParserRunners';
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
 
@@ -298,7 +317,7 @@ export function parseSkillsWTC(lines: string[]): Skill[] {
   return skills;
 }
 
-function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
+export function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
   const savingThrowsLine = lines.find((line) => line.toUpperCase().includes('SAVING THROWS'));
   if (!savingThrowsLine) {
     return abilities;
@@ -732,167 +751,6 @@ function parseLanguagesWTC(lines: string[]): Languages {
   const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
-}
-export type ParserOutput = ActorTypes;
-export type ActorParser = (input: string[]) => ParserOutput;
-
-function tryParsers(parsers: ActorParser[], input: string[]): ParserOutput {
-  const parserErrors = [];
-  for (const parser of parsers) {
-    try {
-      const result = parser(input);
-      return result;
-    } catch (error) {
-      parserErrors.push(error);
-    }
-  }
-  throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
-}
-
-function tryNameParse(parsers: ActorParser[], lines: string[]): Name {
-  const name = tryParsers(parsers, lines);
-  if (typeof name !== 'string') {
-    throw new Error(`Could not parse name: ${name}`);
-  }
-  return name;
-}
-
-function tryRatingParse(parsers: ActorParser[], lines: string[]): Rating {
-  const rating = tryParsers(parsers, lines);
-  if (!(rating as Rating).xp) {
-    return {
-      xp: 0,
-    };
-  }
-  return rating as Rating;
-}
-
-function tryTypeParse(parsers: ActorParser[], lines: string[]): ActorType {
-  const type = tryParsers(parsers, lines);
-  if (typeof type !== 'string') {
-    throw new Error(`Could not parse type: ${type}`);
-  }
-  return type;
-}
-
-function tryAlignmentParse(parsers: ActorParser[], lines: string[]): Alignment {
-  const alignment = tryParsers(parsers, lines);
-  if (typeof alignment !== 'string') {
-    throw new Error(`Could not parse alignment: ${alignment}`);
-  }
-  return alignment;
-}
-
-function tryBiographyParse(parsers: ActorParser[], lines: string[]): Biography {
-  const biography = tryParsers(parsers, lines);
-  if (typeof biography !== 'string') {
-    throw new Error(`Could not parse biography: ${biography}`);
-  }
-  return biography;
-}
-
-function tryLanguageParse(parsers: ActorParser[], lines: string[]): Languages {
-  const languages = tryParsers(parsers, lines);
-  if (!Array.isArray(languages)) {
-    throw new Error(`Could not parse languages: ${languages}`);
-  }
-  return languages as Languages;
-}
-
-function trySizeParse(parsers: ActorParser[], lines: string[]): Size {
-  const size = tryParsers(parsers, lines);
-  if (typeof size !== 'string') {
-    throw new Error(`Could not parse size: ${size}`);
-  }
-  return size as Size;
-}
-
-function tryHealthParse(parsers: ActorParser[], lines: string[]): Health {
-  const health = tryParsers(parsers, lines);
-  if (!(health as Health).value) {
-    throw new Error(`Could not parse health: ${health}`);
-  }
-  return health as Health;
-}
-
-function trySensesParse(parsers: ActorParser[], lines: string[]): Senses {
-  const senses = tryParsers(parsers, lines);
-  if (!(senses as Senses).units) {
-    throw new Error(`Could not parse senses: ${senses}`);
-  }
-  return senses as Senses;
-}
-
-function tryParseArmorClass(parsers: ActorParser[], lines: string[]): ArmorClass {
-  const armorClass = tryParsers(parsers, lines);
-  if (!(armorClass as ArmorClass).value) {
-    throw new Error(`Could not parse armor class: ${armorClass}`);
-  }
-  return armorClass as ArmorClass;
-}
-
-function tryParseDamageImmunities(parsers: ActorParser[], lines: string[]): DamageType[] {
-  const damageImmunities = tryParsers(parsers, lines);
-  if (!Array.isArray(damageImmunities)) {
-    throw new Error(`Could not parse damage immunities: ${damageImmunities}`);
-  }
-  return damageImmunities as DamageType[];
-}
-
-function tryParseDamageResistances(parsers: ActorParser[], lines: string[]): DamageType[] {
-  const damageResistances = tryParsers(parsers, lines);
-  if (!Array.isArray(damageResistances)) {
-    throw new Error(`Could not parse damage resistances: ${damageResistances}`);
-  }
-  return damageResistances as DamageType[];
-}
-
-function tryParseConditionImmunities(parsers: ActorParser[], lines: string[]): Condition[] {
-  const conditionImmunities = tryParsers(parsers, lines);
-  if (!Array.isArray(conditionImmunities)) {
-    throw new Error(`Could not parse condition immunities: ${conditionImmunities}`);
-  }
-  return conditionImmunities as Condition[];
-}
-
-function tryParseDamageVulnerabilities(parsers: ActorParser[], lines: string[]): DamageType[] {
-  const damageVulnerabilities = tryParsers(parsers, lines);
-  if (!Array.isArray(damageVulnerabilities)) {
-    throw new Error(`Could not parse damage vulnerabilities: ${damageVulnerabilities}`);
-  }
-  return damageVulnerabilities as DamageType[];
-}
-
-function tryParseStats(parsers: ActorParser[], lines: string[]): Abilities {
-  const stats = tryParsers(parsers, lines);
-  if (!(stats as Abilities).str) {
-    throw new Error(`Could not parse stats: ${stats}`);
-  }
-  const statsWithSaves = addSavingThrows(lines, stats as Abilities);
-  return statsWithSaves as Abilities;
-}
-
-function tryParseSpeed(parsers: ActorParser[], lines: string[]): Speed {
-  const speed = tryParsers(parsers, lines);
-  if (typeof speed !== 'number') {
-    throw new Error(`Could not parse speed: ${speed}`);
-  }
-  return speed;
-}
-
-function tryParseSkills(parsers: ActorParser[], lines: string[]): Skill[] {
-  try {
-    const skills = tryParsers(parsers, lines);
-
-    if (!Array.isArray(skills)) {
-      // Skills are optional
-      return [];
-    }
-    return skills as Skill[];
-  } catch (_) {
-    // Skills are optional
-    return [];
-  }
 }
 
 export function textToActor(input: string): ImportActor {
