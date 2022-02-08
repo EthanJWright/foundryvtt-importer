@@ -20,26 +20,6 @@ import {
   Skill,
   Speed,
 } from '../interfaces';
-import {
-  tryAlignmentParse,
-  tryBiographyParse,
-  tryHealthParse,
-  tryLanguageParse,
-  tryNameParse,
-  tryParseArmorClass,
-  tryParseConditionImmunities,
-  tryParseDamageImmunities,
-  tryParseDamageResistances,
-  tryParseDamageVulnerabilities,
-  tryParseFeatures,
-  tryParseSkills,
-  tryParseSpeed,
-  tryParseStats,
-  tryRatingParse,
-  trySensesParse,
-  trySizeParse,
-  tryTypeParse,
-} from './typeGuardParserRunners';
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
 
@@ -102,7 +82,7 @@ export function parseHealthWTC(lines: string[]) {
   return parseGenericFormula(healthLine, /Hit Points (.*)/);
 }
 
-function parseNameWTC(lines: string[]): Name {
+export function parseNameWTC(lines: string[]): Name {
   return lines[0].trim();
 }
 
@@ -548,7 +528,7 @@ export function tryStatParsers(lines: string[]): Abilities {
   if (!stats) throw new Error('could not parse stats.');
   return stats;
 }
-function parseBiographyWTC(lines: string[]): Biography {
+export function parseBiographyWTC(lines: string[]): Biography {
   let firstBioIndex = 0;
   lines.forEach((line: string, index: number) => {
     if (firstBioIndex === 0 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
@@ -592,7 +572,7 @@ function getListRelated(to: string, inStrings: string[]) {
   return conditionImmunityLine;
 }
 
-function parseDamageImmunitiesWTC(lines: string[]) {
+export function parseDamageImmunitiesWTC(lines: string[]) {
   const damageImmunityLine = getListRelated('damage immunities', lines);
   if (!damageImmunityLine) return [];
   return damageImmunityLine
@@ -604,7 +584,7 @@ function parseDamageImmunitiesWTC(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-function parseDamageResistancesWTC(lines: string[]) {
+export function parseDamageResistancesWTC(lines: string[]) {
   const damageLine = getListRelated('damage resistances', lines);
   if (!damageLine) return [];
   return damageLine
@@ -620,7 +600,7 @@ function containsMoreItems(line: string) {
   return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
 }
 
-function parseConditionImmunitiesWTC(lines: string[]) {
+export function parseConditionImmunitiesWTC(lines: string[]) {
   const conditionImmunityLine = getListRelated('condition immunities', lines);
   if (!conditionImmunityLine) return [];
   return conditionImmunityLine
@@ -632,7 +612,7 @@ function parseConditionImmunitiesWTC(lines: string[]) {
     .filter((line) => line !== '') as Condition[];
 }
 
-function parseDamageVulnerabilitiesWTC(lines: string[]) {
+export function parseDamageVulnerabilitiesWTC(lines: string[]) {
   const damage = getListRelated('damage vulnerabilities', lines);
   if (!damage) return [];
   return damage
@@ -710,7 +690,7 @@ function getDescriptionLine(lines: string[]): string {
   return descriptionLine;
 }
 
-function parseSizeWTC(lines: string[]): Size {
+export function parseSizeWTC(lines: string[]): Size {
   const candidateLines = lines.slice(0, 8);
   const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
   const size = sizes.find((size) => {
@@ -727,7 +707,7 @@ function parseSizeWTC(lines: string[]): Size {
   return size as Size;
 }
 
-function parseTypeWTC(lines: string[]): ActorType {
+export function parseTypeWTC(lines: string[]): ActorType {
   const descriptionLine = getDescriptionLine(lines);
   // type is in string before parens and before comma
   if (descriptionLine.includes('(')) {
@@ -742,37 +722,13 @@ function capitalizeBeginings(str: string): string {
   });
 }
 
-function parseAlignmentWTC(lines: string[]): Alignment {
+export function parseAlignmentWTC(lines: string[]): Alignment {
   const descriptionLine = getDescriptionLine(lines);
   return capitalizeBeginings(descriptionLine.split(',')[1].trim().toLowerCase());
 }
 
-function parseLanguagesWTC(lines: string[]): Languages {
+export function parseLanguagesWTC(lines: string[]): Languages {
   const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
-}
-
-export function textToActor(input: string): ImportActor {
-  const lines = input.split('\n');
-  return {
-    name: tryNameParse([parseNameWTC], lines),
-    rating: tryRatingParse([parseRatingWTC], lines),
-    type: tryTypeParse([parseTypeWTC], lines),
-    alignment: tryAlignmentParse([parseAlignmentWTC], lines),
-    biography: tryBiographyParse([parseBiographyWTC], lines),
-    languages: tryLanguageParse([parseLanguagesWTC], lines),
-    size: trySizeParse([parseSizeWTC], lines),
-    health: tryHealthParse([parseHealthWTC], lines),
-    senses: trySensesParse([parseSensesWTC], lines),
-    armorClass: tryParseArmorClass([parseACWTC], lines),
-    damageImmunities: tryParseDamageImmunities([parseDamageImmunitiesWTC], lines),
-    damageResistances: tryParseDamageResistances([parseDamageResistancesWTC], lines),
-    conditionImmunities: tryParseConditionImmunities([parseConditionImmunitiesWTC], lines),
-    damageVulnerabilities: tryParseDamageVulnerabilities([parseDamageVulnerabilitiesWTC], lines),
-    stats: tryParseStats([parseStatsWTC, parseMultilineStats, parseVerticalKeyValueStats], lines),
-    speed: tryParseSpeed([parseSpeedWTC], lines),
-    skills: tryParseSkills([parseSkillsWTC], lines),
-    features: tryParseFeatures([parseFeaturesWTC], lines),
-  };
 }

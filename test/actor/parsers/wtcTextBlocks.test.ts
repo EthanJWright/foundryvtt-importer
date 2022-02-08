@@ -1,7 +1,6 @@
 import {
   parseStatsWTC,
   parseGenericFormula,
-  textToActor,
   parseSkillsWTC,
   parseFeaturesFromBlock,
   findFirstSectionIndex,
@@ -17,6 +16,7 @@ import {
   tryStatParsers,
   parseSensesWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
+import { textToActor } from '../../../src/module/actor/parsers';
 describe('parseHealth', () => {
   it('should parse a valid health string', () => {
     const health = parseGenericFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);

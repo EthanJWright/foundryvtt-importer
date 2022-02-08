@@ -1,0 +1,68 @@
+import { ImportActor } from '../interfaces';
+import {
+  tryAlignmentParse,
+  tryBiographyParse,
+  tryHealthParse,
+  tryLanguageParse,
+  tryNameParse,
+  tryParseArmorClass,
+  tryParseConditionImmunities,
+  tryParseDamageImmunities,
+  tryParseDamageResistances,
+  tryParseDamageVulnerabilities,
+  tryParseFeatures,
+  tryParseSkills,
+  tryParseSpeed,
+  tryParseStats,
+  tryRatingParse,
+  trySensesParse,
+  trySizeParse,
+  tryTypeParse,
+} from './typeGuardParserRunners';
+
+import {
+  parseACWTC,
+  parseAlignmentWTC,
+  parseBiographyWTC,
+  parseConditionImmunitiesWTC,
+  parseDamageImmunitiesWTC,
+  parseDamageResistancesWTC,
+  parseDamageVulnerabilitiesWTC,
+  parseFeaturesWTC,
+  parseHealthWTC,
+  parseLanguagesWTC,
+  parseMultilineStats,
+  parseNameWTC,
+  parseRatingWTC,
+  parseSensesWTC,
+  parseSizeWTC,
+  parseSkillsWTC,
+  parseSpeedWTC,
+  parseStatsWTC,
+  parseTypeWTC,
+  parseVerticalKeyValueStats,
+} from './wtcTextBlock';
+
+export function textToActor(input: string): ImportActor {
+  const lines = input.split('\n');
+  return {
+    name: tryNameParse([parseNameWTC], lines),
+    rating: tryRatingParse([parseRatingWTC], lines),
+    type: tryTypeParse([parseTypeWTC], lines),
+    alignment: tryAlignmentParse([parseAlignmentWTC], lines),
+    biography: tryBiographyParse([parseBiographyWTC], lines),
+    languages: tryLanguageParse([parseLanguagesWTC], lines),
+    size: trySizeParse([parseSizeWTC], lines),
+    health: tryHealthParse([parseHealthWTC], lines),
+    senses: trySensesParse([parseSensesWTC], lines),
+    armorClass: tryParseArmorClass([parseACWTC], lines),
+    damageImmunities: tryParseDamageImmunities([parseDamageImmunitiesWTC], lines),
+    damageResistances: tryParseDamageResistances([parseDamageResistancesWTC], lines),
+    conditionImmunities: tryParseConditionImmunities([parseConditionImmunitiesWTC], lines),
+    damageVulnerabilities: tryParseDamageVulnerabilities([parseDamageVulnerabilitiesWTC], lines),
+    stats: tryParseStats([parseStatsWTC, parseMultilineStats, parseVerticalKeyValueStats], lines),
+    speed: tryParseSpeed([parseSpeedWTC], lines),
+    skills: tryParseSkills([parseSkillsWTC], lines),
+    features: tryParseFeatures([parseFeaturesWTC], lines),
+  };
+}
