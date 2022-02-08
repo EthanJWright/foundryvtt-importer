@@ -15,6 +15,7 @@ import {
   getVerticalKeyValueStats,
   tryStatParsers,
   parseSensesWTC,
+  parseHealthWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 describe('parseHealth', () => {
@@ -24,6 +25,12 @@ describe('parseHealth', () => {
     expect(health.max).toBe(12 * 8 + 12);
     expect(health.min).toBe(12 + 12);
     expect(health.str).toBe('12d8 + 12');
+  });
+  it('should throw an error when not passed a valid health string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseHealthWTC(invalid);
+    }).toThrow();
   });
 });
 

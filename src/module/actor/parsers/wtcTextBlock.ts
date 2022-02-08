@@ -79,7 +79,11 @@ export function parseGenericFormula(line: string, regexStart: RegExp) {
 
 export function parseHealthWTC(lines: string[]) {
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
-  return parseGenericFormula(healthLine, /Hit Points (.*)/);
+  const health = parseGenericFormula(healthLine, /Hit Points (.*)/);
+  if (!(health as Health).value) {
+    throw new Error('Could not parse health from line: ' + healthLine);
+  }
+  return health;
 }
 
 export function parseNameWTC(lines: string[]): Name {
