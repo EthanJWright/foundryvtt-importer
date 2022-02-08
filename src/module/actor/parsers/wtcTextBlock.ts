@@ -636,6 +636,7 @@ export function parseDamageVulnerabilitiesWTC(lines: string[]) {
 
 export function parseFeaturesWTC(lines: string[]): Feature[] {
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
+  if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
   return featureStrings.map(featureStringsToFeatures);
