@@ -16,7 +16,7 @@ import {
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
 
-export function parseFormulaWTC(line: string, regexStart: RegExp) {
+export function parseGenericFormula(line: string, regexStart: RegExp) {
   // line: Hit Points 66 (12d8 + 12)
   // get string from between parentheses
   // match = (12d8 + 12),12d8 + 12
@@ -68,6 +68,11 @@ export function parseFormulaWTC(line: string, regexStart: RegExp) {
     afterFormula,
     beforeFormula,
   };
+}
+
+export function parseHealthWTC(lines: string[]) {
+  const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
+  return parseGenericFormula(healthLine, /Hit Points (.*)/);
 }
 
 export function parseACWTC(acString: string): ArmorClass {
@@ -747,7 +752,7 @@ export function textToActor(input: string): ImportActor {
     biography: parseBiographyWTC(lines),
     languages: parseLanguagesWTC(lines),
     size: parseSizeWTC(lines),
-    health: parseFormulaWTC(healthLine, /Hit Points (.*)/),
+    health: parseHealthWTC(lines),
     senses: parseSensesWTC(lines),
     armorClass: parseACWTC(acLine),
     damageImmunities: parseDamageImmunitiesWTC(lines),

@@ -1,6 +1,6 @@
 import {
   parseStatsWTC,
-  parseFormulaWTC,
+  parseGenericFormula,
   textToActor,
   parseSkillsWTC,
   parseFeaturesFromBlock,
@@ -19,7 +19,7 @@ import {
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 describe('parseHealth', () => {
   it('should parse a valid health string', () => {
-    const health = parseFormulaWTC('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);
+    const health = parseGenericFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);
     expect(health.value).toBe(66);
     expect(health.max).toBe(12 * 8 + 12);
     expect(health.min).toBe(12 + 12);
