@@ -49,22 +49,6 @@ describe('Rating', () => {
   });
 });
 
-describe('parseHealth', () => {
-  it('should parse a valid health string', () => {
-    const health = parseGenericFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);
-    expect(health.value).toBe(66);
-    expect(health.max).toBe(12 * 8 + 12);
-    expect(health.min).toBe(12 + 12);
-    expect(health.str).toBe('12d8 + 12');
-  });
-  it('should throw an error when not passed a valid health string', () => {
-    const invalid = ['invalid'];
-    expect(() => {
-      parseHealthWTC(invalid);
-    }).toThrow();
-  });
-});
-
 describe('parseType', () => {
   it('should parse a valid type string', () => {
     const type = parseTypeWTC(['Medium humanoid (warforged), neutral evil']);
@@ -137,6 +121,35 @@ describe('parseSize', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseSizeWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseHealth', () => {
+  it('should parse a valid health string', () => {
+    const health = parseGenericFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);
+    expect(health.value).toBe(66);
+    expect(health.max).toBe(12 * 8 + 12);
+    expect(health.min).toBe(12 + 12);
+    expect(health.str).toBe('12d8 + 12');
+  });
+  it('should throw an error when not passed a valid health string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseHealthWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseSenses', () => {
+  it('should parse a valid senses string', () => {
+    const senses = parseSensesWTC(['Senses darkvision 60 ft., passive Perception 17']);
+    expect(senses).toStrictEqual({ darkvision: 60, units: 'ft' });
+  });
+  it('should throw an error when not passed a valid senses string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseSensesWTC(invalid);
     }).toThrow();
   });
 });

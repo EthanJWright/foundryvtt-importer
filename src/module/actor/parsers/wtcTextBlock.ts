@@ -637,41 +637,38 @@ export function parseFeaturesWTC(lines: string[]): Feature[] {
 
 export function parseSensesWTC(lines: string[]): Senses {
   const sensesLine = lines.find((line) => line.toLowerCase().includes('senses')) || '';
+  if (!sensesLine) throw new Error('Could not find senses');
   const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
   const senses: Senses = { units: 'ft' };
   rawSenses.forEach((sense) => {
     if (sense === '') return;
-    try {
-      let [text, special] = [sense, ''];
-      // remove parens and get text inside
-      if (sense.includes('(')) {
-        [text, special] = sense.split('(');
-        senses.special = special.replace(')', '');
-      }
-      // get number from string of form darkvision 60ft
-      const number = text.split(' ')[1].replace('ft', '');
-      const senseText = sense.split(' ')[0];
-      switch (senseText) {
-        case 'darkvision':
-          senses.darkvision = Number(number);
-          break;
-        case 'blindsight':
-          senses.blindsight = Number(number);
-          break;
-        case 'tremorsense':
-          senses.tremorsense = Number(number);
-          break;
-        case 'truesight':
-          senses.truesight = Number(number);
-          break;
-        case 'passive perception':
-          senses.passivePerception = Number(number);
-          break;
-        default:
-          break;
-      }
-    } catch (error) {
-      console.log(`Could not parse senses line: ${sense} | error ${error}`);
+    let [text, special] = [sense, ''];
+    // remove parens and get text inside
+    if (sense.includes('(')) {
+      [text, special] = sense.split('(');
+      senses.special = special.replace(')', '');
+    }
+    // get number from string of form darkvision 60ft
+    const number = text.split(' ')[1].replace('ft', '');
+    const senseText = sense.split(' ')[0];
+    switch (senseText) {
+      case 'darkvision':
+        senses.darkvision = Number(number);
+        break;
+      case 'blindsight':
+        senses.blindsight = Number(number);
+        break;
+      case 'tremorsense':
+        senses.tremorsense = Number(number);
+        break;
+      case 'truesight':
+        senses.truesight = Number(number);
+        break;
+      case 'passive perception':
+        senses.passivePerception = Number(number);
+        break;
+      default:
+        break;
     }
   });
   senses.units = 'ft';
