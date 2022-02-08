@@ -1,13 +1,17 @@
 import {
   Abilities,
   Ability,
+  ActorType,
+  Alignment,
   ArmorClass,
+  Biography,
   Condition,
   DamageType,
   Feature,
   Group,
   ImportActor,
   Languages,
+  Name,
   Rating,
   Senses,
   Size,
@@ -75,7 +79,7 @@ export function parseHealthWTC(lines: string[]) {
   return parseGenericFormula(healthLine, /Hit Points (.*)/);
 }
 
-function parseNameWTC(lines: string[]) {
+function parseNameWTC(lines: string[]): Name {
   return lines[0].trim();
 }
 
@@ -521,7 +525,7 @@ export function tryStatParsers(lines: string[]): Abilities {
   if (!stats) throw new Error('could not parse stats.');
   return stats;
 }
-function parseBiographyWTC(lines: string[]): string {
+function parseBiographyWTC(lines: string[]): Biography {
   let firstBioIndex = 0;
   lines.forEach((line: string, index: number) => {
     if (firstBioIndex === 0 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
@@ -701,7 +705,7 @@ function parseSizeWTC(lines: string[]): Size {
   return size as Size;
 }
 
-function parseTypeWTC(lines: string[]): string {
+function parseTypeWTC(lines: string[]): ActorType {
   const descriptionLine = getDescriptionLine(lines);
   // type is in string before parens and before comma
   if (descriptionLine.includes('(')) {
@@ -716,7 +720,7 @@ function capitalizeBeginings(str: string): string {
   });
 }
 
-function parseAlignmentWTC(lines: string[]): string {
+function parseAlignmentWTC(lines: string[]): Alignment {
   const descriptionLine = getDescriptionLine(lines);
   return capitalizeBeginings(descriptionLine.split(',')[1].trim().toLowerCase());
 }
@@ -726,7 +730,19 @@ function parseLanguagesWTC(lines: string[]): Languages {
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
 }
-export type actorParser = (input: string) => Actor;
+export type ActorParser = (input: string[]) => ActorType;
+
+function tryParsers(parsers: ActorParser[], input: string[]): ActorType {
+  for (const parser of parsers) {
+    try {
+      const result = parser(input);
+      return result;
+    } catch (error) {
+      console.log(`Could not parse ${input} with ${parser} | error ${error}`);
+    }
+  }
+  return '';
+}
 
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
@@ -746,7 +762,7 @@ export function textToActor(input: string): ImportActor {
   const statsWithSaves = addSavingThrows(lines, stats);
 
   return {
-    name: parseNameWTC(lines),
+    name: tryParsers([parseNameWTC], lines),
     rating: parseChallengeWTC(lines),
     type: parseTypeWTC(lines),
     alignment: parseAlignmentWTC(lines),

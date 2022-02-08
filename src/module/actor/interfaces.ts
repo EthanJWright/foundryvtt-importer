@@ -94,14 +94,37 @@ export interface Senses {
 
 export type Size = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge' | 'Gargantuan';
 
+export type Name = string;
+export type ActorType = string;
+export type Alignment = string;
+export type Biography = string;
+
+export type ActorTypes =
+  | Name
+  | ActorType
+  | Alignment
+  | Biography
+  | Size
+  | Condition
+  | DamageType
+  | Group
+  | Languages
+  | Rating
+  | Senses
+  | Abilities
+  | Skill
+  | ArmorClass
+  | Feature
+  | Health;
+
 export interface ImportActor {
-  name: string;
+  name: Name;
   size: Size;
-  type: string;
-  alignment: string;
+  type: ActorType;
+  alignment: Alignment;
   senses: Senses;
   languages: Languages;
-  biography: string;
+  biography: Biography;
   damageImmunities: DamageType[];
   damageResistances: DamageType[];
   conditionImmunities: Condition[];
