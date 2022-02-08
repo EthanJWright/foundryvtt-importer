@@ -75,7 +75,15 @@ export function parseHealthWTC(lines: string[]) {
   return parseGenericFormula(healthLine, /Hit Points (.*)/);
 }
 
-export function parseACWTC(acString: string): ArmorClass {
+function parseNameWTC(lines: string[]) {
+  return lines[0].trim();
+}
+
+export function parseACWTC(lines: string[]): ArmorClass {
+  const acString = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
+  if (!acString || typeof acString !== 'string') {
+    throw new Error('Could not find AC line');
+  }
   // acString: Armor Class 17 (natural armor)
   // get string from between parentheses
   let ac = 'Natural Armor';
@@ -726,13 +734,6 @@ export function textToActor(input: string): ImportActor {
   if (featureLines.length === 1) {
     featureLines = lines;
   }
-  const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
-  const acLine = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
-  if (!acLine || typeof acLine !== 'string') {
-    throw new Error('Could not find AC line');
-  }
-
-  const rating = parseChallengeWTC(lines);
 
   let skills: Skill[] = [];
   try {
@@ -745,8 +746,8 @@ export function textToActor(input: string): ImportActor {
   const statsWithSaves = addSavingThrows(lines, stats);
 
   return {
-    name: lines[0].trim(),
-    rating,
+    name: parseNameWTC(lines),
+    rating: parseChallengeWTC(lines),
     type: parseTypeWTC(lines),
     alignment: parseAlignmentWTC(lines),
     biography: parseBiographyWTC(lines),
@@ -754,7 +755,7 @@ export function textToActor(input: string): ImportActor {
     size: parseSizeWTC(lines),
     health: parseHealthWTC(lines),
     senses: parseSensesWTC(lines),
-    armorClass: parseACWTC(acLine),
+    armorClass: parseACWTC(lines),
     damageImmunities: parseDamageImmunitiesWTC(lines),
     damageResistances: parseDamageResistancesWTC(lines),
     conditionImmunities: parseConditionImmunitiesWTC(lines),
