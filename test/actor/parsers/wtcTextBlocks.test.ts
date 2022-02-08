@@ -16,7 +16,7 @@ import {
   getVerticalKeyValueStats,
   tryStatParsers,
   getSenses,
-} from '../src/module/actors.process';
+} from '../../../src/module/actor/parsers/wtcTextBlock';
 describe('parseHealth', () => {
   it('should parse a valid health string', () => {
     const health = parseFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);

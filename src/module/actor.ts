@@ -1,5 +1,5 @@
+import { textToActor } from './actor/parsers/wtcTextBlock';
 import { actorToFifth, featureCollectionToItems } from './actors.convert';
-import { textToActor } from './actors.process';
 import { UserData } from './importForm';
 
 async function txtRoute(stringData: string) {
