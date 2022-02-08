@@ -564,13 +564,16 @@ export function parseRatingWTC(lines: string[]): Rating {
 }
 
 function getListRelated(to: string, inStrings: string[]) {
-  const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to)) || -1;
+  const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to));
   if (conditionImmunityLineIndex === -1) return;
   let conditionImmunityLine = inStrings[conditionImmunityLineIndex];
-  const remainingLines = inStrings.slice(conditionImmunityLineIndex + 1);
+  let remaining = inStrings;
+  if (inStrings.length > conditionImmunityLineIndex) {
+    remaining = inStrings.slice(conditionImmunityLineIndex + 1);
+  }
   let iter = 0;
-  while (containsMoreItems(remainingLines[iter])) {
-    conditionImmunityLine = conditionImmunityLine + ' ' + remainingLines[iter];
+  while (containsMoreItems(remaining[iter])) {
+    conditionImmunityLine = conditionImmunityLine + ' ' + remaining[iter];
     iter++;
   }
   return conditionImmunityLine;
@@ -578,7 +581,7 @@ function getListRelated(to: string, inStrings: string[]) {
 
 export function parseDamageImmunitiesWTC(lines: string[]) {
   const damageImmunityLine = getListRelated('damage immunities', lines);
-  if (!damageImmunityLine) return [];
+  if (!damageImmunityLine) throw new Error('could not parse damage immunities');
   return damageImmunityLine
     .replace('Damage Immunities', '')
     .replace('and', '')
@@ -601,6 +604,7 @@ export function parseDamageResistancesWTC(lines: string[]) {
 }
 
 function containsMoreItems(line: string) {
+  if (!line) return false;
   return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
 }
 

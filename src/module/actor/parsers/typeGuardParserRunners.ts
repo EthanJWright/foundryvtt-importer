@@ -124,11 +124,15 @@ export function tryParseArmorClass(parsers: ActorParser[], lines: string[]): Arm
 }
 
 export function tryParseDamageImmunities(parsers: ActorParser[], lines: string[]): DamageType[] {
-  const damageImmunities = tryParsers(parsers, lines);
-  if (!Array.isArray(damageImmunities)) {
-    throw new Error(`Could not parse damage immunities: ${damageImmunities}`);
+  try {
+    const damageImmunities = tryParsers(parsers, lines);
+    if (!Array.isArray(damageImmunities)) {
+      return [];
+    }
+    return damageImmunities as DamageType[];
+  } catch (_) {
+    return [];
   }
-  return damageImmunities as DamageType[];
 }
 
 export function tryParseDamageResistances(parsers: ActorParser[], lines: string[]): DamageType[] {
