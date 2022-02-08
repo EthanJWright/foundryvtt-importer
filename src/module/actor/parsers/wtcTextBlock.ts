@@ -553,7 +553,7 @@ export function parseRatingWTC(lines: string[]): Rating {
     cr = Number(ratingString);
   }
   // get the number in the parentheses
-  const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', ''));
+  const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', '').replace(',', ''));
   return {
     cr,
     xp,
