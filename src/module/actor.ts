@@ -1,4 +1,4 @@
-import { textToActor } from './actor/parsers/wtcTextBlock';
+import { textToActor } from './actor/parsers';
 import { actorToFifth, featureCollectionToItems } from './actors.convert';
 import { UserData } from './importForm';
 
