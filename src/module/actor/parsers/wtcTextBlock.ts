@@ -707,7 +707,7 @@ export function parseSizeWTC(lines: string[]): Size {
     }
     return sizeInLine;
   });
-  if (!size) return 'Medium';
+  if (!size) throw new Error('Could not parse size');
   return size as Size;
 }
 

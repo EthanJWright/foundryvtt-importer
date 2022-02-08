@@ -21,6 +21,7 @@ import {
   parseAlignmentWTC,
   parseBiographyWTC,
   parseLanguagesWTC,
+  parseSizeWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -124,6 +125,19 @@ describe('findStatBounds', () => {
     const { firstLine, lastLine } = findStatBounds(lines);
     expect(lines[firstLine]).toBe('STR');
     expect(lines[lastLine - 1].trim()).toBe('18 (+4)');
+  });
+});
+
+describe('parseSize', () => {
+  it('should parse a valid size string', () => {
+    const size = parseSizeWTC(['Medium humanoid (warforged), neutral evil']);
+    expect(size).toBe('Medium');
+  });
+  it('should throw an error when not passed a valid size string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseSizeWTC(invalid);
+    }).toThrow();
   });
 });
 
