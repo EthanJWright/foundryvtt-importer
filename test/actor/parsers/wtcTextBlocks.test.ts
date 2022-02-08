@@ -32,6 +32,18 @@ describe('nameParse', () => {
   });
 });
 
+describe('Rating', () => {
+  it('should parse a rating', () => {
+    const text = ['Challenge 9 (5,000 XP)'];
+    expect(parseRatingWTC(text)).toEqual({ xp: 5000, cr: 9 });
+  });
+
+  it('should throw when passed an invalid rating', () => {
+    const text: string[] = [];
+    expect(() => parseRatingWTC(text)).toThrow();
+  });
+});
+
 describe('parseHealth', () => {
   it('should parse a valid health string', () => {
     const health = parseGenericFormula('Hit Points 66 (12d8 + 12)', /Hit Points (.*)/);
