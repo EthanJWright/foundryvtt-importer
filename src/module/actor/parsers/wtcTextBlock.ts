@@ -232,7 +232,7 @@ export function findStatBounds(input: string[]): { lastLine: number; firstLine: 
   return { firstLine, lastLine };
 }
 
-export function parseMultilineStats(lines: string[]): Abilities {
+export function parseMultilineStatsWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
@@ -521,7 +521,7 @@ export function tryStatParsers(lines: string[]): Abilities {
     stats = parseStatsWTC(lines);
   } catch (error) {
     try {
-      stats = parseMultilineStats(lines);
+      stats = parseMultilineStatsWTC(lines);
     } catch {
       stats = parseVerticalKeyValueStats(lines);
     }

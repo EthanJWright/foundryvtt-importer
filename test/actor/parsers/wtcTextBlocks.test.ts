@@ -7,7 +7,7 @@ import {
   parseStandardCSV,
   parseFeatureSections,
   featureFromSection,
-  parseMultilineStats,
+  parseMultilineStatsWTC,
   getFeatureNames,
   parseFeaturesWTC,
   parseRatingWTC,
@@ -223,6 +223,107 @@ describe('damageVulderabilityParsers', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseDamageVulnerabilitiesWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseStatsWTC', () => {
+  it('should parse a valid stats string', () => {
+    const stats = parseStatsWTC(['STR DEX CON INT WIS CHA', '18 (+4) 11 (+0) 14 (+2) 13 (+0) 15 (+1) 11 (+0)']);
+    expect(stats).toStrictEqual({
+      cha: {
+        mod: 0,
+        savingThrow: 0,
+        value: 11,
+      },
+      con: {
+        mod: 2,
+        savingThrow: 0,
+        value: 14,
+      },
+      dex: {
+        mod: 0,
+        savingThrow: 0,
+        value: 11,
+      },
+      int: {
+        mod: 0,
+        savingThrow: 0,
+        value: 13,
+      },
+      str: {
+        mod: 4,
+        savingThrow: 0,
+        value: 18,
+      },
+      wis: {
+        mod: 1,
+        savingThrow: 0,
+        value: 15,
+      },
+    });
+  });
+  it('should throw an error when not passed a valid stats string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseStatsWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseMultilineStatsWTC', () => {
+  it('should parse a valid multi line stats string', () => {
+    const stats = parseMultilineStatsWTC([
+      'STR',
+      '12 (+1)',
+      'DEX',
+      '18 (+4)',
+      'CON',
+      '12 (+1)',
+      'INT',
+      '14 (+2)',
+      'WIS',
+      '11 (+0)',
+      'CHA',
+      '15 (+2)',
+    ]);
+    expect(stats).toStrictEqual({
+      cha: {
+        mod: 2,
+        savingThrow: 0,
+        value: 15,
+      },
+      con: {
+        mod: 1,
+        savingThrow: 0,
+        value: 12,
+      },
+      dex: {
+        mod: 4,
+        savingThrow: 0,
+        value: 18,
+      },
+      int: {
+        mod: 2,
+        savingThrow: 0,
+        value: 14,
+      },
+      str: {
+        mod: 1,
+        savingThrow: 0,
+        value: 12,
+      },
+      wis: {
+        mod: 0,
+        savingThrow: 0,
+        value: 11,
+      },
+    });
+  });
+  it('should throw an error when not passed a valid stats string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseMultilineStatsWTC(invalid);
     }).toThrow();
   });
 });
@@ -528,7 +629,7 @@ describe('parseMultiLineStates', () => {
     const actorText =
       'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nMedium humanoid (any race), any alignment\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
     const lines: string[] = actorText.split('\n');
-    const stats = parseMultilineStats(lines);
+    const stats = parseMultilineStatsWTC(lines);
     expect(stats).toEqual({
       str: {
         value: 12,

@@ -10,7 +10,7 @@ import {
   parseFeaturesWTC,
   parseHealthWTC,
   parseLanguagesWTC,
-  parseMultilineStats,
+  parseMultilineStatsWTC,
   parseRatingWTC,
   parseSensesWTC,
   parseSizeWTC,
@@ -35,7 +35,7 @@ export const damageImmunitiesParsers = [parseDamageImmunitiesWTC];
 export const damageResistancesParsers = [parseDamageResistancesWTC];
 export const conditionImmunitiesParsers = [parseConditionImmunitiesWTC];
 export const damageVulnerabilitiesParsers = [parseDamageVulnerabilitiesWTC];
-export const statsParsers = [parseStatsWTC, parseMultilineStats, parseVerticalKeyValueStats];
+export const statsParsers = [parseStatsWTC, parseMultilineStatsWTC, parseVerticalKeyValueStats];
 export const speedParsers = [parseSpeedWTC];
 export const skillsParsers = [parseSkillsWTC];
 export const featuresParsers = [parseFeaturesWTC];
