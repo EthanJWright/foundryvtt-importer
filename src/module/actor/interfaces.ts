@@ -115,7 +115,7 @@ export type ActorTypes =
   | Abilities
   | Skill[]
   | ArmorClass
-  | Feature
+  | Feature[]
   | Rating
   | Speed
   | Health;

@@ -7,6 +7,7 @@ import {
   Biography,
   Condition,
   DamageType,
+  Feature,
   Health,
   Languages,
   Name,
@@ -178,4 +179,12 @@ export function tryParseSkills(parsers: ActorParser[], lines: string[]): Skill[]
     // Skills are optional
     return [];
   }
+}
+
+export function tryParseFeatures(parsers: ActorParser[], lines: string[]): Feature[] {
+  const features = tryParsers(parsers, lines);
+  if (!Array.isArray(features)) {
+    throw new Error(`Could not parse features: ${features}`);
+  }
+  return features as Feature[];
 }

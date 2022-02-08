@@ -31,6 +31,7 @@ import {
   tryParseDamageImmunities,
   tryParseDamageResistances,
   tryParseDamageVulnerabilities,
+  tryParseFeatures,
   tryParseSkills,
   tryParseSpeed,
   tryParseStats,
@@ -643,8 +644,7 @@ function parseDamageVulnerabilitiesWTC(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-export function parseFeaturesWTC(text: string): Feature[] {
-  const lines = text.split('\n');
+export function parseFeaturesWTC(lines: string[]): Feature[] {
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
@@ -755,11 +755,6 @@ function parseLanguagesWTC(lines: string[]): Languages {
 
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
-  let featureLines = input.split('\n\n');
-  if (featureLines.length === 1) {
-    featureLines = lines;
-  }
-
   return {
     name: tryNameParse([parseNameWTC], lines),
     rating: tryRatingParse([parseRatingWTC], lines),
@@ -778,6 +773,6 @@ export function textToActor(input: string): ImportActor {
     stats: tryParseStats([parseStatsWTC, parseMultilineStats, parseVerticalKeyValueStats], lines),
     speed: tryParseSpeed([parseSpeedWTC], lines),
     skills: tryParseSkills([parseSkillsWTC], lines),
-    features: parseFeaturesWTC(input),
+    features: tryParseFeatures([parseFeaturesWTC], lines),
   };
 }
