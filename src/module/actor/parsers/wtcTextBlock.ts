@@ -737,6 +737,7 @@ export function parseAlignmentWTC(lines: string[]): Alignment {
 
 export function parseLanguagesWTC(lines: string[]): Languages {
   const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
+  if (!languageLine) throw new Error(`Could not find language line in ${lines}`);
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
 }

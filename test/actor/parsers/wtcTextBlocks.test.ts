@@ -20,6 +20,7 @@ import {
   parseTypeWTC,
   parseAlignmentWTC,
   parseBiographyWTC,
+  parseLanguagesWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -98,6 +99,19 @@ describe('parseBiography', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseBiographyWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseLanguages', () => {
+  it('should parse a valid languages string', () => {
+    const languages = ['Languages Common, Dwarvish, Elvish, Giant, Gnomish, Goblin, Orc'];
+    expect(parseLanguagesWTC(languages)).toEqual(['common', 'dwarvish', 'elvish', 'giant', 'gnomish', 'goblin', 'orc']);
+  });
+  it('should throw an error when not passed a valid languages string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseLanguagesWTC(invalid);
     }).toThrow();
   });
 });
