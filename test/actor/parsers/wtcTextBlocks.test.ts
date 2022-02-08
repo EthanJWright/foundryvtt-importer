@@ -28,6 +28,7 @@ import {
   parseConditionImmunitiesWTC,
   parseDamageVulnerabilitiesWTC,
   parseVerticalKeyValueStatsWTC,
+  parseSpeedWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -377,6 +378,19 @@ describe('parseVerticalKeyValueStats', () => {
         value: 15,
       },
     });
+  });
+});
+
+describe('parseSpeed', () => {
+  it('should parse a valid speed string', () => {
+    const speed = parseSpeedWTC(['Speed 30 ft.']);
+    expect(speed).toBe(30);
+  });
+  it('should throw an error when not passed a valid speed string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseSpeedWTC(invalid);
+    }).toThrow();
   });
 });
 
