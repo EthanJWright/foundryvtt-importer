@@ -87,7 +87,7 @@ export interface Senses {
   blindsight?: number;
   tremorsense?: number;
   truesight?: number;
-  units?: string;
+  units: string;
   special?: string;
   passivePerception?: number;
 }
@@ -98,6 +98,7 @@ export type Name = string;
 export type ActorType = string;
 export type Alignment = string;
 export type Biography = string;
+export type Speed = number;
 
 export type ActorTypes =
   | Name
@@ -106,16 +107,17 @@ export type ActorTypes =
   | Biography
   | Size
   | Condition
-  | DamageType
+  | DamageType[]
   | Group
   | Languages
   | Rating
   | Senses
   | Abilities
-  | Skill
+  | Skill[]
   | ArmorClass
   | Feature
   | Rating
+  | Speed
   | Health;
 
 export interface ImportActor {
@@ -134,7 +136,7 @@ export interface ImportActor {
   rating: Rating;
   armorClass: ArmorClass;
   stats: Abilities;
-  speed: number;
+  speed: Speed;
   skills: Skill[];
   features: Feature[];
 }

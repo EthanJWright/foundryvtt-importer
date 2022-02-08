@@ -10,6 +10,7 @@ import {
   DamageType,
   Feature,
   Group,
+  Health,
   ImportActor,
   Languages,
   Name,
@@ -17,6 +18,7 @@ import {
   Senses,
   Size,
   Skill,
+  Speed,
 } from '../interfaces';
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
@@ -633,7 +635,7 @@ export function parseFeaturesWTC(text: string): Feature[] {
 export function parseSensesWTC(lines: string[]): Senses {
   const sensesLine = lines.find((line) => line.toLowerCase().includes('senses')) || '';
   const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
-  const senses: Senses = {};
+  const senses: Senses = { units: 'ft' };
   rawSenses.forEach((sense) => {
     if (sense === '') return;
     try {
@@ -765,6 +767,134 @@ function tryRatingParse(parsers: ActorParser[], lines: string[]): Rating {
   return rating as Rating;
 }
 
+function tryTypeParse(parsers: ActorParser[], lines: string[]): ActorType {
+  const type = tryParsers(parsers, lines);
+  if (typeof type !== 'string') {
+    throw new Error(`Could not parse type: ${type}`);
+  }
+  return type;
+}
+
+function tryAlignmentParse(parsers: ActorParser[], lines: string[]): Alignment {
+  const alignment = tryParsers(parsers, lines);
+  if (typeof alignment !== 'string') {
+    throw new Error(`Could not parse alignment: ${alignment}`);
+  }
+  return alignment;
+}
+
+function tryBiographyParse(parsers: ActorParser[], lines: string[]): Biography {
+  const biography = tryParsers(parsers, lines);
+  if (typeof biography !== 'string') {
+    throw new Error(`Could not parse biography: ${biography}`);
+  }
+  return biography;
+}
+
+function tryLanguageParse(parsers: ActorParser[], lines: string[]): Languages {
+  const languages = tryParsers(parsers, lines);
+  if (!Array.isArray(languages)) {
+    throw new Error(`Could not parse languages: ${languages}`);
+  }
+  return languages as Languages;
+}
+
+function trySizeParse(parsers: ActorParser[], lines: string[]): Size {
+  const size = tryParsers(parsers, lines);
+  if (typeof size !== 'string') {
+    throw new Error(`Could not parse size: ${size}`);
+  }
+  return size as Size;
+}
+
+function tryHealthParse(parsers: ActorParser[], lines: string[]): Health {
+  const health = tryParsers(parsers, lines);
+  if (!(health as Health).value) {
+    throw new Error(`Could not parse health: ${health}`);
+  }
+  return health as Health;
+}
+
+function trySensesParse(parsers: ActorParser[], lines: string[]): Senses {
+  const senses = tryParsers(parsers, lines);
+  if (!(senses as Senses).units) {
+    throw new Error(`Could not parse senses: ${senses}`);
+  }
+  return senses as Senses;
+}
+
+function tryParseArmorClass(parsers: ActorParser[], lines: string[]): ArmorClass {
+  const armorClass = tryParsers(parsers, lines);
+  if (!(armorClass as ArmorClass).value) {
+    throw new Error(`Could not parse armor class: ${armorClass}`);
+  }
+  return armorClass as ArmorClass;
+}
+
+function tryParseDamageImmunities(parsers: ActorParser[], lines: string[]): DamageType[] {
+  const damageImmunities = tryParsers(parsers, lines);
+  if (!Array.isArray(damageImmunities)) {
+    throw new Error(`Could not parse damage immunities: ${damageImmunities}`);
+  }
+  return damageImmunities as DamageType[];
+}
+
+function tryParseDamageResistances(parsers: ActorParser[], lines: string[]): DamageType[] {
+  const damageResistances = tryParsers(parsers, lines);
+  if (!Array.isArray(damageResistances)) {
+    throw new Error(`Could not parse damage resistances: ${damageResistances}`);
+  }
+  return damageResistances as DamageType[];
+}
+
+function tryParseConditionImmunities(parsers: ActorParser[], lines: string[]): Condition[] {
+  const conditionImmunities = tryParsers(parsers, lines);
+  if (!Array.isArray(conditionImmunities)) {
+    throw new Error(`Could not parse condition immunities: ${conditionImmunities}`);
+  }
+  return conditionImmunities as Condition[];
+}
+
+function tryParseDamageVulnerabilities(parsers: ActorParser[], lines: string[]): DamageType[] {
+  const damageVulnerabilities = tryParsers(parsers, lines);
+  if (!Array.isArray(damageVulnerabilities)) {
+    throw new Error(`Could not parse damage vulnerabilities: ${damageVulnerabilities}`);
+  }
+  return damageVulnerabilities as DamageType[];
+}
+
+function tryParseStats(parsers: ActorParser[], lines: string[]): Abilities {
+  const stats = tryParsers(parsers, lines);
+  if (!(stats as Abilities).str) {
+    throw new Error(`Could not parse stats: ${stats}`);
+  }
+  const statsWithSaves = addSavingThrows(lines, stats as Abilities);
+  return statsWithSaves as Abilities;
+}
+
+function tryParseSpeed(parsers: ActorParser[], lines: string[]): Speed {
+  const speed = tryParsers(parsers, lines);
+  if (typeof speed !== 'number') {
+    throw new Error(`Could not parse speed: ${speed}`);
+  }
+  return speed;
+}
+
+function tryParseSkills(parsers: ActorParser[], lines: string[]): Skill[] {
+  try {
+    const skills = tryParsers(parsers, lines);
+
+    if (!Array.isArray(skills)) {
+      // Skills are optional
+      return [];
+    }
+    return skills as Skill[];
+  } catch (_) {
+    // Skills are optional
+    return [];
+  }
+}
+
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
   let featureLines = input.split('\n\n');
@@ -772,34 +902,24 @@ export function textToActor(input: string): ImportActor {
     featureLines = lines;
   }
 
-  let skills: Skill[] = [];
-  try {
-    skills = parseSkillsWTC(lines);
-  } catch (error) {
-    console.log('Could not parse skills');
-  }
-
-  const stats = tryStatParsers(lines);
-  const statsWithSaves = addSavingThrows(lines, stats);
-
   return {
     name: tryNameParse([parseNameWTC], lines),
     rating: tryRatingParse([parseRatingWTC], lines),
-    type: parseTypeWTC(lines),
-    alignment: parseAlignmentWTC(lines),
-    biography: parseBiographyWTC(lines),
-    languages: parseLanguagesWTC(lines),
-    size: parseSizeWTC(lines),
-    health: parseHealthWTC(lines),
-    senses: parseSensesWTC(lines),
-    armorClass: parseACWTC(lines),
-    damageImmunities: parseDamageImmunitiesWTC(lines),
-    damageResistances: parseDamageResistancesWTC(lines),
-    conditionImmunities: parseConditionImmunitiesWTC(lines),
-    damageVulnerabilities: parseDamageVulnerabilitiesWTC(lines),
-    stats: statsWithSaves,
-    speed: parseSpeedWTC(lines),
-    skills,
+    type: tryTypeParse([parseTypeWTC], lines),
+    alignment: tryAlignmentParse([parseAlignmentWTC], lines),
+    biography: tryBiographyParse([parseBiographyWTC], lines),
+    languages: tryLanguageParse([parseLanguagesWTC], lines),
+    size: trySizeParse([parseSizeWTC], lines),
+    health: tryHealthParse([parseHealthWTC], lines),
+    senses: trySensesParse([parseSensesWTC], lines),
+    armorClass: tryParseArmorClass([parseACWTC], lines),
+    damageImmunities: tryParseDamageImmunities([parseDamageImmunitiesWTC], lines),
+    damageResistances: tryParseDamageResistances([parseDamageResistancesWTC], lines),
+    conditionImmunities: tryParseConditionImmunities([parseConditionImmunitiesWTC], lines),
+    damageVulnerabilities: tryParseDamageVulnerabilities([parseDamageVulnerabilitiesWTC], lines),
+    stats: tryParseStats([parseStatsWTC, parseMultilineStats, parseVerticalKeyValueStats], lines),
+    speed: tryParseSpeed([parseSpeedWTC], lines),
+    skills: tryParseSkills([parseSkillsWTC], lines),
     features: parseFeaturesWTC(input),
   };
 }
