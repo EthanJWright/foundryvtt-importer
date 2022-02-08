@@ -518,7 +518,9 @@ function parseBiographyWTC(lines: string[]): string {
   return lines[firstBioIndex].trim();
 }
 
-export function getChallenge(challengeLine: string): Rating {
+export function parseChallengeWTC(lines: string[]): Rating {
+  const challengeLine = lines.find((line) => line.includes('Challenge'));
+  if (!challengeLine) throw new Error('could not parse challenge');
   // challengeLine : Challenge 1 (200 XP)
   // get the first number in the line
   const ratingString = challengeLine.split(' ')[1];
@@ -725,11 +727,7 @@ export function textToActor(input: string): ImportActor {
     throw new Error('Could not find AC line');
   }
 
-  const challengeLine = lines.find((line) => line.includes('Challenge'));
-  let rating = undefined;
-  if (challengeLine) {
-    rating = getChallenge(challengeLine);
-  }
+  const rating = parseChallengeWTC(lines);
 
   let skills: Skill[] = [];
   try {
