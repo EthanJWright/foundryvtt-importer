@@ -622,7 +622,7 @@ export function parseConditionImmunitiesWTC(lines: string[]) {
 
 export function parseDamageVulnerabilitiesWTC(lines: string[]) {
   const damage = getListRelated('damage vulnerabilities', lines);
-  if (!damage) return [];
+  if (!damage) throw new Error('could not parse damage vulnerabilities');
   return damage
     .replace('Damage Vulnerabilities', '')
     .replace('and', '')

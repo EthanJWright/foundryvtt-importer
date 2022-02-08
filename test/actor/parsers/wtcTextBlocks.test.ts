@@ -26,6 +26,7 @@ import {
   parseDamageImmunitiesWTC,
   parseDamageResistancesWTC,
   parseConditionImmunitiesWTC,
+  parseDamageVulnerabilitiesWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -209,6 +210,19 @@ describe('conditionImmunities', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseConditionImmunitiesWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('damageVulderabilityParsers', () => {
+  it('should parse a valid damage vulnerabilities string', () => {
+    const damageVulnerabilities = parseDamageVulnerabilitiesWTC(['Damage Vulnerabilities fire, psychic']);
+    expect(damageVulnerabilities).toStrictEqual(['fire', 'psychic']);
+  });
+  it('should throw an error when not passed a valid damage vulnerabilities string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseDamageVulnerabilitiesWTC(invalid);
     }).toThrow();
   });
 });
