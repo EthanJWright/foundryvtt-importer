@@ -27,6 +27,7 @@ import {
   parseDamageResistancesWTC,
   parseConditionImmunitiesWTC,
   parseDamageVulnerabilitiesWTC,
+  parseVerticalKeyValueStatsWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -325,6 +326,57 @@ describe('parseMultilineStatsWTC', () => {
     expect(() => {
       parseMultilineStatsWTC(invalid);
     }).toThrow();
+  });
+});
+
+describe('parseVerticalKeyValueStats', () => {
+  it('should parse a valid vertical key value stats string', () => {
+    const stats = parseVerticalKeyValueStatsWTC([
+      'STR',
+      'DEX',
+      'CON',
+      'INT',
+      'WIS',
+      'CHA',
+      '18 (+4)',
+      '12 (+1)',
+      '14 (+2)',
+      '11 (+0)',
+      '15 (+2)',
+      '13 (+0)',
+    ]);
+    expect(stats).toStrictEqual({
+      cha: {
+        mod: 0,
+        savingThrow: 0,
+        value: 13,
+      },
+      con: {
+        mod: 2,
+        savingThrow: 0,
+        value: 14,
+      },
+      dex: {
+        mod: 1,
+        savingThrow: 0,
+        value: 12,
+      },
+      int: {
+        mod: 0,
+        savingThrow: 0,
+        value: 11,
+      },
+      str: {
+        mod: 4,
+        savingThrow: 0,
+        value: 18,
+      },
+      wis: {
+        mod: 2,
+        savingThrow: 0,
+        value: 15,
+      },
+    });
   });
 });
 

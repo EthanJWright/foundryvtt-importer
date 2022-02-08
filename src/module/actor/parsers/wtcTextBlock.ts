@@ -142,6 +142,7 @@ function isAbilityLine(line: string) {
 }
 
 function containsAbility(line: string) {
+  if (!line) return false;
   const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   return (
     abilities.findIndex((ability) => {
@@ -169,6 +170,7 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
 }
 
 function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[]): Abilities {
+  console.log(`HERE: ${abilityKeys}`);
   return abilityKeys.reduce(
     (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
     {},
@@ -217,17 +219,17 @@ export function findStatBounds(input: string[]): { lastLine: number; firstLine: 
   const firstLine = lines.findIndex((line) => {
     return line.trim().toLowerCase() === 'str';
   });
-  if (!firstLine) {
+  if (firstLine === undefined) {
     throw new Error('Could not find first line');
   }
-  const remainingLines = lines.splice(firstLine, lines.length);
-  const lastLine =
+  const remainingLines = lines.slice(firstLine, lines.length);
+  let lastLine =
     remainingLines.findIndex((line) => {
       const trimArray = line.trim().split(' ');
       return trimArray.length > 3;
     }) + firstLine;
-  if (!lastLine) {
-    throw new Error('Could not find last line');
+  if (lastLine === -1) {
+    lastLine = lines.length;
   }
   return { firstLine, lastLine };
 }
@@ -253,11 +255,11 @@ export function getVerticalKeyValueStats(input: string[]) {
     return !containsAbility(line);
   });
   const keys = lines.slice(0, keyEndIndex).map((line) => line.trim().toLowerCase());
-  const values = lines.slice(keyEndIndex, keyEndIndex + 7).map((line) => line.trim().toLowerCase());
+  const values = lines.slice(keyEndIndex, keyEndIndex + 6).map((line) => line.trim().toLowerCase());
   return { keys, values };
 }
 
-export function parseVerticalKeyValueStats(input: string[]): Abilities {
+export function parseVerticalKeyValueStatsWTC(input: string[]): Abilities {
   const { keys, values } = getVerticalKeyValueStats(input);
   const { abilities, modifiers } = extractAbilityValues(values.join(' '));
   return zipStats(keys, abilities, modifiers);
@@ -523,7 +525,7 @@ export function tryStatParsers(lines: string[]): Abilities {
     try {
       stats = parseMultilineStatsWTC(lines);
     } catch {
-      stats = parseVerticalKeyValueStats(lines);
+      stats = parseVerticalKeyValueStatsWTC(lines);
     }
   }
   if (!stats) throw new Error('could not parse stats.');
