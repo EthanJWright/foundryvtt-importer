@@ -18,6 +18,8 @@ import {
   parseHealthWTC,
   parseNameWTC,
   parseTypeWTC,
+  parseAlignmentWTC,
+  parseBiographyWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 
@@ -70,6 +72,32 @@ describe('parseType', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseTypeWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseAlignment', () => {
+  it('should parse a valid alignment string', () => {
+    const alignment = ['Medium humanoid (warforged), neutral evil'];
+    expect(parseAlignmentWTC(alignment)).toBe('Neutral Evil');
+  });
+  it('should throw an error when not passed a valid alignment string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseAlignmentWTC(invalid);
+    }).toThrow();
+  });
+});
+
+describe('parseBiography', () => {
+  it('should parse a valid biography string', () => {
+    const biography = ['Medium humanoid (warforged), neutral evil'];
+    expect(parseBiographyWTC(biography)).toBe('Medium humanoid (warforged), neutral evil');
+  });
+  it('should throw an error when not passed a valid biography string', () => {
+    const invalid = ['invalid'];
+    expect(() => {
+      parseBiographyWTC(invalid);
     }).toThrow();
   });
 });

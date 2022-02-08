@@ -70,11 +70,17 @@ export function tryAlignmentParse(parsers: ActorParser[], lines: string[]): Alig
 }
 
 export function tryBiographyParse(parsers: ActorParser[], lines: string[]): Biography {
-  const biography = tryParsers(parsers, lines);
-  if (typeof biography !== 'string') {
-    throw new Error(`Could not parse biography: ${biography}`);
+  try {
+    const biography = tryParsers(parsers, lines);
+    if (typeof biography !== 'string') {
+      // Biography is optional
+      return '';
+    }
+    return biography;
+  } catch (_) {
+    // Biography is optional
+    return '';
   }
-  return biography;
 }
 
 export function tryLanguageParse(parsers: ActorParser[], lines: string[]): Languages {

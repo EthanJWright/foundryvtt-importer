@@ -530,12 +530,15 @@ export function tryStatParsers(lines: string[]): Abilities {
   return stats;
 }
 export function parseBiographyWTC(lines: string[]): Biography {
-  let firstBioIndex = 0;
+  let firstBioIndex = -1;
   lines.forEach((line: string, index: number) => {
-    if (firstBioIndex === 0 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
+    if (firstBioIndex === -1 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
       firstBioIndex = index;
     }
   });
+  if (firstBioIndex === -1) {
+    throw new Error('Could not find a valid biography');
+  }
   return lines[firstBioIndex].trim();
 }
 
