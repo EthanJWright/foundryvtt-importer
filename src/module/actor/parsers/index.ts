@@ -1,0 +1,66 @@
+import { ImportActor } from '../interfaces';
+import {
+  nameParsers,
+  ratingParsers,
+  typeParsers,
+  alignmentParsers,
+  biographyParsers,
+  languagesParsers,
+  sizeParsers,
+  healthParsers,
+  sensesParsers,
+  acParsers,
+  damageImmunitiesParsers,
+  damageResistancesParsers,
+  conditionImmunitiesParsers,
+  damageVulnerabilitiesParsers,
+  abilitiesParsers,
+  speedParsers,
+  skillsParsers,
+  featuresParsers,
+} from './available';
+
+import {
+  tryAlignmentParse,
+  tryBiographyParse,
+  tryHealthParse,
+  tryLanguageParse,
+  tryNameParse,
+  tryParseArmorClass,
+  tryParseConditionImmunities,
+  tryParseDamageImmunities,
+  tryParseDamageResistances,
+  tryParseDamageVulnerabilities,
+  tryParseFeatures,
+  tryParseSkills,
+  tryParseSpeed,
+  tryParseAbilities,
+  tryRatingParse,
+  trySensesParse,
+  trySizeParse,
+  tryTypeParse,
+} from './typeGuardParserRunners';
+
+export function textToActor(input: string): ImportActor {
+  const lines = input.split('\n');
+  return {
+    name: tryNameParse(nameParsers, lines),
+    rating: tryRatingParse(ratingParsers, lines),
+    type: tryTypeParse(typeParsers, lines),
+    alignment: tryAlignmentParse(alignmentParsers, lines),
+    biography: tryBiographyParse(biographyParsers, lines),
+    languages: tryLanguageParse(languagesParsers, lines),
+    size: trySizeParse(sizeParsers, lines),
+    health: tryHealthParse(healthParsers, lines),
+    senses: trySensesParse(sensesParsers, lines),
+    armorClass: tryParseArmorClass(acParsers, lines),
+    damageImmunities: tryParseDamageImmunities(damageImmunitiesParsers, lines),
+    damageResistances: tryParseDamageResistances(damageResistancesParsers, lines),
+    conditionImmunities: tryParseConditionImmunities(conditionImmunitiesParsers, lines),
+    damageVulnerabilities: tryParseDamageVulnerabilities(damageVulnerabilitiesParsers, lines),
+    abilities: tryParseAbilities(abilitiesParsers, lines),
+    speed: tryParseSpeed(speedParsers, lines),
+    skills: tryParseSkills(skillsParsers, lines),
+    features: tryParseFeatures(featuresParsers, lines),
+  };
+}

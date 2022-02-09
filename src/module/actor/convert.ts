@@ -1,15 +1,16 @@
 import {
   Abilities,
   ArmorClass,
-  Condition,
+  ConditionTypes,
   DamageType,
   Feature,
   Health,
   ImportActor,
   Senses,
-  Size,
   Skill,
-} from './actors.process';
+  Size,
+  DamageTypes,
+} from './interfaces';
 import {
   FifthAbilities,
   FifthAttributes,
@@ -17,8 +18,8 @@ import {
   FifthSkill,
   FifthSkills,
   FifthStat,
-} from './fifthedition.actor.template';
-import { featuresToItems } from './item/weapon';
+} from './templates/fifthedition';
+import { featuresToItems } from '../item/weapon';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {
   return {
@@ -280,9 +281,9 @@ function convertLanguage(language: string) {
 
 function buildResistances(
   damageImmunities: DamageType[],
-  conditionImmunities: Condition[],
-  damageResistances: DamageType[],
-  damageVulnerabilities: DamageType[],
+  conditionImmunities: ConditionTypes,
+  damageResistances: DamageTypes,
+  damageVulnerabilities: DamageTypes,
 ) {
   let resistances = {};
   if (damageImmunities.length > 0) {
@@ -314,7 +315,7 @@ function buildResistances(
 }
 
 export function actorToFifth({
-  stats,
+  abilities,
   armorClass,
   health,
   speed,
@@ -332,7 +333,7 @@ export function actorToFifth({
   type,
 }: ImportActor) {
   return {
-    abilities: convertAbilities(stats),
+    abilities: convertAbilities(abilities),
     attributes: convertAttributes({ armorClass, health, speed }, senses),
     details: {
       race: type,

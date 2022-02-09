@@ -1,6 +1,6 @@
-import { actorToFifth, buildAttackBonus, buildReach } from '../src/module/actors.convert';
-import { swashbuckler } from './mock.swashbuckler';
-import { spythronar } from './mock.spythronarsac';
+import { actorToFifth, buildAttackBonus, buildReach } from '../../src/module/actor/convert';
+import { swashbuckler } from '../mock.swashbuckler';
+import { spythronar } from '../mock.spythronarsac';
 
 describe('Parsed Actor to 5th Structure', () => {
   it('should convert a swashbuckler', () => {

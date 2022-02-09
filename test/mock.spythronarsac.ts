@@ -1,4 +1,4 @@
-import { ImportActor } from '../src/module/actors.process';
+import { ImportActor } from '../src/module/actor/interfaces';
 export const spythronar: ImportActor = {
   name: 'Spythronar Sac',
   rating: {
@@ -40,7 +40,7 @@ export const spythronar: ImportActor = {
     'unconscious',
   ],
   damageVulnerabilities: [],
-  stats: {
+  abilities: {
     str: {
       value: 1,
       mod: -5,

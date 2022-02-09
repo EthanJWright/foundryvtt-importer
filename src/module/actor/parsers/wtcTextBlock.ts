@@ -1,189 +1,45 @@
+import {
+  Abilities,
+  Ability,
+  ActorType,
+  Alignment,
+  ArmorClass,
+  Biography,
+  ConditionTypes,
+  DamageType,
+  Feature,
+  Features,
+  Group,
+  Health,
+  Languages,
+  Name,
+  Rating,
+  Senses,
+  Size,
+  Skill,
+} from '../interfaces';
+import { parseGenericFormula } from './generic';
+
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
 
-interface Ability {
-  value: number;
-  mod: number;
-  savingThrow: number;
-}
-
-export type Languages = string[];
-
-export interface Abilities {
-  str: Ability;
-  dex: Ability;
-  con: Ability;
-  int: Ability;
-  wis: Ability;
-  cha: Ability;
-}
-export interface Skill {
-  name: string;
-  bonus: number;
-}
-
-interface Set {
-  name: string;
-  collection: string[];
-}
-
-export interface ArmorClass {
-  value: number;
-  type: string;
-}
-
-export interface Feature {
-  name: string;
-  description: string;
-}
-
-export interface Health {
-  value: number;
-  min: number;
-  max: number;
-}
-
-export interface Rating {
-  cr?: number;
-  xp: number;
-}
-
-export type DamageType =
-  | 'poison'
-  | 'disease'
-  | 'magic'
-  | 'psychic'
-  | 'radiant'
-  | 'necrotic'
-  | 'bludgeoning'
-  | 'piercing'
-  | 'slashing'
-  | 'acid'
-  | 'cold'
-  | 'fire'
-  | 'force'
-  | 'lightning'
-  | 'necrotic'
-  | 'psychic'
-  | 'radiant'
-  | 'thunder';
-
-export type Condition =
-  | 'blinded'
-  | 'charmed'
-  | 'deafened'
-  | 'exhaustion'
-  | 'frightened'
-  | 'grappled'
-  | 'incapacitated'
-  | 'invisible'
-  | 'paralyzed'
-  | 'petrified'
-  | 'poisoned'
-  | 'prone'
-  | 'restrained'
-  | 'stunned'
-  | 'unconscious';
-
-export interface Senses {
-  darkvision?: number;
-  blindsight?: number;
-  tremorsense?: number;
-  truesight?: number;
-  units?: string;
-  special?: string;
-  passivePerception?: number;
-}
-
-export type Size = 'Tiny' | 'Small' | 'Medium' | 'Large' | 'Huge' | 'Gargantuan';
-
-export interface ImportActor {
-  name: string;
-  size: Size;
-  type: string;
-  alignment: string;
-  senses: Senses;
-  languages: Languages;
-  biography: string;
-  damageImmunities: DamageType[];
-  damageResistances: DamageType[];
-  conditionImmunities: Condition[];
-  damageVulnerabilities: DamageType[];
-  health: Health;
-  rating?: Rating;
-  armorClass: ArmorClass;
-  stats: Abilities;
-  speed: number;
-  skills: Skill[];
-  features: Feature[];
-}
-
-export interface Formula {
-  value: number;
-  str?: string;
-  min?: number;
-  max?: number;
-  mod?: number;
-  afterRegex?: string;
-  beforeRegex?: string;
-  afterFormula?: string;
-  beforeFormula?: string;
-}
-
-export function parseFormula(line: string, regexStart: RegExp) {
-  // line: Hit Points 66 (12d8 + 12)
-  // get string from between parentheses
-  // match = (12d8 + 12),12d8 + 12
-  const formulaArray = line.match(/\(([^)]+)\)/);
-  const regexSplit = line.split(regexStart);
-  const beforeRegex = regexSplit[0];
-  const afterRegex = regexSplit[1];
-  let dieFormula = '';
-  let change = '';
-  let formula = undefined;
-  if (!formulaArray || formulaArray.length < 2) {
-    console.log(`Could not parse formula from string: ${line}`);
-  } else {
-    // pull formula from match
-    formula = formulaArray[1];
-
-    if (formula.includes('+')) {
-      dieFormula = formula.split('+')[0];
-      change = formula.split('+')[1];
-    } else if (formula.includes('-')) {
-      dieFormula = formula.split('-')[0];
-      change = '-' + formula.split('-')[1];
-    } else {
-      dieFormula = formula;
-      change = '0';
-    }
+export function parseHealthWTC(lines: string[]) {
+  const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
+  const health = parseGenericFormula(healthLine, /Hit Points (.*)/);
+  if (!(health as Health).value) {
+    throw new Error('Could not parse health from line: ' + healthLine);
   }
-
-  const numOfDice = dieFormula.split('d')[0];
-  const dieSize = dieFormula.split('d')[1];
-
-  // get value after Hit Points string
-  const hp = line.match(regexStart) || '10';
-  let afterFormula: string | undefined;
-  let beforeFormula: string | undefined;
-  if (formula) {
-    const formulaSplit: string[] = line.split(formula).map((item) => item.replace('(,', '').replace(')', ''));
-    afterFormula = formulaSplit[1];
-    beforeFormula = formulaSplit[0];
-  }
-  return {
-    value: parseInt(hp[1], 10),
-    min: Number(numOfDice) + Number(change),
-    max: Number(numOfDice) * Number(dieSize) + Number(change),
-    str: formula,
-    afterRegex,
-    beforeRegex,
-    mod: Number(change),
-    afterFormula,
-    beforeFormula,
-  };
+  return health;
 }
 
-export function parseAC(acString: string): ArmorClass {
+export function parseNameWTC(lines: string[]): Name {
+  return lines[0].trim();
+}
+
+export function parseACWTC(lines: string[]): ArmorClass {
+  const acString = lines.find((line) => line.includes('Armor Class'));
+  if (!acString || typeof acString !== 'string') {
+    throw new Error('Could not find AC line');
+  }
   // acString: Armor Class 17 (natural armor)
   // get string from between parentheses
   let ac = 'Natural Armor';
@@ -234,6 +90,7 @@ function isAbilityLine(line: string) {
 }
 
 function containsAbility(line: string) {
+  if (!line) return false;
   const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   return (
     abilities.findIndex((ability) => {
@@ -267,7 +124,7 @@ function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[
   ) as Abilities;
 }
 
-export function parseStats(inputList: string[]) {
+export function parseAbilitiesWTC(inputList: string[]) {
   const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
     throw new Error('Could not find ability line');
@@ -309,22 +166,22 @@ export function findStatBounds(input: string[]): { lastLine: number; firstLine: 
   const firstLine = lines.findIndex((line) => {
     return line.trim().toLowerCase() === 'str';
   });
-  if (!firstLine) {
+  if (firstLine === undefined) {
     throw new Error('Could not find first line');
   }
-  const remainingLines = lines.splice(firstLine, lines.length);
-  const lastLine =
+  const remainingLines = lines.slice(firstLine, lines.length);
+  let lastLine =
     remainingLines.findIndex((line) => {
       const trimArray = line.trim().split(' ');
       return trimArray.length > 3;
     }) + firstLine;
-  if (!lastLine) {
-    throw new Error('Could not find last line');
+  if (lastLine === -1) {
+    lastLine = lines.length;
   }
   return { firstLine, lastLine };
 }
 
-export function parseMultilineStats(lines: string[]): Abilities {
+export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
@@ -338,24 +195,24 @@ export function parseMultilineStats(lines: string[]): Abilities {
   };
 }
 
-export function getVerticalKeyValueStats(input: string[]) {
+export function getVerticalKeyValueAbilities(input: string[]) {
   const { firstLine, lastLine } = findStatBounds(input);
   const lines = input.slice(firstLine, lastLine);
   const keyEndIndex = lines.findIndex((line) => {
     return !containsAbility(line);
   });
   const keys = lines.slice(0, keyEndIndex).map((line) => line.trim().toLowerCase());
-  const values = lines.slice(keyEndIndex, keyEndIndex + 7).map((line) => line.trim().toLowerCase());
+  const values = lines.slice(keyEndIndex, keyEndIndex + 6).map((line) => line.trim().toLowerCase());
   return { keys, values };
 }
 
-export function parseVerticalKeyValueStats(input: string[]): Abilities {
-  const { keys, values } = getVerticalKeyValueStats(input);
+export function parseVerticalKeyValueAbilitiesWTC(input: string[]): Abilities {
+  const { keys, values } = getVerticalKeyValueAbilities(input);
   const { abilities, modifiers } = extractAbilityValues(values.join(' '));
   return zipStats(keys, abilities, modifiers);
 }
 
-export function parseSpeed(lines: string[]) {
+export function parseSpeedWTC(lines: string[]) {
   const speedLine = lines.find((line) => line.toUpperCase().includes('SPEED'));
   if (!speedLine) {
     throw new Error('Could not find speed line');
@@ -367,7 +224,7 @@ export function parseSpeed(lines: string[]) {
   return Number(speed[0]);
 }
 
-export function parseSkills(lines: string[]): Skill[] {
+export function parseSkillsWTC(lines: string[]): Skill[] {
   let skillLine = lines.find((line) => line.toUpperCase().includes('SKILL'));
   if (!skillLine) {
     throw new Error('Could not find skill line');
@@ -391,7 +248,7 @@ export function parseSkills(lines: string[]): Skill[] {
   return skills;
 }
 
-function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
+export function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
   const savingThrowsLine = lines.find((line) => line.toUpperCase().includes('SAVING THROWS'));
   if (!savingThrowsLine) {
     return abilities;
@@ -420,7 +277,7 @@ function addSavingThrows(lines: string[], abilities: Abilities): Abilities {
   return abilities;
 }
 
-export function parseStandardCSV(lines: string[], name: string): Set {
+export function parseStandardCSV(lines: string[], name: string): Group {
   let standardLine = lines.find((line) => line.toUpperCase().includes(name.toUpperCase()));
   if (!standardLine) {
     throw new Error(`${name} not found`);
@@ -444,7 +301,7 @@ function extractFeature(checking: string): Feature | undefined {
   return undefined;
 }
 
-export function parseFeatures(lines: string[], startIndex: number): Feature[] {
+export function parseFeaturesFromBlock(lines: string[], startIndex: number): Feature[] {
   const features: Feature[] = [];
   for (let i = startIndex; i < lines.length; i++) {
     const checking = lines[i];
@@ -610,28 +467,33 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
 export function tryStatParsers(lines: string[]): Abilities {
   let stats: Abilities | undefined;
   try {
-    stats = parseStats(lines);
+    stats = parseAbilitiesWTC(lines);
   } catch (error) {
     try {
-      stats = parseMultilineStats(lines);
+      stats = parseMultilineAbilitiesWTC(lines);
     } catch {
-      stats = parseVerticalKeyValueStats(lines);
+      stats = parseVerticalKeyValueAbilitiesWTC(lines);
     }
   }
   if (!stats) throw new Error('could not parse stats.');
   return stats;
 }
-function getBiography(lines: string[]): string {
-  let firstBioIndex = 0;
+export function parseBiographyWTC(lines: string[]): Biography {
+  let firstBioIndex = -1;
   lines.forEach((line: string, index: number) => {
-    if (firstBioIndex === 0 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
+    if (firstBioIndex === -1 && line.toUpperCase().includes('MEDIUM' || 'LARGE' || 'TINY')) {
       firstBioIndex = index;
     }
   });
+  if (firstBioIndex === -1) {
+    throw new Error('Could not find a valid biography');
+  }
   return lines[firstBioIndex].trim();
 }
 
-export function getChallenge(challengeLine: string): Rating {
+export function parseRatingWTC(lines: string[]): Rating {
+  const challengeLine = lines.find((line) => line.includes('Challenge'));
+  if (!challengeLine) throw new Error('could not parse challenge');
   // challengeLine : Challenge 1 (200 XP)
   // get the first number in the line
   const ratingString = challengeLine.split(' ')[1];
@@ -643,7 +505,7 @@ export function getChallenge(challengeLine: string): Rating {
     cr = Number(ratingString);
   }
   // get the number in the parentheses
-  const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', ''));
+  const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', '').replace(',', ''));
   return {
     cr,
     xp,
@@ -651,21 +513,24 @@ export function getChallenge(challengeLine: string): Rating {
 }
 
 function getListRelated(to: string, inStrings: string[]) {
-  const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to)) || -1;
+  const conditionImmunityLineIndex = inStrings.findIndex((line) => line.toLowerCase().includes(to));
   if (conditionImmunityLineIndex === -1) return;
   let conditionImmunityLine = inStrings[conditionImmunityLineIndex];
-  const remainingLines = inStrings.slice(conditionImmunityLineIndex + 1);
+  let remaining = inStrings;
+  if (inStrings.length > conditionImmunityLineIndex) {
+    remaining = inStrings.slice(conditionImmunityLineIndex + 1);
+  }
   let iter = 0;
-  while (containsMoreItems(remainingLines[iter])) {
-    conditionImmunityLine = conditionImmunityLine + ' ' + remainingLines[iter];
+  while (containsMoreItems(remaining[iter])) {
+    conditionImmunityLine = conditionImmunityLine + ' ' + remaining[iter];
     iter++;
   }
   return conditionImmunityLine;
 }
 
-function getDamageImmunities(lines: string[]) {
+export function parseDamageImmunitiesWTC(lines: string[]) {
   const damageImmunityLine = getListRelated('damage immunities', lines);
-  if (!damageImmunityLine) return [];
+  if (!damageImmunityLine) throw new Error('could not parse damage immunities');
   return damageImmunityLine
     .replace('Damage Immunities', '')
     .replace('and', '')
@@ -675,9 +540,9 @@ function getDamageImmunities(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-function getDamageResistances(lines: string[]) {
+export function parseDamageResistancesWTC(lines: string[]) {
   const damageLine = getListRelated('damage resistances', lines);
-  if (!damageLine) return [];
+  if (!damageLine) throw new Error('could not parse damage resistances');
   return damageLine
     .replace('Damage Resistances', '')
     .replace('and', '')
@@ -688,24 +553,25 @@ function getDamageResistances(lines: string[]) {
 }
 
 function containsMoreItems(line: string) {
+  if (!line) return false;
   return line.split(',').length > 1 && line.split(',')[0].trim().split(' ').length === 1;
 }
 
-function getConditionImmunities(lines: string[]) {
+export function parseConditionImmunitiesWTC(lines: string[]) {
   const conditionImmunityLine = getListRelated('condition immunities', lines);
-  if (!conditionImmunityLine) return [];
+  if (!conditionImmunityLine) throw new Error('could not parse condition immunities');
   return conditionImmunityLine
     .replace('Condition Immunities', '')
     .replace('and', '')
     .trim()
     .split(',')
     .map((condition) => condition.trim())
-    .filter((line) => line !== '') as Condition[];
+    .filter((line) => line !== '') as ConditionTypes;
 }
 
-function getDamageVulnerabilities(lines: string[]) {
+export function parseDamageVulnerabilitiesWTC(lines: string[]) {
   const damage = getListRelated('damage vulnerabilities', lines);
-  if (!damage) return [];
+  if (!damage) throw new Error('could not parse damage vulnerabilities');
   return damage
     .replace('Damage Vulnerabilities', '')
     .replace('and', '')
@@ -715,51 +581,48 @@ function getDamageVulnerabilities(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-export function getAllFeatures(text: string): Feature[] {
-  const lines = text.split('\n');
+export function parseFeaturesWTC(lines: string[]): Features {
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
+  if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
   return featureStrings.map(featureStringsToFeatures);
 }
 
-export function getSenses(lines: string[]): Senses {
+export function parseSensesWTC(lines: string[]): Senses {
   const sensesLine = lines.find((line) => line.toLowerCase().includes('senses')) || '';
+  if (!sensesLine) throw new Error('Could not find senses');
   const rawSenses = sensesLine.replace('Senses', '').replace('and', '').trim().split(',');
-  const senses: Senses = {};
+  const senses: Senses = { units: 'ft' };
   rawSenses.forEach((sense) => {
     if (sense === '') return;
-    try {
-      let [text, special] = [sense, ''];
-      // remove parens and get text inside
-      if (sense.includes('(')) {
-        [text, special] = sense.split('(');
-        senses.special = special.replace(')', '');
-      }
-      // get number from string of form darkvision 60ft
-      const number = text.split(' ')[1].replace('ft', '');
-      const senseText = sense.split(' ')[0];
-      switch (senseText) {
-        case 'darkvision':
-          senses.darkvision = Number(number);
-          break;
-        case 'blindsight':
-          senses.blindsight = Number(number);
-          break;
-        case 'tremorsense':
-          senses.tremorsense = Number(number);
-          break;
-        case 'truesight':
-          senses.truesight = Number(number);
-          break;
-        case 'passive perception':
-          senses.passivePerception = Number(number);
-          break;
-        default:
-          break;
-      }
-    } catch (error) {
-      console.log(`Could not parse senses line: ${sense} | error ${error}`);
+    let [text, special] = [sense, ''];
+    // remove parens and get text inside
+    if (sense.includes('(')) {
+      [text, special] = sense.split('(');
+      senses.special = special.replace(')', '');
+    }
+    // get number from string of form darkvision 60ft
+    const number = text.split(' ')[1].replace('ft', '');
+    const senseText = sense.split(' ')[0];
+    switch (senseText) {
+      case 'darkvision':
+        senses.darkvision = Number(number);
+        break;
+      case 'blindsight':
+        senses.blindsight = Number(number);
+        break;
+      case 'tremorsense':
+        senses.tremorsense = Number(number);
+        break;
+      case 'truesight':
+        senses.truesight = Number(number);
+        break;
+      case 'passive perception':
+        senses.passivePerception = Number(number);
+        break;
+      default:
+        break;
     }
   });
   senses.units = 'ft';
@@ -782,7 +645,7 @@ function getDescriptionLine(lines: string[]): string {
   return descriptionLine;
 }
 
-function getSize(lines: string[]): Size {
+export function parseSizeWTC(lines: string[]): Size {
   const candidateLines = lines.slice(0, 8);
   const sizes = ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'];
   const size = sizes.find((size) => {
@@ -795,17 +658,21 @@ function getSize(lines: string[]): Size {
     }
     return sizeInLine;
   });
-  if (!size) return 'Medium';
+  if (!size) throw new Error('Could not parse size');
   return size as Size;
 }
 
-function getType(lines: string[]): string {
+export function parseTypeWTC(lines: string[]): ActorType {
   const descriptionLine = getDescriptionLine(lines);
   // type is in string before parens and before comma
   if (descriptionLine.includes('(')) {
-    return descriptionLine.split('(')[0].trim().split(' ').pop() || '';
+    const type = descriptionLine.split('(')[0].trim().split(' ').pop();
+    if (!type) throw new Error(`Could not parse type from ${descriptionLine}`);
+    return type as ActorType;
   }
-  return descriptionLine.split(',')[0].trim().split(' ').pop() || '';
+  const type = descriptionLine.split(',')[0].trim().split(' ').pop();
+  if (!type) throw new Error(`Could not parse type from ${descriptionLine}`);
+  return type;
 }
 
 function capitalizeBeginings(str: string): string {
@@ -814,63 +681,14 @@ function capitalizeBeginings(str: string): string {
   });
 }
 
-function getAlignment(lines: string[]): string {
+export function parseAlignmentWTC(lines: string[]): Alignment {
   const descriptionLine = getDescriptionLine(lines);
   return capitalizeBeginings(descriptionLine.split(',')[1].trim().toLowerCase());
 }
 
-function getLanguages(lines: string[]): Languages {
+export function parseLanguagesWTC(lines: string[]): Languages {
   const languageLine = lines.find((line) => line.toLowerCase().includes('languages')) || '';
+  if (!languageLine) throw new Error(`Could not find language line in ${lines}`);
   const languages = languageLine.replace('Languages', '').replace('and', '').trim().split(',');
   return languages.map((language) => language.trim().toLowerCase());
-}
-
-export function textToActor(input: string): ImportActor {
-  const lines = input.split('\n');
-  let featureLines = input.split('\n\n');
-  if (featureLines.length === 1) {
-    featureLines = lines;
-  }
-  const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
-  const acLine = lines.find((line) => line.includes('Armor Class')) || 'Armor Class 12';
-  if (!acLine || typeof acLine !== 'string') {
-    throw new Error('Could not find AC line');
-  }
-
-  const challengeLine = lines.find((line) => line.includes('Challenge'));
-  let rating = undefined;
-  if (challengeLine) {
-    rating = getChallenge(challengeLine);
-  }
-
-  let skills: Skill[] = [];
-  try {
-    skills = parseSkills(lines);
-  } catch (error) {
-    console.log('Could not parse skills');
-  }
-
-  const stats = tryStatParsers(lines);
-  const statsWithSaves = addSavingThrows(lines, stats);
-
-  return {
-    name: lines[0].trim(),
-    rating,
-    type: getType(lines),
-    alignment: getAlignment(lines),
-    biography: getBiography(lines),
-    languages: getLanguages(lines),
-    size: getSize(lines),
-    health: parseFormula(healthLine, /Hit Points (.*)/),
-    senses: getSenses(lines),
-    armorClass: parseAC(acLine),
-    damageImmunities: getDamageImmunities(lines),
-    damageResistances: getDamageResistances(lines),
-    conditionImmunities: getConditionImmunities(lines),
-    damageVulnerabilities: getDamageVulnerabilities(lines),
-    stats: statsWithSaves,
-    speed: parseSpeed(lines),
-    skills,
-    features: getAllFeatures(input),
-  };
 }

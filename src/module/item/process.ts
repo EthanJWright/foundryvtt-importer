@@ -1,4 +1,4 @@
-import { FifthItem, ItemRarity } from '../fifthedition.actor.template';
+import { FifthItem, ItemRarity } from '../actor/templates/fifthedition';
 import { ItemType, parseType } from './parsers';
 import { parsedToWeapon } from './weapon';
 

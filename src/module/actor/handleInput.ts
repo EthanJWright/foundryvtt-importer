@@ -1,11 +1,12 @@
-import { actorToFifth, featureCollectionToItems } from './actors.convert';
-import { textToActor } from './actors.process';
-import { UserData } from './importForm';
+import { textToActor } from './parsers';
+import { actorToFifth, featureCollectionToItems } from './convert';
+import { UserData } from '../importForm';
+import { FifthItem } from './templates/fifthedition';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
   const { features } = actor;
-  const preparedItems = featureCollectionToItems(features, { abilities: actor.stats });
+  const preparedItems = featureCollectionToItems(features, { abilities: actor.abilities });
   const convertedActor = actorToFifth(actor);
   console.log(`Converted actor: ${JSON.stringify(convertedActor, null, 2)}`);
   const foundryActor = await Actor.create({
@@ -15,8 +16,7 @@ async function txtRoute(stringData: string) {
   });
 
   await Promise.all(
-    preparedItems.map(async (item) => {
-      console.log(`Creating item: ${item.name}`);
+    preparedItems.map(async (item: FifthItem) => {
       return await Item.create(
         {
           ...item,
