@@ -64,8 +64,9 @@ export type DamageType =
   | 'psychic'
   | 'radiant'
   | 'thunder';
+export type DamageTypes = DamageType[];
 
-export type Condition =
+export type ConditionType =
   | 'blinded'
   | 'charmed'
   | 'deafened'
@@ -81,6 +82,7 @@ export type Condition =
   | 'restrained'
   | 'stunned'
   | 'unconscious';
+export type ConditionTypes = ConditionType[];
 
 export interface Senses {
   darkvision?: number;
@@ -106,7 +108,7 @@ export type ActorTypes =
   | Alignment
   | Biography
   | Size
-  | Condition
+  | ConditionType
   | DamageType[]
   | Group
   | Languages
@@ -128,10 +130,10 @@ export interface ImportActor {
   senses: Senses;
   languages: Languages;
   biography: Biography;
-  damageImmunities: DamageType[];
-  damageResistances: DamageType[];
-  conditionImmunities: Condition[];
-  damageVulnerabilities: DamageType[];
+  damageImmunities: DamageTypes;
+  damageResistances: DamageTypes;
+  conditionImmunities: ConditionTypes;
+  damageVulnerabilities: DamageTypes;
   health: Health;
   rating: Rating;
   armorClass: ArmorClass;

@@ -5,7 +5,7 @@ import {
   Alignment,
   ArmorClass,
   Biography,
-  Condition,
+  ConditionTypes,
   DamageType,
   Feature,
   Health,
@@ -149,14 +149,14 @@ export function tryParseDamageResistances(parsers: ActorParser[], lines: string[
   }
 }
 
-export function tryParseConditionImmunities(parsers: ActorParser[], lines: string[]): Condition[] {
+export function tryParseConditionImmunities(parsers: ActorParser[], lines: string[]): ConditionTypes {
   try {
     const conditionImmunities = tryParsers(parsers, lines);
     if (!Array.isArray(conditionImmunities)) {
       // Condition immunities are optional
       return [];
     }
-    return conditionImmunities as Condition[];
+    return conditionImmunities as ConditionTypes;
   } catch (_) {
     // Condition immunities are optional
     return [];

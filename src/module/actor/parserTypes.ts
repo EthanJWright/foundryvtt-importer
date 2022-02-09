@@ -4,8 +4,8 @@ import {
   Alignment,
   ArmorClass,
   Biography,
-  Condition,
-  DamageType,
+  ConditionTypes,
+  DamageTypes,
   Feature,
   Health,
   Languages,
@@ -27,10 +27,10 @@ export type LanguagesParser = (lines: string[]) => Languages;
 export type SizeParser = (lines: string[]) => Size;
 export type HealthParser = (lines: string[]) => Health;
 export type SensesParser = (lines: string[]) => Senses;
-export type DamageImmunitiesParser = (lines: string[]) => DamageType[];
-export type DamageResistancesParser = (lines: string[]) => DamageType[];
-export type DamageVulnerabilitiesParser = (lines: string[]) => DamageType[];
-export type ConditionImmunitiesParser = (lines: string[]) => Condition[];
+export type DamageImmunitiesParser = (lines: string[]) => DamageTypes;
+export type DamageResistancesParser = (lines: string[]) => DamageTypes;
+export type DamageVulnerabilitiesParser = (lines: string[]) => DamageTypes;
+export type ConditionImmunitiesParser = (lines: string[]) => ConditionTypes;
 export type StatsParser = (lines: string[]) => Abilities;
 export type SpeedParser = (lines: string[]) => Speed;
 export type SkillsParser = (lines: string[]) => Skill[];

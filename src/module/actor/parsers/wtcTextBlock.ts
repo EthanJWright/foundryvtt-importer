@@ -5,7 +5,7 @@ import {
   Alignment,
   ArmorClass,
   Biography,
-  Condition,
+  ConditionTypes,
   DamageType,
   Feature,
   Group,
@@ -565,7 +565,7 @@ export function parseConditionImmunitiesWTC(lines: string[]) {
     .trim()
     .split(',')
     .map((condition) => condition.trim())
-    .filter((line) => line !== '') as Condition[];
+    .filter((line) => line !== '') as ConditionTypes;
 }
 
 export function parseDamageVulnerabilitiesWTC(lines: string[]) {

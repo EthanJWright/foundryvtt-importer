@@ -1,7 +1,7 @@
 import {
   Abilities,
   ArmorClass,
-  Condition,
+  ConditionTypes,
   DamageType,
   Feature,
   Health,
@@ -9,6 +9,7 @@ import {
   Senses,
   Skill,
   Size,
+  DamageTypes,
 } from './interfaces';
 import {
   FifthAbilities,
@@ -280,9 +281,9 @@ function convertLanguage(language: string) {
 
 function buildResistances(
   damageImmunities: DamageType[],
-  conditionImmunities: Condition[],
-  damageResistances: DamageType[],
-  damageVulnerabilities: DamageType[],
+  conditionImmunities: ConditionTypes,
+  damageResistances: DamageTypes,
+  damageVulnerabilities: DamageTypes,
 ) {
   let resistances = {};
   if (damageImmunities.length > 0) {
