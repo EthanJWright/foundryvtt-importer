@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.7](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.6...v0.2.7) (2022-02-09)
+
+
+### Features
+
+* adding type examples for all parser methods ([91fb911](https://github.com/EthanJWright/foundryvtt-importer/commit/91fb911ad8ab11cab064fca82eae960cb2eec2c6))
+
+
+### Bug Fixes
+
+* ac throws on error, adding test ([881c46d](https://github.com/EthanJWright/foundryvtt-importer/commit/881c46d5325c4efcf39fde796dd2b23779fdc4f9))
+* actually throwing for health ([66270c1](https://github.com/EthanJWright/foundryvtt-importer/commit/66270c13d0425f1839c29326e544d028e97bc61f))
+* add error throwing to type extraction ([3f09396](https://github.com/EthanJWright/foundryvtt-importer/commit/3f0939651872427b9405bab6b8ab2e140d7b1756))
+* add parser tests ([4da7550](https://github.com/EthanJWright/foundryvtt-importer/commit/4da755088236be6ea0838ae7fbf53f0d60159057))
+* add tests for name ([bc3ad65](https://github.com/EthanJWright/foundryvtt-importer/commit/bc3ad6533f5b29c1db2e8f5faa71871d6f1529bc))
+* adding language throw and tests ([64ce84c](https://github.com/EthanJWright/foundryvtt-importer/commit/64ce84c29b14da23b980fae7b178f24220a3dc86))
+* adding speed test ([421e4a2](https://github.com/EthanJWright/foundryvtt-importer/commit/421e4a24358cbf06b1c3bc3abc3d31f598eba077))
+* adding tests for parseFeatures and throwing when invalid ([55e23e6](https://github.com/EthanJWright/foundryvtt-importer/commit/55e23e6c34a2b227452f20740c62150af4a97461))
+* adjusting build issues ([07895a0](https://github.com/EthanJWright/foundryvtt-importer/commit/07895a098ae49ecea83a921cc4f16d82bd351527))
+* biography not required, adding tests ([244354f](https://github.com/EthanJWright/foundryvtt-importer/commit/244354fc8c50ec8cefe6217bb75c4e2976971326))
+* damage resistances tested and new pattern followed ([7e01f5a](https://github.com/EthanJWright/foundryvtt-importer/commit/7e01f5ab7a819c5a389df692b08230772e03124a))
+* ensuring health throws when passed invalid data ([8da0b7b](https://github.com/EthanJWright/foundryvtt-importer/commit/8da0b7b29108868011ea6192c4cae22db2a3978a))
+* first use of tryParsers implemented ([ad589a5](https://github.com/EthanJWright/foundryvtt-importer/commit/ad589a55dde7219859d92244863768d423ce6c4a))
+* fixing references and moving convert ([b09ba85](https://github.com/EthanJWright/foundryvtt-importer/commit/b09ba85995c035ab4d77189b5d9c9c4763b6fce2))
+* handle commas in XP ([75e5b52](https://github.com/EthanJWright/foundryvtt-importer/commit/75e5b521000521e35c147daa63ac18605f725c22))
+* patching bugs in vertical parse, adding tests ([19b3390](https://github.com/EthanJWright/foundryvtt-importer/commit/19b33905ca64bbd1e0fc161ba6727f048538fe01))
+* referencing new path ([f7530db](https://github.com/EthanJWright/foundryvtt-importer/commit/f7530db2bca710e40688e08a563db782cd546732))
+* removing old file ([f4d59be](https://github.com/EthanJWright/foundryvtt-importer/commit/f4d59be8de3858bc3303e69c3e06277ac853ea9e))
+* size throws, add tests ([46818df](https://github.com/EthanJWright/foundryvtt-importer/commit/46818dfaf96216692ee34aa7494ad19c43c307ff))
+* test senses and add throw ([06b4e87](https://github.com/EthanJWright/foundryvtt-importer/commit/06b4e8718449dd6518fa67f7f12ea41d90c7b549))
+* tested and fixed damage immunity parser ([3a346f6](https://github.com/EthanJWright/foundryvtt-importer/commit/3a346f6c7744ed2f7d7c5db08c1f3a7e69f8e78f))
+* wrapping types with arrays in container type ([4bbf033](https://github.com/EthanJWright/foundryvtt-importer/commit/4bbf03346f5a744386389a8eb464c70ff304f5d4))
+
 ### [0.2.6](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.5...v0.2.6) (2022-02-05)
 
 
