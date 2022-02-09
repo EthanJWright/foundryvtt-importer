@@ -1,6 +1,5 @@
 import { Abilities, Feature } from '../actor/interfaces';
 import { parseGenericFormula } from '../actor/parsers/generic';
-import { FifthItem, FifthItemType, FifthStat } from '../fifthedition.actor.template';
 import {
   parseActionType,
   parseActivation,
@@ -10,6 +9,7 @@ import {
   parseSpellSphere,
   parseTypeFromActorFeature,
 } from './parsers';
+import { FifthItem, FifthItemType, FifthStat } from '../actor/templates/fifthedition';
 
 function getMaxAbility(abilities: Abilities): FifthStat {
   if (abilities.str.mod > abilities.dex.mod) return 'str';

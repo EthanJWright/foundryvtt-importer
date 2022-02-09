@@ -1,4 +1,4 @@
-import { ActionType, FifthFeatureCost } from '../fifthedition.actor.template';
+import { ActionType, FifthFeatureCost } from '../actor/templates/fifthedition';
 
 export function parseSpellCone(description: string) {
   // like 20-foot-radius sphere

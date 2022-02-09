@@ -17,7 +17,7 @@ import {
   FifthSkill,
   FifthSkills,
   FifthStat,
-} from '../fifthedition.actor.template';
+} from './templates/fifthedition';
 import { featuresToItems } from '../item/weapon';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {

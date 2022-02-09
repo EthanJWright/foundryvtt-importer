@@ -1,7 +1,7 @@
 import { textToActor } from './parsers';
 import { actorToFifth, featureCollectionToItems } from './convert';
 import { UserData } from '../importForm';
-import { FifthItem } from '../fifthedition.actor.template';
+import { FifthItem } from './templates/fifthedition';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
