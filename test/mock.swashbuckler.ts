@@ -1,8 +1,12 @@
-import { ImportActor } from '../src/module/actors.process';
+import { ImportActor } from '../src/module/actor/interfaces';
 export const swashbuckler: ImportActor = {
   name: 'Swashbuckler',
   biography: 'Medium humanoid (any race), any non-lawful alignment',
   damageImmunities: [],
+  rating: {
+    cr: 3,
+    xp: 3000,
+  },
   damageResistances: [],
   conditionImmunities: [],
   damageVulnerabilities: [],
@@ -10,7 +14,7 @@ export const swashbuckler: ImportActor = {
   type: 'any race',
   size: 'Medium',
   alignment: 'non-lawful alignment',
-  senses: {},
+  senses: { units: 'ft' },
   health: {
     value: 66,
     min: 24,

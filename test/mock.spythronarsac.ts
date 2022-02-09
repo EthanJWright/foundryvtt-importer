@@ -1,4 +1,4 @@
-import { ImportActor } from '../src/module/actors.process';
+import { ImportActor } from '../src/module/actor/interfaces';
 export const spythronar: ImportActor = {
   name: 'Spythronar Sac',
   rating: {

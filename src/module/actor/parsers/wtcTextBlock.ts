@@ -117,7 +117,6 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
 }
 
 function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[]): Abilities {
-  console.log(`HERE: ${abilityKeys}`);
   return abilityKeys.reduce(
     (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
     {},
