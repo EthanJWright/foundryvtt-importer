@@ -135,7 +135,7 @@ export interface ImportActor {
   health: Health;
   rating: Rating;
   armorClass: ArmorClass;
-  stats: Abilities;
+  abilities: Abilities;
   speed: Speed;
   skills: Skill[];
   features: Feature[];

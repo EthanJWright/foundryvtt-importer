@@ -1,17 +1,17 @@
 import {
-  parseStatsWTC,
+  parseAbilitiesWTC,
   parseSkillsWTC,
   parseFeaturesFromBlock,
   findFirstSectionIndex,
   parseStandardCSV,
   parseFeatureSections,
   featureFromSection,
-  parseMultilineStatsWTC,
+  parseMultilineAbilitiesWTC,
   getFeatureNames,
   parseFeaturesWTC,
   parseRatingWTC,
   findStatBounds,
-  getVerticalKeyValueStats,
+  getVerticalKeyValueAbilities,
   tryStatParsers,
   parseSensesWTC,
   parseHealthWTC,
@@ -26,7 +26,7 @@ import {
   parseDamageResistancesWTC,
   parseConditionImmunitiesWTC,
   parseDamageVulnerabilitiesWTC,
-  parseVerticalKeyValueStatsWTC,
+  parseVerticalKeyValueAbilitiesWTC,
   parseSpeedWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
@@ -229,10 +229,10 @@ describe('damageVulderabilityParsers', () => {
   });
 });
 
-describe('parseStatsWTC', () => {
-  it('should parse a valid stats string', () => {
-    const stats = parseStatsWTC(['STR DEX CON INT WIS CHA', '18 (+4) 11 (+0) 14 (+2) 13 (+0) 15 (+1) 11 (+0)']);
-    expect(stats).toStrictEqual({
+describe('parseAbilitiesWTC', () => {
+  it('should parse a valid abilities string', () => {
+    const abilities = parseAbilitiesWTC(['STR DEX CON INT WIS CHA', '18 (+4) 11 (+0) 14 (+2) 13 (+0) 15 (+1) 11 (+0)']);
+    expect(abilities).toStrictEqual({
       cha: {
         mod: 0,
         savingThrow: 0,
@@ -265,17 +265,17 @@ describe('parseStatsWTC', () => {
       },
     });
   });
-  it('should throw an error when not passed a valid stats string', () => {
+  it('should throw an error when not passed a valid abilities string', () => {
     const invalid = ['invalid'];
     expect(() => {
-      parseStatsWTC(invalid);
+      parseAbilitiesWTC(invalid);
     }).toThrow();
   });
 });
 
-describe('parseMultilineStatsWTC', () => {
-  it('should parse a valid multi line stats string', () => {
-    const stats = parseMultilineStatsWTC([
+describe('parseMultilineAbilitiesWTC', () => {
+  it('should parse a valid multi line abilities string', () => {
+    const abilities = parseMultilineAbilitiesWTC([
       'STR',
       '12 (+1)',
       'DEX',
@@ -289,7 +289,7 @@ describe('parseMultilineStatsWTC', () => {
       'CHA',
       '15 (+2)',
     ]);
-    expect(stats).toStrictEqual({
+    expect(abilities).toStrictEqual({
       cha: {
         mod: 2,
         savingThrow: 0,
@@ -322,17 +322,17 @@ describe('parseMultilineStatsWTC', () => {
       },
     });
   });
-  it('should throw an error when not passed a valid stats string', () => {
+  it('should throw an error when not passed a valid abilities string', () => {
     const invalid = ['invalid'];
     expect(() => {
-      parseMultilineStatsWTC(invalid);
+      parseMultilineAbilitiesWTC(invalid);
     }).toThrow();
   });
 });
 
-describe('parseVerticalKeyValueStats', () => {
-  it('should parse a valid vertical key value stats string', () => {
-    const stats = parseVerticalKeyValueStatsWTC([
+describe('parseVerticalKeyValueAbilities', () => {
+  it('should parse a valid vertical key value abilities string', () => {
+    const abilities = parseVerticalKeyValueAbilitiesWTC([
       'STR',
       'DEX',
       'CON',
@@ -346,7 +346,7 @@ describe('parseVerticalKeyValueStats', () => {
       '15 (+2)',
       '13 (+0)',
     ]);
-    expect(stats).toStrictEqual({
+    expect(abilities).toStrictEqual({
       cha: {
         mod: 0,
         savingThrow: 0,
@@ -492,12 +492,12 @@ describe('parseFeatures', () => {
   });
 });
 
-describe('extractStats', () => {
-  it('should extract stats from a valid string', () => {
+describe('extractAbilities', () => {
+  it('should extract abilities from a valid string', () => {
     const actorText =
       'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
-    const stats = parseStatsWTC(actorText.split('\n'));
-    expect(stats).toEqual({
+    const abilities = parseAbilitiesWTC(actorText.split('\n'));
+    expect(abilities).toEqual({
       str: {
         value: 12,
         mod: 1,
@@ -534,32 +534,32 @@ describe('extractStats', () => {
   it('Should parse a Goblin', () => {
     const actorText =
       'Goblin\nMedium humanoid (goblin), chaotic evil\nArmor Class 13 (natural armor)\nHit Points 52 (8d8 + 16)\nSpeed 40 ft.\nSTR DEX CON INT WIS CHA\n16 (+3) 12 (+1) 15 (+2) 6 (–2) 13 (+1) 7 (–2)\nSkills Athletics +5\nSenses darkvision 60 ft.';
-    const stats = parseStatsWTC(actorText.split('\n'));
-    expect(stats.str.value).toBe(16);
+    const abilities = parseAbilitiesWTC(actorText.split('\n'));
+    expect(abilities.str.value).toBe(16);
   });
 
   it('should get key array and value array', () => {
     const actorText =
       'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
     const lines = actorText.split('\n');
-    const { keys, values } = getVerticalKeyValueStats(lines);
+    const { keys, values } = getVerticalKeyValueAbilities(lines);
     expect(keys).toEqual(['str', 'dex', 'con', 'int', 'wis', 'cha']);
     expect(values).toEqual(['14 (+2)', '17 (+3)', '15 (+2)', '13 (+1)', '16 (+3)', '18 (+4)']);
   });
 
-  it('should parse big bara stats', () => {
+  it('should parse big bara abilities', () => {
     const actorText =
       'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
-    const stats = tryStatParsers(actorText.split('\n'));
-    expect(stats.str.value).toBe(14);
-    expect(stats.str.mod).toBe(2);
+    const abilities = tryStatParsers(actorText.split('\n'));
+    expect(abilities.str.value).toBe(14);
+    expect(abilities.str.mod).toBe(2);
   });
 
-  it('should parse stats of a spythronar sac', () => {
+  it('should parse abilities of a spythronar sac', () => {
     const actorText =
       'Spythronar Sac\nTiny aberration, unaligned\nArmor Class 5\nHit Points 1 (1d4 – 1)\nSpeed 0 ft.\nSTR DEX CON INT WIS CHA\n1 (–5) 1 (–5) 8 (–1) 1 (–5) 3 (–4) 1 (–5)\nCondition Immunities blinded, charmed, deafened,\nexhaustion, frightened, paralyzed, petrified, poisoned,\nprone, restrained, unconscious\nSenses tremorsense 10 ft. (blind beyond this radius),\npassive Perception 6\nLanguages —\nChallenge 0 (10 XP) Proficiency Bonus +2\nFalse Appearance. The spythronar sac appears to be\na tangled ball of string, twigs, and dirt. Someone who\ncan see the sac can identify it with a successful DC 15\nIntelligence (Arcana or Nature) check.\nFragile. A creature who enters the spythronar sac’s\nspace must succeed on a DC 10 Dexterity saving throw,\nor the sac is destroyed.\nLightning Release. When the spythronar sac is\ndestroyed, it releases lightning in a 10-foot radius. A\ncreature who destroyed the sac by entering its space\nreceives no saving throw. Other creatures in that area\nmust succeed on a DC 10 Dexterity saving throw or\ntake 4 (1d8) lightning damage. Each spythronar swarm\nand web in this area instead gains advantage on its\nnext attack roll.\nShocking Birth. When a spythronar sac takes lightning\ndamage from a source other than another spythronar,\nit hatches, transforming into a spythronar swarm with\nhalf the normal hit points. This swarm rolls initiative and\nenters the combat.';
-    const stats = tryStatParsers(actorText.split('\n'));
-    expect(stats).toStrictEqual({
+    const abilities = tryStatParsers(actorText.split('\n'));
+    expect(abilities).toStrictEqual({
       str: { value: 1, mod: -5, savingThrow: 0 },
       dex: { value: 1, mod: -5, savingThrow: 0 },
       con: { value: 8, mod: -1, savingThrow: 0 },
@@ -692,13 +692,13 @@ describe('Parse Text', () => {
     expect(actor.name).toBe('Big Bara');
     expect(actor.alignment).toBe('Neutral Evil');
     expect(actor.languages).toEqual(['common']);
-    expect(actor.stats.con?.savingThrow).toEqual(4);
-    expect(actor.stats.wis?.savingThrow).toEqual(4);
+    expect(actor.abilities.con?.savingThrow).toEqual(4);
+    expect(actor.abilities.wis?.savingThrow).toEqual(4);
     expect(actor.type).toEqual('humanoid');
     expect(actor.size).toBe('Medium');
     expect(actor.health.value).toEqual(117);
-    expect(actor.stats.str.value).toEqual(14);
-    expect(actor.stats.str.mod).toEqual(2);
+    expect(actor.abilities.str.value).toEqual(14);
+    expect(actor.abilities.str.mod).toEqual(2);
     expect(actor.damageImmunities).toEqual(['poison']);
     expect(actor.conditionImmunities).toEqual(['charmed', 'frightened', 'poisoned']);
     expect(actor.damageVulnerabilities).toEqual([]);
@@ -721,7 +721,7 @@ describe('Parse Text', () => {
     expect(actor.name).toBe('Spythronar Sac');
     expect(actor.senses.tremorsense).toEqual(10);
     expect(actor.senses.special).toEqual('blind beyond this radius');
-    expect(actor.stats).toStrictEqual({
+    expect(actor.abilities).toStrictEqual({
       str: { value: 1, mod: -5, savingThrow: 0 },
       dex: { value: 1, mod: -5, savingThrow: 0 },
       con: { value: 8, mod: -1, savingThrow: 0 },
@@ -746,12 +746,12 @@ describe('Parse Text', () => {
 });
 
 describe('parseMultiLineStates', () => {
-  it('should parse stats originating from a multi line file', () => {
+  it('should parse abilities originating from a multi line file', () => {
     const actorText =
       'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nMedium humanoid (any race), any alignment\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
     const lines: string[] = actorText.split('\n');
-    const stats = parseMultilineStatsWTC(lines);
-    expect(stats).toEqual({
+    const abilities = parseMultilineAbilitiesWTC(lines);
+    expect(abilities).toEqual({
       str: {
         value: 12,
         mod: 1,

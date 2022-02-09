@@ -24,7 +24,7 @@ export const swashbuckler: ImportActor = {
     value: 17,
     type: 'leather armor',
   },
-  stats: {
+  abilities: {
     str: {
       value: 12,
       mod: 1,

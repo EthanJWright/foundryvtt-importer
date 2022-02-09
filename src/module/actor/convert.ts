@@ -314,7 +314,7 @@ function buildResistances(
 }
 
 export function actorToFifth({
-  stats,
+  abilities,
   armorClass,
   health,
   speed,
@@ -332,7 +332,7 @@ export function actorToFifth({
   type,
 }: ImportActor) {
   return {
-    abilities: convertAbilities(stats),
+    abilities: convertAbilities(abilities),
     attributes: convertAttributes({ armorClass, health, speed }, senses),
     details: {
       race: type,

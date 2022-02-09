@@ -123,7 +123,7 @@ function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[
   ) as Abilities;
 }
 
-export function parseStatsWTC(inputList: string[]) {
+export function parseAbilitiesWTC(inputList: string[]) {
   const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
     throw new Error('Could not find ability line');
@@ -180,7 +180,7 @@ export function findStatBounds(input: string[]): { lastLine: number; firstLine: 
   return { firstLine, lastLine };
 }
 
-export function parseMultilineStatsWTC(lines: string[]): Abilities {
+export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
@@ -194,7 +194,7 @@ export function parseMultilineStatsWTC(lines: string[]): Abilities {
   };
 }
 
-export function getVerticalKeyValueStats(input: string[]) {
+export function getVerticalKeyValueAbilities(input: string[]) {
   const { firstLine, lastLine } = findStatBounds(input);
   const lines = input.slice(firstLine, lastLine);
   const keyEndIndex = lines.findIndex((line) => {
@@ -205,8 +205,8 @@ export function getVerticalKeyValueStats(input: string[]) {
   return { keys, values };
 }
 
-export function parseVerticalKeyValueStatsWTC(input: string[]): Abilities {
-  const { keys, values } = getVerticalKeyValueStats(input);
+export function parseVerticalKeyValueAbilitiesWTC(input: string[]): Abilities {
+  const { keys, values } = getVerticalKeyValueAbilities(input);
   const { abilities, modifiers } = extractAbilityValues(values.join(' '));
   return zipStats(keys, abilities, modifiers);
 }
@@ -466,12 +466,12 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
 export function tryStatParsers(lines: string[]): Abilities {
   let stats: Abilities | undefined;
   try {
-    stats = parseStatsWTC(lines);
+    stats = parseAbilitiesWTC(lines);
   } catch (error) {
     try {
-      stats = parseMultilineStatsWTC(lines);
+      stats = parseMultilineAbilitiesWTC(lines);
     } catch {
-      stats = parseVerticalKeyValueStatsWTC(lines);
+      stats = parseVerticalKeyValueAbilitiesWTC(lines);
     }
   }
   if (!stats) throw new Error('could not parse stats.');

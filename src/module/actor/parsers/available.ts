@@ -10,15 +10,15 @@ import {
   parseFeaturesWTC,
   parseHealthWTC,
   parseLanguagesWTC,
-  parseMultilineStatsWTC,
+  parseMultilineAbilitiesWTC,
   parseRatingWTC,
   parseSensesWTC,
   parseSizeWTC,
   parseSkillsWTC,
   parseSpeedWTC,
-  parseStatsWTC,
+  parseAbilitiesWTC,
   parseTypeWTC,
-  parseVerticalKeyValueStatsWTC,
+  parseVerticalKeyValueAbilitiesWTC,
 } from './wtcTextBlock';
 
 export const nameParsers = [parseNameWTC];
@@ -35,7 +35,7 @@ export const damageImmunitiesParsers = [parseDamageImmunitiesWTC];
 export const damageResistancesParsers = [parseDamageResistancesWTC];
 export const conditionImmunitiesParsers = [parseConditionImmunitiesWTC];
 export const damageVulnerabilitiesParsers = [parseDamageVulnerabilitiesWTC];
-export const statsParsers = [parseStatsWTC, parseMultilineStatsWTC, parseVerticalKeyValueStatsWTC];
+export const abilitiesParsers = [parseAbilitiesWTC, parseMultilineAbilitiesWTC, parseVerticalKeyValueAbilitiesWTC];
 export const speedParsers = [parseSpeedWTC];
 export const skillsParsers = [parseSkillsWTC];
 export const featuresParsers = [parseFeaturesWTC];

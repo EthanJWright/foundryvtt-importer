@@ -177,7 +177,7 @@ export function tryParseDamageVulnerabilities(parsers: ActorParser[], lines: str
   }
 }
 
-export function tryParseStats(parsers: ActorParser[], lines: string[]): Abilities {
+export function tryParseAbilities(parsers: ActorParser[], lines: string[]): Abilities {
   const stats = tryParsers(parsers, lines);
   if (!(stats as Abilities).str) {
     throw new Error(`Could not parse stats: ${stats}`);

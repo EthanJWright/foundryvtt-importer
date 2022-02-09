@@ -40,7 +40,7 @@ export const spythronar: ImportActor = {
     'unconscious',
   ],
   damageVulnerabilities: [],
-  stats: {
+  abilities: {
     str: {
       value: 1,
       mod: -5,
