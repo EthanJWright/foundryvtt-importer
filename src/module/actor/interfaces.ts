@@ -34,6 +34,8 @@ export interface Feature {
   description: string;
 }
 
+export type Features = Feature[];
+
 export interface Health {
   value: number;
   min: number;
@@ -140,7 +142,7 @@ export interface ImportActor {
   abilities: Abilities;
   speed: Speed;
   skills: Skill[];
-  features: Feature[];
+  features: Features;
 }
 
 export interface Formula {

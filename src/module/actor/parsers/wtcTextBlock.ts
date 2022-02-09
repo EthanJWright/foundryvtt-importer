@@ -8,6 +8,7 @@ import {
   ConditionTypes,
   DamageType,
   Feature,
+  Features,
   Group,
   Health,
   Languages,
@@ -580,7 +581,7 @@ export function parseDamageVulnerabilitiesWTC(lines: string[]) {
     .filter((line) => line !== '') as DamageType[];
 }
 
-export function parseFeaturesWTC(lines: string[]): Feature[] {
+export function parseFeaturesWTC(lines: string[]): Features {
   const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);

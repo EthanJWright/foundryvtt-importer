@@ -8,6 +8,7 @@ import {
   ConditionTypes,
   DamageType,
   Feature,
+  Features,
   Health,
   Languages,
   Name,
@@ -209,7 +210,7 @@ export function tryParseSkills(parsers: ActorParser[], lines: string[]): Skill[]
   }
 }
 
-export function tryParseFeatures(parsers: ActorParser[], lines: string[]): Feature[] {
+export function tryParseFeatures(parsers: ActorParser[], lines: string[]): Features {
   const features = tryParsers(parsers, lines);
   if (!Array.isArray(features)) {
     throw new Error(`Could not parse features: ${features}`);
