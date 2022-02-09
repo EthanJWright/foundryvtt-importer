@@ -9,7 +9,7 @@ import {
   Senses,
   Skill,
   Size,
-} from './actor/interfaces';
+} from './interfaces';
 import {
   FifthAbilities,
   FifthAttributes,
@@ -17,8 +17,8 @@ import {
   FifthSkill,
   FifthSkills,
   FifthStat,
-} from './fifthedition.actor.template';
-import { featuresToItems } from './item/weapon';
+} from '../fifthedition.actor.template';
+import { featuresToItems } from '../item/weapon';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {
   return {

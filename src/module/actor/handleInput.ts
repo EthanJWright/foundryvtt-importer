@@ -1,6 +1,7 @@
-import { textToActor } from './actor/parsers';
-import { actorToFifth, featureCollectionToItems } from './actors.convert';
-import { UserData } from './importForm';
+import { textToActor } from './parsers';
+import { actorToFifth, featureCollectionToItems } from './convert';
+import { UserData } from '../importForm';
+import { FifthItem } from '../fifthedition.actor.template';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
@@ -15,8 +16,7 @@ async function txtRoute(stringData: string) {
   });
 
   await Promise.all(
-    preparedItems.map(async (item) => {
-      console.log(`Creating item: ${item.name}`);
+    preparedItems.map(async (item: FifthItem) => {
       return await Item.create(
         {
           ...item,
