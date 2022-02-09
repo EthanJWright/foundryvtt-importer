@@ -421,7 +421,7 @@ Currently the actor API is flushed out and extensible for contributions.
 #### Dev Foundry Configuration
 
 I recommend setting up a foundry dev environment. This should entail copying
-your FoundryVTT folder and making a new folder, say DevFoundryVTT. Then modify
+your FoundryVTT folder and making a new folder, say `DevFoundryVTT`. Then modify
 the `dataPath` located in the file `FoundryVTT/Config/options.json` to reflect
 the new base folder `DevFoundryVTT`. Now when you launch Foundry, you should
 have an environment free from your standard game sessions. I recommend removing
@@ -429,7 +429,7 @@ any extra modules and setting up a clean 'hello world' to test in.
 
 #### Installing this module
 
-Clone the repository to your systme, and ensure you have NPM and Node installed
+Clone the repository to your system, and ensure you have NPM and Node installed
 and up to date.
 
 To install the dependencies, run the following from the project directory:
@@ -453,11 +453,11 @@ npm run build
 The build command should generate a `dist` repo with the following contents:
 
 ```
-drwxrwxr-x     - ethan  8 Feb 20:21   -I  lang
-drwxrwxr-x     - ethan  8 Feb 20:21   -I  module
-.rw-rw-r--  1.0k ethan  8 Feb 20:21   -I  module.json
-drwxrwxr-x     - ethan  8 Feb 20:21   -I  styles
-drwxrwxr-x     - ethan  8 Feb 20:21   -I  templates
+drwxrwxr-x     - ubuntu  8 Feb 20:21   -I  lang
+drwxrwxr-x     - ubuntu  8 Feb 20:21   -I  module
+.rw-rw-r--  1.0k ubuntu  8 Feb 20:21   -I  module.json
+drwxrwxr-x     - ubuntu  8 Feb 20:21   -I  styles
+drwxrwxr-x     - ubuntu  8 Feb 20:21   -I  templates
 ```
 
 You can now symlink this module into you DevFoundry addon repo with the
@@ -499,7 +499,7 @@ list. Each element of an actor will have a list of availble parsers to attempt
 to parse that elment. 
 
 Each parser is well typed and must either return the particular element, or
-throw an error. When the module recievs input, it will hand that input to each
+throw an error. When the module recieves input, it will hand that input to each
 parser in the list for each field in the actor.
 
 This system means that an actor can be built from many different forms of
@@ -508,7 +508,7 @@ parser cannot handle the input it will error, and the next parser will be run.
 
 ### Adding a parser
 
-The current parser is the wtcTextBlock parser, which attempts to convert blocks
+The current parsers are wtcTextBlock parsers, which attempt to convert blocks
 of text that resemble a Wizards of the Coast Monster Block into the discrete
 actor elements.
 
@@ -521,8 +521,8 @@ of potential parsers and their expected types in the file `src/module/actor/pars
 
 Now you can create your new parser for a name:
 
-```js
-export const nameParserHelloWorld: ParserName = (lines) => {
+```ts
+export const nameParserHelloWorld: NameParser = (lines) => {
   if (lines[0] === 'Hello') return 'Hello, World!'
   throw new Error('Have not implemented parser yet!');
 };
@@ -532,7 +532,7 @@ and add it to the list of availble name parsers parsers in `src/module/actor/par
 
 and you can create your new test for your parser in `test/actor/parsers/yourNewParser.test.ts`
 
-```
+```ts
 describe('nameParserHelloWorld', () => {
   it('should return hello world', () => {
     const testInput = ['Hello']
