@@ -1,29 +1,31 @@
 import { ImportActor } from '../src/module/actor/interfaces';
 export const swashbuckler: ImportActor = {
   name: 'Swashbuckler',
-  biography: 'Medium humanoid (any race), any non-lawful alignment',
-  damageImmunities: [],
   rating: {
     cr: 3,
-    xp: 3000,
+    xp: 700,
   },
-  damageResistances: [],
-  conditionImmunities: [],
-  damageVulnerabilities: [],
-  languages: ['common'],
-  type: 'any race',
+  type: 'humanoid',
+  alignment: 'Any Non-lawful Alignment',
+  biography: 'Medium humanoid (any race), any non-lawful alignment',
+  languages: ['any one language (usually common)'],
   size: 'Medium',
-  alignment: 'non-lawful alignment',
-  senses: { units: 'ft' },
   health: {
     value: 66,
     min: 24,
     max: 108,
   },
+  senses: {
+    units: 'ft',
+  },
   armorClass: {
     value: 17,
     type: 'leather armor',
   },
+  damageImmunities: [],
+  damageResistances: [],
+  conditionImmunities: [],
+  damageVulnerabilities: [],
   abilities: {
     str: {
       value: 12,
@@ -71,5 +73,59 @@ export const swashbuckler: ImportActor = {
       bonus: 6,
     },
   ],
-  items: [],
+  items: [
+    {
+      name: 'Lightfooted',
+      type: 'feat',
+      description: 'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
+    },
+    {
+      name: 'Suave Defense',
+      type: 'feat',
+      description:
+        'While the swashbuckler is wearing light or no armor and wielding no shield, its AC includes its Charisma modifier. Actions',
+    },
+    {
+      name: 'Multiattack',
+      type: 'feat',
+      description: 'The swashbuckler makes three attacks: one with a dagger and two with its rapier.',
+    },
+    {
+      name: 'Dagger',
+      type: 'weapon',
+      description:
+        'Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing damage.',
+      activation: {
+        type: 'action',
+        cost: 1,
+      },
+      damage: {
+        parts: [['1d4 + 4', 'piercing']],
+      },
+      actionType: 'mwak',
+      range: {
+        value: 5,
+      },
+      ability: 'dex',
+      attackBonus: 0,
+    },
+    {
+      name: 'Rapier',
+      type: 'weapon',
+      description: 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage.',
+      activation: {
+        type: 'action',
+        cost: 1,
+      },
+      damage: {
+        parts: [['1d8 + 4', 'piercing']],
+      },
+      actionType: 'mwak',
+      range: {
+        value: 5,
+      },
+      ability: 'dex',
+      attackBonus: 0,
+    },
+  ],
 };

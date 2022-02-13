@@ -7,14 +7,11 @@ import { itemToFifth } from '../item/convert';
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
   const { items } = actor;
+  console.log(`Prepared Actor: ${JSON.stringify(actor, null, 2)}`);
   const preparedItems = items.map((item) => {
     return itemToFifth(item);
   });
-  preparedItems.forEach((item) => {
-    console.log(`Generating item : ${JSON.stringify(item, null, 2)}`);
-  });
   const convertedActor = actorToFifth(actor);
-  console.log(`Converted actor: ${JSON.stringify(convertedActor, null, 2)}`);
   const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',

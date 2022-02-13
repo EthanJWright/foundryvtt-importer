@@ -7,18 +7,18 @@ export const spythronar: ImportActor = {
   },
   type: 'aberration',
   alignment: 'Unaligned',
-  biography: 'Spythronar Sac',
+  biography: '',
   languages: ['—'],
   size: 'Tiny',
   health: {
     value: 1,
-    min: 1,
     max: 1,
+    min: 1,
   },
   senses: {
+    units: 'ft',
     special: 'blind beyond this radius',
     tremorsense: 10,
-    units: 'ft',
   },
   armorClass: {
     value: 5,
@@ -74,5 +74,30 @@ export const spythronar: ImportActor = {
   },
   speed: 0,
   skills: [],
-  items: [],
+  items: [
+    {
+      name: 'False Appearance',
+      type: 'feat',
+      description:
+        'The spythronar sac appears to be a tangled ball of string, twigs, and dirt. Someone who can see the sac can identify it with a successful DC 15 Intelligence (Arcana or Nature) check.',
+    },
+    {
+      name: 'Fragile',
+      type: 'feat',
+      description:
+        'A creature who enters the spythronar sac’s space must succeed on a DC 10 Dexterity saving throw, or the sac is destroyed.',
+    },
+    {
+      name: 'Lightning Release',
+      type: 'feat',
+      description:
+        'When the spythronar sac is destroyed, it releases lightning in a 10-foot radius. A creature who destroyed the sac by entering its space receives no saving throw. Other creatures in that area must succeed on a DC 10 Dexterity saving throw or take 4 (1d8) lightning damage. Each spythronar swarm and web in this area instead gains advantage on its next attack roll.',
+    },
+    {
+      name: 'Shocking Birth',
+      type: 'feat',
+      description:
+        'When a spythronar sac takes lightning damage from a source other than another spythronar, it hatches, transforming into a spythronar swarm with half the normal hit points. This swarm rolls initiative and enters the combat.',
+    },
+  ],
 };
