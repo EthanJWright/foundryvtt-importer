@@ -248,7 +248,12 @@ function parseTarget(description: string): Target {
 export function parseSpell(name: string, description: string, inputAbility?: ShortAbility): SpellType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'spell') throw new Error(`${name} is not a spell`);
-  const damage: Damage = { parts: buildDamageParts(description) };
+  let damage: undefined | Damage = undefined;
+  try {
+    damage = { parts: buildDamageParts(description) };
+  } catch (_) {
+    // spell doesnt require damage
+  }
   let actionType: 'save' | undefined;
   try {
     if (parseActionType(description) === 'save') actionType = 'save';

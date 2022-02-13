@@ -62,7 +62,7 @@ export interface SpellType {
   type: 'spell';
   description: string;
   activation?: Activation;
-  damage: Damage;
+  damage?: Damage;
   range: Range;
   ability?: ShortAbility;
   save?: Save;
