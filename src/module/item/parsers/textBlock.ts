@@ -134,14 +134,11 @@ export function buildDamageParts(description: string): string[][] {
 
 // the logic for parsing type is different if it is sourced from a monster
 export function parseTypeFromActorFeature(input: string): ItemType {
-  if (/weapon/i.test(input)) return 'weapon';
   if (/beginning at/i.test(input)) return 'feat';
   if (/starting at/i.test(input)) return 'feat';
   if (/melee weapon attack/i.test(input)) return 'weapon';
   if (/ranged weapon attack/i.test(input)) return 'weapon';
   if (/melee or ranged weapon attack/i.test(input)) return 'weapon';
-  if (/spell/i.test(input)) return 'spell';
-  if (/centered on/i.test(input)) return 'spell';
   return 'feat';
 }
 
@@ -247,7 +244,7 @@ function parseTarget(description: string): Target {
 
 export function parseSpell(name: string, description: string, inputAbility?: ShortAbility): SpellType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'spell') throw new Error(`${name} is not a spell`);
+  if (itemType !== 'spell' && itemType !== 'feat') throw new Error(`${name} is not a spell`);
   let damage: undefined | Damage = undefined;
   try {
     damage = { parts: buildDamageParts(description) };

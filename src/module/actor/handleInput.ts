@@ -1,15 +1,13 @@
 import { textToActor } from './parsers';
-import { actorToFifth, getMaxAbility } from './convert';
+import { actorToFifth } from './convert';
 import { UserData } from '../importForm';
 import { FifthItem } from './templates/fifthedition';
-import { parseItem } from '../item/parsers';
 import { itemToFifth } from '../item/convert';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
-  const { features } = actor;
-  const preparedItems = features.map(({ name, description }) => {
-    const item = parseItem(name, description, getMaxAbility(actor.abilities));
+  const { items } = actor;
+  const preparedItems = items.map((item) => {
     return itemToFifth(item);
   });
   preparedItems.forEach((item) => {

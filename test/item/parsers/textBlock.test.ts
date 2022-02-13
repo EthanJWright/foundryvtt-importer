@@ -1,4 +1,5 @@
 import { parseSpell, parseWeapon } from '../../../src/module/item/parsers/textBlock';
+import { parseItem } from '../../../src/module/item/parsers/available';
 describe('parseWeapon', () => {
   it('should parse a shortsword', () => {
     const name = 'Shortsword';
@@ -44,6 +45,7 @@ describe('parseSpell', () => {
     expect(spell).toEqual({
       ability: 'con',
       actionType: 'save',
+      hasSpellData: true,
       activation: {
         cost: 1,
         type: 'action',
@@ -77,5 +79,26 @@ describe('parseSpell', () => {
   it('should throw an error if not passed a spell', () => {
     const text = 'Some feat that isnt a spell.';
     expect(() => parseSpell('Not a spell', text, 'wis')).toThrow();
+  });
+});
+
+describe('tryParsers', () => {
+  it('should parse magic resistance', () => {
+    const item = 'The nimblewright has advantage on saving throws against spells and other magical effects.';
+    const parsed = parseItem('Magic Resistance', item, 'wis');
+    expect(parsed).toEqual({
+      description: 'The nimblewright has advantage on saving throws against spells and other magical effects.',
+      name: 'Magic Resistance',
+      type: 'feat',
+    });
+  });
+  it('should parse magic weapons', () => {
+    const item = 'The nimblewright’s weapon attacks are magical.';
+    const parsed = parseItem('Magic Weapons', item, 'str');
+    expect(parsed).toEqual({
+      description: 'The nimblewright’s weapon attacks are magical.',
+      name: 'Magic Weapons',
+      type: 'feat',
+    });
   });
 });

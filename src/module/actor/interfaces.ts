@@ -1,3 +1,5 @@
+import { ImportItem } from '../item/interfaces';
+
 export interface Ability {
   value: number;
   mod: number;
@@ -103,6 +105,7 @@ export type ActorType = string;
 export type Alignment = string;
 export type Biography = string;
 export type Speed = number;
+export type ImportItems = ImportItem[];
 
 export type ActorTypes =
   | Name
@@ -122,7 +125,8 @@ export type ActorTypes =
   | Feature[]
   | Rating
   | Speed
-  | Health;
+  | Health
+  | ImportItems;
 
 export interface ImportActor {
   name: Name;
@@ -142,7 +146,7 @@ export interface ImportActor {
   abilities: Abilities;
   speed: Speed;
   skills: Skill[];
-  features: Features;
+  items: ImportItems;
 }
 
 export interface Formula {

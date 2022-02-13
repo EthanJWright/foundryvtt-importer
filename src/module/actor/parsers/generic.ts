@@ -10,7 +10,7 @@ export function parseGenericFormula(line: string, regexStart: RegExp) {
   let change = '';
   let formula = undefined;
   if (!formulaArray || formulaArray.length < 2) {
-    console.log(`Could not parse formula from string: ${line}`);
+    // no parentheses found
   } else {
     // pull formula from match
     formula = formulaArray[1];

@@ -71,29 +71,5 @@ export const swashbuckler: ImportActor = {
       bonus: 6,
     },
   ],
-  features: [
-    {
-      name: 'Lightfooted',
-      description: '. The swashbuckler can take the Dash or Disengageaction as a bonus action on each of its turns.',
-    },
-    {
-      name: 'Suave Defense',
-      description:
-        '. While the swashbuckler is wearing light or noarmor and wielding no shield, its AC includes its Charismamodifier.',
-    },
-
-    {
-      name: 'Multiattack',
-      description: '. The swashbuckler makes three attacks: one witha dagger and two with its rapier.',
-    },
-    {
-      name: 'Dagger',
-      description:
-        '. Melee or Ranged Weapon Attack: +6 to hit, reach 5ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercingdamage.',
-    },
-    {
-      name: 'Rapier',
-      description: '. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.Hit: 8 (1d8 + 4) piercing damage.',
-    },
-  ],
+  items: [],
 };

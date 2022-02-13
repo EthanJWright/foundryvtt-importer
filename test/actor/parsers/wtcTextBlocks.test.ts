@@ -634,10 +634,10 @@ describe('Parse Text', () => {
     expect(actor.armorClass.type).toBe('leather armor');
     expect(actor.speed).toEqual(30);
     expect(actor.skills.length).toEqual(3);
-    expect(actor.features[0].description).toBe(
+    expect(actor.items[0].description).toBe(
       'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
     );
-    expect(actor.features.length).toEqual(5);
+    expect(actor.items.length).toEqual(5);
   });
 
   it('should parse a nimblewright into an actor', () => {
@@ -653,9 +653,9 @@ describe('Parse Text', () => {
     expect(actor.armorClass.type).toBe('natural armor');
     expect(actor.speed).toEqual(60);
     expect(actor.skills.length).toEqual(2);
-    expect(actor.features.length).toEqual(8);
-    expect(actor.features[0].name).toBe('Magic Resistance');
-    expect(actor.features[0].description).toBe(
+    expect(actor.items.length).toEqual(8);
+    expect(actor.items[0].name).toBe('Magic Resistance');
+    expect(actor.items[0].description).toBe(
       'The nimblewright has advantage on saving throws against spells and other magical effects.',
     );
   });
@@ -679,8 +679,8 @@ describe('Parse Text', () => {
     expect(actor?.rating?.cr).toEqual(3);
     expect(actor?.rating?.xp).toEqual(700);
     expect(actor.skills.length).toEqual(3);
-    expect(actor.features.length).toEqual(5);
-    expect(actor.features[0].description).toBe(
+    expect(actor.items.length).toEqual(5);
+    expect(actor.items[0].description).toBe(
       'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
     );
   });
@@ -703,10 +703,8 @@ describe('Parse Text', () => {
     expect(actor.conditionImmunities).toEqual(['charmed', 'frightened', 'poisoned']);
     expect(actor.damageVulnerabilities).toEqual([]);
     expect(actor.senses.darkvision).toEqual(60);
-    expect(actor.features).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'Poisonous Cloud (2/Day)' })]),
-    );
-    const sword = actor.features.find((f) => f.name === 'Shortsword');
+    expect(actor.items).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'Poisonous Cloud (2/Day)' })]));
+    const sword = actor.items.find((f) => f.name === 'Shortsword');
     expect(sword).toBeDefined();
     expect(sword?.description).toBe(
       'Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poison damage.',

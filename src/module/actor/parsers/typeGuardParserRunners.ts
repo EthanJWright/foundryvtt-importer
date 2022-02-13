@@ -10,6 +10,7 @@ import {
   Feature,
   Features,
   Health,
+  ImportItems,
   Languages,
   Name,
   Rating,
@@ -216,4 +217,26 @@ export function tryParseFeatures(parsers: ActorParser[], lines: string[]): Featu
     throw new Error(`Could not parse features: ${features}`);
   }
   return features as Feature[];
+}
+
+export function tryItemParsers(parsers: ItemParser[], input: string[], abilities: Abilities): ParserOutput {
+  const parserErrors = [];
+  for (const parser of parsers) {
+    try {
+      const result = parser(input, abilities);
+      return result;
+    } catch (error) {
+      parserErrors.push(error);
+    }
+  }
+  throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
+}
+
+export type ItemParser = (input: string[], abilities: Abilities) => ParserOutput;
+export function tryParseItems(parsers: ItemParser[], lines: string[], abilities: Abilities): ImportItems {
+  const items = tryItemParsers(parsers, lines, abilities);
+  if (!Array.isArray(items)) {
+    throw new Error(`Could not parse items: ${items}`);
+  }
+  return items as ImportItems;
 }
