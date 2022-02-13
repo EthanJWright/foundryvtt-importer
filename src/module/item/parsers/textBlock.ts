@@ -159,7 +159,7 @@ function abilityToLongShort(ability: string) {
   if (/cha/i.test(ability)) return ['cha', 'charisma'];
   return ['', ''];
 }
-export function actionTypeExtraData(actionType: string | undefined, { name, description }: Feature) {
+export function actionTypeExtraData(actionType: string | undefined, { description }: Feature) {
   let building = {};
   if (!actionType) return building;
   if (actionType === 'save') {
@@ -295,6 +295,7 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function parseFeat(name: string, description: string, _?: ShortAbility): FeatType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'feat') throw new Error(`${name} is not a feat`);
