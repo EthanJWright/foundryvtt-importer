@@ -59,7 +59,8 @@ export interface WeaponType {
 
 export interface SpellType {
   name: string;
-  type: 'spell';
+  type: 'spell' | 'feat';
+  hasSpellData?: boolean;
   description: string;
   activation?: Activation;
   damage?: Damage;

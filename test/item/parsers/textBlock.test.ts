@@ -66,7 +66,7 @@ describe('parseSpell', () => {
         units: 'ft',
         value: 20,
       },
-      type: 'spell',
+      type: 'feat',
       uses: {
         max: 2,
         per: 'day',

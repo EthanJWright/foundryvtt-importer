@@ -12,6 +12,9 @@ async function txtRoute(stringData: string) {
     const item = parseItem(name, description, getMaxAbility(actor.abilities));
     return itemToFifth(item);
   });
+  preparedItems.forEach((item) => {
+    console.log(`Generating item : ${JSON.stringify(item, null, 2)}`);
+  });
   const convertedActor = actorToFifth(actor);
   console.log(`Converted actor: ${JSON.stringify(convertedActor, null, 2)}`);
   const foundryActor = await Actor.create({

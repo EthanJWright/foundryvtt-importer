@@ -283,7 +283,8 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
 
   return {
     name,
-    type: 'spell',
+    type: 'feat',
+    hasSpellData: true,
     ability,
     uses,
     save,

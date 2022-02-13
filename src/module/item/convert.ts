@@ -1,5 +1,23 @@
 import { FifthItem } from '../actor/templates/fifthedition';
-import { ImportItem } from './interfaces';
+import { ImportItem, SpellType } from './interfaces';
+
+function spellRoute(item: SpellType): FifthItem {
+  const { name, type, description, activation, range, save, uses, ability } = item;
+  return {
+    name,
+    type,
+    data: {
+      description: {
+        value: description,
+      },
+      activation,
+      range,
+      save,
+      uses,
+      ability,
+    },
+  };
+}
 
 export function itemToFifth(item: ImportItem): FifthItem {
   switch (item.type) {
@@ -22,23 +40,12 @@ export function itemToFifth(item: ImportItem): FifthItem {
       };
     }
     case 'spell': {
-      const { name, type, description, activation, range, save, uses, ability } = item;
-      return {
-        name,
-        type,
-        data: {
-          description: {
-            value: description,
-          },
-          activation,
-          range,
-          save,
-          uses,
-          ability,
-        },
-      };
+      return spellRoute(item);
     }
     case 'feat': {
+      if ((item as SpellType)?.hasSpellData) {
+        return spellRoute(item as SpellType);
+      }
       const { name, type, description } = item;
       return {
         name,
