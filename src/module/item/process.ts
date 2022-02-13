@@ -1,5 +1,6 @@
 import { FifthItem, ItemRarity } from '../actor/templates/fifthedition';
-import { ItemType, parseType } from './parsers';
+import { ItemType } from './interfaces';
+import { parseType } from './parsers/textBlock';
 import { parsedToWeapon } from './weapon';
 
 interface ItemData {
