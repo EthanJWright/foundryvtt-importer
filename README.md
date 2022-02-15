@@ -414,7 +414,8 @@ Foundry.
 
 ## Contributing to the codebase
 
-Currently the actor API is flushed out and extensible for contributions.
+Currently the actor API is flushed out and extensible for contributions. The
+Item parsers are starting to be flushed out.
 
 ### Dev Environment
 
@@ -505,6 +506,19 @@ parser in the list for each field in the actor.
 This system means that an actor can be built from many different forms of
 input, and that input doesn't need to be routed to any specific parser. If a
 parser cannot handle the input it will error, and the next parser will be run.
+
+
+---
+
+**NOTE**
+
+Feats, actions, weapons, etc, are all represented as Items in Foundry. I'm
+slowly flushing out the item parser, but currently the actor parser
+itemsParsers expects a return of one of the types defined in the Item
+interface. Look at the implementation of parseItemsWTC for an example of item
+parsing.
+
+---
 
 ### Adding a parser
 

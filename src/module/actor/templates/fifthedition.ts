@@ -171,6 +171,16 @@ export interface FifthItem {
       units?: string;
       long?: number;
     };
+    save?: {
+      ability?: string;
+      dc?: number;
+      scaling?: string;
+    };
+    uses?: {
+      value?: number;
+      per?: string;
+      max?: number;
+    };
     ability?: string | undefined;
     attackBonus?: number;
     rarity?: ItemRarity;

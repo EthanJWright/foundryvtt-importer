@@ -1,5 +1,4 @@
-import { buildDamageParts } from '../src/module/item/weapon';
-import { parseRange, parseSpellCone, parseSpellSphere } from '../src/module/item/parsers';
+import { buildDamageParts, parseRange, parseSpellCone, parseSpellSphere } from '../src/module/item/parsers/textBlock';
 
 describe('buildDamage', () => {
   it('should build damage from a melee weapon', () => {

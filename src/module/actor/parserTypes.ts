@@ -6,7 +6,6 @@ import {
   Biography,
   ConditionTypes,
   DamageTypes,
-  Feature,
   Health,
   Languages,
   Name,
@@ -15,6 +14,7 @@ import {
   Size,
   Skill,
   Speed,
+  ImportItems,
 } from './interfaces';
 
 export type NameParser = (lines: string[]) => Name;
@@ -34,4 +34,4 @@ export type ConditionImmunitiesParser = (lines: string[]) => ConditionTypes;
 export type StatsParser = (lines: string[]) => Abilities;
 export type SpeedParser = (lines: string[]) => Speed;
 export type SkillsParser = (lines: string[]) => Skill[];
-export type FeaturesParser = (lines: string[]) => Feature[];
+export type ItemsParser = (lines: string[]) => ImportItems;

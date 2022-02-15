@@ -19,7 +19,7 @@ import {
   FifthSkills,
   FifthStat,
 } from './templates/fifthedition';
-import { featuresToItems } from '../item/weapon';
+import { parsedToWeapon } from '../item/parsers/textBlock';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {
   return {
@@ -224,8 +224,14 @@ export interface FeatureCollection {
 interface ActorData {
   abilities: Abilities;
 }
+
+export function getMaxAbility(abilities: Abilities): FifthStat {
+  if (abilities.str.mod > abilities.dex.mod) return 'str';
+  return 'dex';
+}
+
 export function featureCollectionToItems(allFeatures: Feature[], { abilities }: ActorData): FifthItem[] {
-  return featuresToItems(allFeatures, abilities);
+  return allFeatures.map(({ name, description }) => parsedToWeapon(name, description, getMaxAbility(abilities)));
 }
 
 function convertSize(size: Size) {

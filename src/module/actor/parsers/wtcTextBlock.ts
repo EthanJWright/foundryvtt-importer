@@ -1,3 +1,5 @@
+import { parseItem } from '../../item/parsers';
+import { getMaxAbility } from '../convert';
 import {
   Abilities,
   Ability,
@@ -11,6 +13,7 @@ import {
   Features,
   Group,
   Health,
+  ImportItems,
   Languages,
   Name,
   Rating,
@@ -587,6 +590,11 @@ export function parseFeaturesWTC(lines: string[]): Features {
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
   return featureStrings.map(featureStringsToFeatures);
+}
+
+export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {
+  const features = parseFeaturesWTC(lines);
+  return features.map(({ name, description }) => parseItem(name, description, getMaxAbility(abilities)));
 }
 
 export function parseSensesWTC(lines: string[]): Senses {

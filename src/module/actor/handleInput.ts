@@ -1,14 +1,17 @@
 import { textToActor } from './parsers';
-import { actorToFifth, featureCollectionToItems } from './convert';
+import { actorToFifth } from './convert';
 import { UserData } from '../importForm';
 import { FifthItem } from './templates/fifthedition';
+import { itemToFifth } from '../item/convert';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
-  const { features } = actor;
-  const preparedItems = featureCollectionToItems(features, { abilities: actor.abilities });
+  const { items } = actor;
+  console.log(`Prepared Actor: ${JSON.stringify(actor, null, 2)}`);
+  const preparedItems = items.map((item) => {
+    return itemToFifth(item);
+  });
   const convertedActor = actorToFifth(actor);
-  console.log(`Converted actor: ${JSON.stringify(convertedActor, null, 2)}`);
   const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',

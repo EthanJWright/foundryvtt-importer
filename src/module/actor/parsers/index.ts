@@ -17,7 +17,7 @@ import {
   abilitiesParsers,
   speedParsers,
   skillsParsers,
-  featuresParsers,
+  itemsParsers,
 } from './available';
 
 import {
@@ -31,7 +31,6 @@ import {
   tryParseDamageImmunities,
   tryParseDamageResistances,
   tryParseDamageVulnerabilities,
-  tryParseFeatures,
   tryParseSkills,
   tryParseSpeed,
   tryParseAbilities,
@@ -39,10 +38,12 @@ import {
   trySensesParse,
   trySizeParse,
   tryTypeParse,
+  tryParseItems,
 } from './typeGuardParserRunners';
 
 export function textToActor(input: string): ImportActor {
   const lines = input.split('\n');
+  const abilities = tryParseAbilities(abilitiesParsers, lines);
   return {
     name: tryNameParse(nameParsers, lines),
     rating: tryRatingParse(ratingParsers, lines),
@@ -58,9 +59,9 @@ export function textToActor(input: string): ImportActor {
     damageResistances: tryParseDamageResistances(damageResistancesParsers, lines),
     conditionImmunities: tryParseConditionImmunities(conditionImmunitiesParsers, lines),
     damageVulnerabilities: tryParseDamageVulnerabilities(damageVulnerabilitiesParsers, lines),
-    abilities: tryParseAbilities(abilitiesParsers, lines),
+    abilities,
     speed: tryParseSpeed(speedParsers, lines),
     skills: tryParseSkills(skillsParsers, lines),
-    features: tryParseFeatures(featuresParsers, lines),
+    items: tryParseItems(itemsParsers, lines, abilities),
   };
 }
