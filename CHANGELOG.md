@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.8](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.7...v0.2.8) (2022-02-15)
+
+
+### Bug Fixes
+
+* adding no unused for generic function ([7cd9390](https://github.com/EthanJWright/foundryvtt-importer/commit/7cd9390e216e25f7c06671e0bd5a969ecb5d3336))
+* adding note to readme regarding items ([c02d07a](https://github.com/EthanJWright/foundryvtt-importer/commit/c02d07af185e8e0b649cad40d390c8f0347b3091))
+* adjusting assumptions ([6292584](https://github.com/EthanJWright/foundryvtt-importer/commit/6292584b0b933fb8e9a842b0a792d574b19d53f0))
+* fixing spacing issues in hbs ([d4de478](https://github.com/EthanJWright/foundryvtt-importer/commit/d4de4782a83a392e718dc84d3edb0f160c204498))
+* spell parsing and adding tests ([2ea9e19](https://github.com/EthanJWright/foundryvtt-importer/commit/2ea9e1958d87720c6687c92d677411308c4d0945))
+* treat spells as feats for now ([5057cda](https://github.com/EthanJWright/foundryvtt-importer/commit/5057cdae5fcd5c511f6e93319e602385c876977f))
+* updating mocks ([7acf209](https://github.com/EthanJWright/foundryvtt-importer/commit/7acf2091ebf706cbc59fa49f1dd1e930189ad93b))
+
 ### [0.2.7](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.6...v0.2.7) (2022-02-09)
 
 
