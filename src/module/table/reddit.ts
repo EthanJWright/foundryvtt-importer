@@ -24,12 +24,21 @@ export function addWeight(line: string): TableEntry {
   };
 }
 
+export function cleanName(name: string) {
+  return name
+    .replace(/d[0-9]{1,3}/, '')
+    .replace(/[0-9]{1,3}/, '')
+    .trim();
+}
+
 export function parseWeightedTable(userInput: string): FoundryTable {
   const raw = userInput.split('\n');
   const lines = raw.filter((line) => line !== '');
-  const rawName = lines.shift() || 'No Name';
-  const replacedName = rawName.replace(/d[0-9]{1,3}/, '').replace(/[0-9]{1,3}/, '');
-  const name = replacedName.trim();
+  let rawName = 'Parsed Table';
+  if (!hasWeights(lines[0])) {
+    rawName = lines.shift() || 'No Name';
+  }
+  const name = cleanName(rawName);
   let results: TableEntry[] | undefined = undefined;
   let formula = `1d${lines.length}`;
   if (hasWeights(lines[0])) {

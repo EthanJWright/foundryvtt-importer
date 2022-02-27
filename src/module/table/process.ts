@@ -13,7 +13,6 @@ import {
   TableData,
 } from './parse';
 async function createTableFromJSON(tableJSON: FoundryTable | BasicTable) {
-  console.log(`creating a table...`);
   let parsed: TableData | undefined;
   if (isFoundryTable(tableJSON)) {
     parsed = parseFoundryJSON(tableJSON as FoundryTable);
@@ -28,17 +27,16 @@ async function jsonRoute(stringData: string) {
   createTableFromJSON(json);
 }
 
-const breakLines = (data: string) => {
+export const breakLines = (data: string) => {
   const rawLines = data.split(/\r?\n/);
   return rawLines.filter((line) => {
     return line !== '';
   });
 };
 
-export type TableParser = (table: BasicTable) => FoundryTable;
+export type TableParser = (table: string) => FoundryTable;
 
-const TABLE_PARSERS = [parseFromTxt];
-function tryParseTables(parsers: TableParser[], inputTable: BasicTable): FoundryTable {
+function tryParseTables(parsers: TableParser[], inputTable: string): FoundryTable {
   for (const parser of parsers) {
     try {
       const table = parser(inputTable);
@@ -49,17 +47,16 @@ function tryParseTables(parsers: TableParser[], inputTable: BasicTable): Foundry
       // trying other parsers
     }
   }
-  throw new Error(`Unable to parse ${inputTable.name}`);
+  throw new Error(`Unable to parse table`);
 }
 
-export function txtToFoundry(fullFileName: string, stringData: string) {
-  const lines = breakLines(stringData);
-  return tryParseTables(TABLE_PARSERS, { name: fullFileName, entries: lines });
+export function txtToFoundry(stringData: string) {
+  return tryParseTables([parseFromTxt], stringData);
 }
 
-async function txtRoute(fullFileName: string, stringData: string) {
+async function txtRoute(stringData: string) {
   console.log(`Data: ${stringData}`);
-  await RollTable.create(txtToFoundry(fullFileName, stringData));
+  await RollTable.create(txtToFoundry(stringData));
 }
 
 async function csvRoute(fullFileName: string, data: string) {
@@ -98,7 +95,7 @@ export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
     } else if (isRedditTable(clipboardInput)) {
       redditTableRoute(clipboardInput);
     } else {
-      txtRoute('Line Imported Table', clipboardInput);
+      txtRoute(clipboardInput);
     }
     return;
   }
@@ -115,7 +112,7 @@ export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
       jsonRoute(data);
       break;
     case 'txt':
-      txtRoute(jsonfile, data);
+      txtRoute(`${jsonfile}\n${data}`);
       break;
     case 'csv':
       csvRoute(jsonfile, data);

@@ -1,4 +1,5 @@
 import { cleanName } from '../formatters';
+import { breakLines, TableParser } from './process';
 import { addWeight, hasWeights } from './reddit';
 
 export type TableData = ConstructorParameters<typeof foundry.documents.BaseRollTable>[0];
@@ -89,18 +90,20 @@ export function numWithWeights(entries: string[]) {
   }, 0);
 }
 
-export function parseFromTxt(table: BasicTable) {
-  const { name, entries } = table;
-  const numWeighted: number = numWithWeights(entries);
-  if (numWeighted > entries.length / 2) {
+export const parseFromTxt: TableParser = (table: string) => {
+  const lines = breakLines(table);
+  const name = lines.shift() || 'Parsed Table';
+  console.log(`Name: ${name}`);
+  const numWeighted: number = numWithWeights(lines);
+  if (numWeighted > lines.length / 2) {
     throw new Error('Entries have weights');
   }
   return {
     name: nameFromFile(name),
-    formula: `1d${entries.length}`,
-    results: [...entries.map(entryStringMap)],
+    formula: `1d${lines.length}`,
+    results: [...lines.map(entryStringMap)],
   };
-}
+};
 
 export const rangeStringMap = (current: string): [number, number] => {
   let start, end: number;
@@ -138,13 +141,18 @@ export function parseFromCSV(table: BasicTable) {
   };
 }
 
-export function parseMultiLineWeighted(table: BasicTable) {
-  const withWeights = numWithWeights(table.entries);
-  if (withWeights !== table.entries.length / 2) {
+export function parseMultiLineWeighted(inputTable: string) {
+  const lines = breakLines(inputTable);
+  let name = 'Parsed Table';
+  if (!hasWeights(lines[0])) {
+    name = lines.shift() || 'Parsed Table';
+  }
+  const withWeights = numWithWeights(lines);
+  if (withWeights !== lines.length / 2) {
     throw new Error('Not a multi line weighted table');
   }
 
-  const entries = table.entries.reduce((acc: TableEntry[], curr: string) => {
+  const entries = lines.reduce((acc: TableEntry[], curr: string) => {
     if (hasWeights(curr)) {
       acc.push(addWeight(curr));
     } else {
@@ -154,7 +162,7 @@ export function parseMultiLineWeighted(table: BasicTable) {
   }, []);
   const formula = formulaFromEntries(entries);
   return {
-    name: table.name,
+    name,
     formula,
     results: entries,
   };
