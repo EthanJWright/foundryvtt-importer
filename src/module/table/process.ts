@@ -1,5 +1,5 @@
-import { UserData } from './importForm';
-import { isRedditCollection, isRedditTable, parseRedditCollection, parseRedditTable } from './table.reddit';
+import { UserData } from '../importForm';
+import { isRedditCollection, isRedditTable, parseRedditCollection, parseWeightedTable } from './reddit';
 import {
   BasicTable,
   FoundryTable,
@@ -11,7 +11,7 @@ import {
   parseFromCSV,
   parseFromTxt,
   TableData,
-} from './table.process';
+} from './parse';
 async function createTableFromJSON(tableJSON: FoundryTable | BasicTable) {
   console.log(`creating a table...`);
   let parsed: TableData | undefined;
@@ -35,11 +35,31 @@ const breakLines = (data: string) => {
   });
 };
 
+export type TableParser = (table: BasicTable) => FoundryTable;
+
+const TABLE_PARSERS = [parseFromTxt];
+function tryParseTables(parsers: TableParser[], inputTable: BasicTable): FoundryTable {
+  for (const parser of parsers) {
+    try {
+      const table = parser(inputTable);
+      if (table) {
+        return table;
+      }
+    } catch (e) {
+      // trying other parsers
+    }
+  }
+  throw new Error(`Unable to parse ${inputTable.name}`);
+}
+
+export function txtToFoundry(fullFileName: string, stringData: string) {
+  const lines = breakLines(stringData);
+  return tryParseTables(TABLE_PARSERS, { name: fullFileName, entries: lines });
+}
+
 async function txtRoute(fullFileName: string, stringData: string) {
   console.log(`Data: ${stringData}`);
-  const lines = breakLines(stringData);
-  const parsed = parseFromTxt({ name: fullFileName, entries: lines });
-  await RollTable.create(parsed);
+  await RollTable.create(txtToFoundry(fullFileName, stringData));
 }
 
 async function csvRoute(fullFileName: string, data: string) {
@@ -62,7 +82,7 @@ async function redditTableRoute(input: string) {
   if (isRedditCollection(input)) {
     return handleRedditCollection(input);
   } else {
-    const parsed = parseRedditTable(input);
+    const parsed = parseWeightedTable(input);
     await RollTable.create(parsed);
   }
 }

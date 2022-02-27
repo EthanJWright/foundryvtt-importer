@@ -1,4 +1,4 @@
-import { formulaFromEntries, FoundryTable, rangeStringMap, TableEntry } from './table.process';
+import { formulaFromEntries, FoundryTable, rangeStringMap, TableEntry } from './parse';
 
 const WEIGHT_RANGE_REGEX = /^[0-9]{1,3}-[0-9]{1,3}./;
 const WEIGHT_REGEX = /^[0-9]{1,3}./;
@@ -11,7 +11,7 @@ export function hasWeights(item: string): boolean {
   return WEIGHT_REGEX.test(item.trim());
 }
 
-export function addRedditRange(line: string): TableEntry {
+export function addWeight(line: string): TableEntry {
   let regex = WEIGHT_REGEX;
   if (hasWeightsRange(line)) {
     regex = WEIGHT_RANGE_REGEX;
@@ -24,7 +24,7 @@ export function addRedditRange(line: string): TableEntry {
   };
 }
 
-export function parseRedditTable(userInput: string): FoundryTable {
+export function parseWeightedTable(userInput: string): FoundryTable {
   const raw = userInput.split('\n');
   const lines = raw.filter((line) => line !== '');
   const rawName = lines.shift() || 'No Name';
@@ -33,7 +33,7 @@ export function parseRedditTable(userInput: string): FoundryTable {
   let results: TableEntry[] | undefined = undefined;
   let formula = `1d${lines.length}`;
   if (hasWeights(lines[0])) {
-    results = lines.map(addRedditRange);
+    results = lines.map(addWeight);
     formula = formulaFromEntries(results);
   } else {
     results = lines.map((line: string, index: number) => {
@@ -68,6 +68,6 @@ export function parseRedditCollection(userInput: string): TableCollection {
   const tables = userInput.split(/\nd[0-9]{1,2}/);
   return {
     name: (tables.shift() || 'No Name').trim(),
-    collection: tables.map((table) => parseRedditTable(table)),
+    collection: tables.map((table) => parseWeightedTable(table)),
   };
 }

@@ -1,4 +1,5 @@
-import { cleanName } from './formatters';
+import { cleanName } from '../formatters';
+import { addWeight, hasWeights } from './reddit';
 
 export type TableData = ConstructorParameters<typeof foundry.documents.BaseRollTable>[0];
 
@@ -79,8 +80,21 @@ export function isJSONTable(data: string) {
   return true;
 }
 
+export function numWithWeights(entries: string[]) {
+  return entries.reduce((numWeights, cur) => {
+    if (hasWeights(cur)) {
+      numWeights += 1;
+    }
+    return numWeights;
+  }, 0);
+}
+
 export function parseFromTxt(table: BasicTable) {
   const { name, entries } = table;
+  const numWeighted: number = numWithWeights(entries);
+  if (numWeighted > entries.length / 2) {
+    throw new Error('Entries have weights');
+  }
   return {
     name: nameFromFile(name),
     formula: `1d${entries.length}`,
@@ -121,5 +135,27 @@ export function parseFromCSV(table: BasicTable) {
     name: nameFromFile(name),
     formula: formulaFromEntries(results),
     results,
+  };
+}
+
+export function parseMultiLineWeighted(table: BasicTable) {
+  const withWeights = numWithWeights(table.entries);
+  if (withWeights !== table.entries.length / 2) {
+    throw new Error('Not a multi line weighted table');
+  }
+
+  const entries = table.entries.reduce((acc: TableEntry[], curr: string) => {
+    if (hasWeights(curr)) {
+      acc.push(addWeight(curr));
+    } else {
+      acc[acc.length - 1].text = curr;
+    }
+    return acc;
+  }, []);
+  const formula = formulaFromEntries(entries);
+  return {
+    name: table.name,
+    formula,
+    results: entries,
   };
 }
