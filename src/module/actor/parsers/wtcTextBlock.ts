@@ -13,6 +13,8 @@ import {
   Features,
   Group,
   Health,
+  ImportActor,
+  ImportActorParser,
   ImportItems,
   Languages,
   Name,
@@ -24,6 +26,29 @@ import {
 import { parseGenericFormula } from './generic';
 
 const FEATURE_HEADERS = ['Actions', 'Reactions'];
+
+export function parseActorWTC(): ImportActorParser {
+  return {
+    parseName: parseNameWTC,
+    parseRating: parseRatingWTC,
+    parseType: parseTypeWTC,
+    parseAlignment: parseAlignmentWTC,
+    parseBiography: parseBiographyWTC,
+    parseLanguages: parseLanguagesWTC,
+    parseSize: parseSizeWTC,
+    parseHealth: parseHealthWTC,
+    parseSenses: parseSensesWTC,
+    parseArmorClass: parseACWTC,
+    parseDamageImmunities: parseDamageImmunitiesWTC,
+    parseDamageResistances: parseDamageResistancesWTC,
+    parseConditionImmunities: parseConditionImmunitiesWTC,
+    parseDamageVulnerabilities: parseDamageVulnerabilitiesWTC,
+    parseAbilities: tryStatParsers,
+    parseSpeed: parseSpeedWTC,
+    parseSkills: parseSkillsWTC,
+    parseItems: parseItemsWTC,
+  };
+}
 
 export function parseHealthWTC(lines: string[]) {
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
