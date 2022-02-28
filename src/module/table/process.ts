@@ -10,8 +10,10 @@ import {
   parseFoundryJSON,
   parseFromCSV,
   parseFromTxt,
+  parseMultiLineWeighted,
   TableData,
 } from './parse';
+import { breakLines } from './lineManipulators';
 async function createTableFromJSON(tableJSON: FoundryTable | BasicTable) {
   let parsed: TableData | undefined;
   if (isFoundryTable(tableJSON)) {
@@ -26,13 +28,6 @@ async function jsonRoute(stringData: string) {
   const json = JSON.parse(stringData) as FoundryTable;
   createTableFromJSON(json);
 }
-
-export const breakLines = (data: string) => {
-  const rawLines = data.split('\n');
-  return rawLines.filter((line) => {
-    return line !== '';
-  });
-};
 
 export type TableParser = (table: string) => FoundryTable;
 
@@ -51,7 +46,7 @@ function tryParseTables(parsers: TableParser[], inputTable: string): FoundryTabl
 }
 
 export function txtToFoundry(stringData: string) {
-  return tryParseTables([parseFromTxt], stringData);
+  return tryParseTables([parseFromTxt, parseWeightedTable, parseMultiLineWeighted], stringData);
 }
 
 async function txtRoute(stringData: string) {

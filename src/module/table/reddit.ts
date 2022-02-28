@@ -1,29 +1,13 @@
-import { formulaFromEntries, FoundryTable, numWithWeights, rangeStringMap, TableEntry } from './parse';
-import { breakLines } from './process';
-
-const WEIGHT_RANGE_REGEX = /^[0-9]{1,3}-[0-9]{1,3}./;
-const WEIGHT_REGEX = /^[0-9]{1,3}./;
-
-export function hasWeightsRange(item: string) {
-  return WEIGHT_RANGE_REGEX.test(item.trim());
-}
-
-export function hasWeights(item: string): boolean {
-  return WEIGHT_REGEX.test(item.trim());
-}
-
-export function addWeight(line: string): TableEntry {
-  let regex = WEIGHT_REGEX;
-  if (hasWeightsRange(line)) {
-    regex = WEIGHT_RANGE_REGEX;
-  }
-  const matches = line.trim().match(regex);
-  if (!matches || matches.length > 1) throw new Error(`Invalid line: ${line} ${matches}`);
-  return {
-    text: line.replace(regex, '').trim(),
-    range: rangeStringMap(matches[0]),
-  };
-}
+import { formulaFromEntries, FoundryTable, numWithWeights, TableEntry } from './parse';
+import {
+  addWeight,
+  breakLines,
+  hasWeights,
+  hasWeightsRange,
+  rangeStringMap,
+  WEIGHT_RANGE_REGEX,
+  WEIGHT_REGEX,
+} from './lineManipulators';
 
 export function cleanName(name: string) {
   return name
@@ -39,7 +23,7 @@ export function hasDieNumber(line: string) {
 
 export function parseWeightedTable(userInput: string): FoundryTable {
   const raw = breakLines(userInput);
-  const lines = raw.filter((line) => line !== '');
+  const lines = raw.filter((line: string) => line !== '');
   let rawName = 'Parsed Table';
   if (!hasWeights(lines[0]) || hasDieNumber(lines[0])) {
     rawName = lines.shift() || 'No Name';
@@ -50,6 +34,7 @@ export function parseWeightedTable(userInput: string): FoundryTable {
   const numWeights = numWithWeights(lines);
   if (numWeights === lines.length) {
     results = lines.map(addWeight);
+    if (!results) throw new Error('No results');
     formula = formulaFromEntries(results);
   } else {
     results = lines.map((line: string, index: number) => {
@@ -59,7 +44,7 @@ export function parseWeightedTable(userInput: string): FoundryTable {
       };
     });
   }
-
+  if (!results) throw new Error('No results');
   return {
     name,
     formula,

@@ -1,7 +1,7 @@
 import { Config, registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
 import { processInputJSON } from './journal';
-import { processTableJSON } from './table';
+import { processTableJSON } from './table/process';
 import { renderSidebarButtons } from './renderSidebarButtons';
 import CONSTANTS from './constants';
 import { processItemInput } from './item/handleInput';

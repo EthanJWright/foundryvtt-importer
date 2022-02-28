@@ -1,6 +1,6 @@
 import { cleanName } from '../formatters';
-import { breakLines, TableParser } from './process';
-import { addWeight, hasWeights } from './reddit';
+import { TableParser } from './process';
+import { addWeight, breakLines, hasWeights, rangeStringMap } from './lineManipulators';
 
 export type TableData = ConstructorParameters<typeof foundry.documents.BaseRollTable>[0];
 
@@ -93,7 +93,6 @@ export function numWithWeights(entries: string[]) {
 export const parseFromTxt: TableParser = (table: string) => {
   const lines = breakLines(table);
   const name = lines.shift() || 'Parsed Table';
-  console.log(`Name: ${name}`);
   const numWeighted: number = numWithWeights(lines);
   if (numWeighted > lines.length / 2) {
     throw new Error('Entries have weights');
@@ -103,23 +102,6 @@ export const parseFromTxt: TableParser = (table: string) => {
     formula: `1d${lines.length}`,
     results: [...lines.map(entryStringMap)],
   };
-};
-
-export const rangeStringMap = (current: string): [number, number] => {
-  let start, end: number;
-  if (current.includes('-')) {
-    [start, end] = current.split('-').map(Number);
-  } else {
-    start = Number(current);
-    end = start;
-  }
-  if (end === 0) {
-    end = 100;
-  }
-  if (start === 0) {
-    start = 1;
-  }
-  return [start, end];
 };
 
 const entryCSVMap = (current: string): TableEntry => {
