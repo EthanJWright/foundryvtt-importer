@@ -1,5 +1,5 @@
-import { UserData } from './importForm';
-import { isRedditCollection, isRedditTable, parseRedditCollection, parseRedditTable } from './table.reddit';
+import { UserData } from '../importForm';
+import { isRedditCollection, isRedditTable, parseRedditCollection, parseWeightedTable } from './reddit';
 import {
   BasicTable,
   FoundryTable,
@@ -10,10 +10,11 @@ import {
   parseFoundryJSON,
   parseFromCSV,
   parseFromTxt,
+  parseMultiLineWeighted,
   TableData,
-} from './table.process';
+} from './parse';
+import { breakLines } from './lineManipulators';
 async function createTableFromJSON(tableJSON: FoundryTable | BasicTable) {
-  console.log(`creating a table...`);
   let parsed: TableData | undefined;
   if (isFoundryTable(tableJSON)) {
     parsed = parseFoundryJSON(tableJSON as FoundryTable);
@@ -28,18 +29,29 @@ async function jsonRoute(stringData: string) {
   createTableFromJSON(json);
 }
 
-const breakLines = (data: string) => {
-  const rawLines = data.split(/\r?\n/);
-  return rawLines.filter((line) => {
-    return line !== '';
-  });
-};
+export type TableParser = (table: string) => FoundryTable;
 
-async function txtRoute(fullFileName: string, stringData: string) {
+function tryParseTables(parsers: TableParser[], inputTable: string): FoundryTable {
+  for (const parser of parsers) {
+    try {
+      const table = parser(inputTable);
+      if (table) {
+        return table;
+      }
+    } catch (e) {
+      // trying other parsers
+    }
+  }
+  throw new Error(`Unable to parse table`);
+}
+
+export function txtToFoundry(stringData: string) {
+  return tryParseTables([parseFromTxt, parseWeightedTable, parseMultiLineWeighted], stringData);
+}
+
+async function txtRoute(stringData: string) {
   console.log(`Data: ${stringData}`);
-  const lines = breakLines(stringData);
-  const parsed = parseFromTxt({ name: fullFileName, entries: lines });
-  await RollTable.create(parsed);
+  await RollTable.create(txtToFoundry(stringData));
 }
 
 async function csvRoute(fullFileName: string, data: string) {
@@ -62,7 +74,7 @@ async function redditTableRoute(input: string) {
   if (isRedditCollection(input)) {
     return handleRedditCollection(input);
   } else {
-    const parsed = parseRedditTable(input);
+    const parsed = parseWeightedTable(input);
     await RollTable.create(parsed);
   }
 }
@@ -78,7 +90,7 @@ export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
     } else if (isRedditTable(clipboardInput)) {
       redditTableRoute(clipboardInput);
     } else {
-      txtRoute('Line Imported Table', clipboardInput);
+      txtRoute(clipboardInput);
     }
     return;
   }
@@ -95,7 +107,7 @@ export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
       jsonRoute(data);
       break;
     case 'txt':
-      txtRoute(jsonfile, data);
+      txtRoute(`${jsonfile}\n${data}`);
       break;
     case 'csv':
       csvRoute(jsonfile, data);

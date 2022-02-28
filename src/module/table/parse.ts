@@ -1,4 +1,6 @@
-import { cleanName } from './formatters';
+import { cleanName } from '../formatters';
+import { TableParser } from './process';
+import { addWeight, breakLines, hasWeights, rangeStringMap } from './lineManipulators';
 
 export type TableData = ConstructorParameters<typeof foundry.documents.BaseRollTable>[0];
 
@@ -79,30 +81,27 @@ export function isJSONTable(data: string) {
   return true;
 }
 
-export function parseFromTxt(table: BasicTable) {
-  const { name, entries } = table;
-  return {
-    name: nameFromFile(name),
-    formula: `1d${entries.length}`,
-    results: [...entries.map(entryStringMap)],
-  };
+export function numWithWeights(entries: string[]) {
+  return entries.reduce((numWeights, cur) => {
+    if (hasWeights(cur)) {
+      numWeights += 1;
+    }
+    return numWeights;
+  }, 0);
 }
 
-export const rangeStringMap = (current: string): [number, number] => {
-  let start, end: number;
-  if (current.includes('-')) {
-    [start, end] = current.split('-').map(Number);
-  } else {
-    start = Number(current);
-    end = start;
+export const parseFromTxt: TableParser = (table: string) => {
+  const lines = breakLines(table);
+  const name = lines.shift() || 'Parsed Table';
+  const numWeighted: number = numWithWeights(lines);
+  if (numWeighted > lines.length / 2) {
+    throw new Error('Entries have weights');
   }
-  if (end === 0) {
-    end = 100;
-  }
-  if (start === 0) {
-    start = 1;
-  }
-  return [start, end];
+  return {
+    name: nameFromFile(name),
+    formula: `1d${lines.length}`,
+    results: [...lines.map(entryStringMap)],
+  };
 };
 
 const entryCSVMap = (current: string): TableEntry => {
@@ -121,5 +120,32 @@ export function parseFromCSV(table: BasicTable) {
     name: nameFromFile(name),
     formula: formulaFromEntries(results),
     results,
+  };
+}
+
+export function parseMultiLineWeighted(inputTable: string) {
+  const lines = breakLines(inputTable);
+  let name = 'Parsed Table';
+  if (!hasWeights(lines[0])) {
+    name = lines.shift() || 'Parsed Table';
+  }
+  const withWeights = numWithWeights(lines);
+  if (withWeights !== lines.length / 2) {
+    throw new Error('Not a multi line weighted table');
+  }
+
+  const entries = lines.reduce((acc: TableEntry[], curr: string) => {
+    if (hasWeights(curr)) {
+      acc.push(addWeight(curr));
+    } else {
+      acc[acc.length - 1].text = curr;
+    }
+    return acc;
+  }, []);
+  const formula = formulaFromEntries(entries);
+  return {
+    name,
+    formula,
+    results: entries,
   };
 }

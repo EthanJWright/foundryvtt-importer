@@ -1,4 +1,22 @@
-import { hasWeights, isRedditCollection, parseRedditCollection, parseRedditTable } from '../src/module/table.reddit';
+import {
+  hasDieNumber,
+  isRedditCollection,
+  parseRedditCollection,
+  parseWeightedTable,
+} from '../../src/module/table/reddit';
+import { hasWeights } from '../../src/module/table/lineManipulators';
+
+describe('hasDieNumber', () => {
+  it('should return true for a string with a die number', () => {
+    expect(hasDieNumber('d100 Weather Elements')).toBe(true);
+  });
+  it('should return true for air currents string', () => {
+    expect(hasDieNumber('d100 Air Currents')).toBe(true);
+  });
+  it('should return false for a string without a die number', () => {
+    expect(hasDieNumber('Weather Elements')).toBe(false);
+  });
+});
 
 describe('hasWeights', () => {
   it('should return true if the element has weights', () => {
@@ -11,7 +29,7 @@ describe('parseRedditTable', () => {
   it('should parse a single table', () => {
     const table =
       'd10 The castle sits...\n\n    Atop a mountain.\n\n    On a hill overlooking a wide plain.\n\n    At the fork of a river.\n\n    On a narrow, rocky peninsula.\n\n    Above a seaside cliff.\n\n    On a hill overlooking a river valley.\n\n    On a hill rising out of a swamp.\n\n    On a hill overlooking a forest.\n\n    Astride a desert oasis or natural spring.\n\n    On a ridge overlooking a frozen plain.';
-    const parsed = parseRedditTable(table);
+    const parsed = parseWeightedTable(table);
     expect(parsed.results).toHaveLength(10);
     expect(parsed.name).toBe('The castle sits...');
     expect(parsed.formula).toBe('1d10');
@@ -19,7 +37,7 @@ describe('parseRedditTable', () => {
   it('should use table weights if provided', () => {
     const table =
       'd100 Air Currents\n01-05. breeze, slight.\n06-10. breeze, slight, damp.\n11-12. breeze, gusting.\n13-18. cold current.\n19-20. downdraft, slight.\n21-22. downdraft, strong.\n23-69. still.\n70-75. still, very chill.\n76-85. still, warm (or hot).\n86-87. updraft, slight.\n88-89. updraft, strong.\n90-93. wind, strong.\n94-95. wind, strong, gusting.\n96-100. wind, strong, moaning.';
-    const parsed = parseRedditTable(table);
+    const parsed = parseWeightedTable(table);
     expect(parsed.results).toHaveLength(14);
     expect(parsed.results[0].range).toEqual([1, 5]);
     expect(parsed.results[parsed.results.length - 1].range).toEqual([96, 100]);
@@ -29,7 +47,7 @@ describe('parseRedditTable', () => {
   it('should handle weird ranges that arnt at the start', () => {
     const table =
       'd100 General features\n\n    arrow, broken.\n    02-04. ashes.\n    05-06. bones.\n\n    bottle, broken.\n\n    chain, corroded.\n\n    club, splintered.\n    10-19. cobwebs.';
-    const parsed = parseRedditTable(table);
+    const parsed = parseWeightedTable(table);
     expect(parsed.results).toHaveLength(7);
   });
 });
