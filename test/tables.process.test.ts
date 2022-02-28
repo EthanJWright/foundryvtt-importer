@@ -1,5 +1,5 @@
-import { isCSVTable, isJSONTable } from '../src/module/table.process';
-import { isRedditCollection } from '../src/module/table.reddit';
+import { isCSVTable, isJSONTable } from '../src/module/table/parse';
+import { isRedditCollection } from '../src/module/table/reddit';
 describe('Input type checkers', () => {
   it('should return true for isCSV if the table is a csv', () => {
     const table =

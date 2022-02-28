@@ -28,7 +28,7 @@ async function jsonRoute(stringData: string) {
 }
 
 export const breakLines = (data: string) => {
-  const rawLines = data.split(/\r?\n/);
+  const rawLines = data.split('\n');
   return rawLines.filter((line) => {
     return line !== '';
   });

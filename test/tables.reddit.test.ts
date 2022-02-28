@@ -1,4 +1,22 @@
-import { hasWeights, isRedditCollection, parseRedditCollection, parseWeightedTable } from '../src/module/table/reddit';
+import {
+  hasDieNumber,
+  hasWeights,
+  isRedditCollection,
+  parseRedditCollection,
+  parseWeightedTable,
+} from '../src/module/table/reddit';
+
+describe('hasDieNumber', () => {
+  it('should return true for a string with a die number', () => {
+    expect(hasDieNumber('d100 Weather Elements')).toBe(true);
+  });
+  it('should return true for air currents string', () => {
+    expect(hasDieNumber('d100 Air Currents')).toBe(true);
+  });
+  it('should return false for a string without a die number', () => {
+    expect(hasDieNumber('Weather Elements')).toBe(false);
+  });
+});
 
 describe('hasWeights', () => {
   it('should return true if the element has weights', () => {
