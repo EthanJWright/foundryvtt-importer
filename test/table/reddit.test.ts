@@ -3,8 +3,8 @@ import {
   isRedditCollection,
   parseRedditCollection,
   parseWeightedTable,
-} from '../src/module/table/reddit';
-import { hasWeights } from '../src/module/table/lineManipulators';
+} from '../../src/module/table/reddit';
+import { hasWeights } from '../../src/module/table/lineManipulators';
 
 describe('hasDieNumber', () => {
   it('should return true for a string with a die number', () => {
