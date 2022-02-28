@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.9](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.8...v0.2.9) (2022-02-28)
+
+
+### Bug Fixes
+
+* moving back to old reddit table handling ([8cd9e3c](https://github.com/EthanJWright/foundryvtt-importer/commit/8cd9e3c3849e0802ad706b4ecccdba14231e46e5))
+
 ### [0.2.8](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.7...v0.2.8) (2022-02-15)
 
 
