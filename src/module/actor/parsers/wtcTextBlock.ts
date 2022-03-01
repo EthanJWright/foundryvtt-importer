@@ -29,24 +29,24 @@ const FEATURE_HEADERS = ['Actions', 'Reactions'];
 
 export function parseActorWTC(): ImportActorParser {
   return {
-    parseName: parseNameWTC,
-    parseRating: parseRatingWTC,
-    parseType: parseTypeWTC,
-    parseAlignment: parseAlignmentWTC,
-    parseBiography: parseBiographyWTC,
-    parseLanguages: parseLanguagesWTC,
-    parseSize: parseSizeWTC,
-    parseHealth: parseHealthWTC,
-    parseSenses: parseSensesWTC,
-    parseArmorClass: parseACWTC,
-    parseDamageImmunities: parseDamageImmunitiesWTC,
-    parseDamageResistances: parseDamageResistancesWTC,
-    parseConditionImmunities: parseConditionImmunitiesWTC,
-    parseDamageVulnerabilities: parseDamageVulnerabilitiesWTC,
-    parseAbilities: tryStatParsers,
-    parseSpeed: parseSpeedWTC,
-    parseSkills: parseSkillsWTC,
-    parseItems: parseItemsWTC,
+    parseName: [parseNameWTC],
+    parseRating: [parseRatingWTC],
+    parseType: [parseTypeWTC],
+    parseAlignment: [parseAlignmentWTC],
+    parseBiography: [parseBiographyWTC],
+    parseLanguages: [parseLanguagesWTC],
+    parseSize: [parseSizeWTC],
+    parseHealth: [parseHealthWTC],
+    parseSenses: [parseSensesWTC],
+    parseArmorClass: [parseACWTC],
+    parseDamageImmunities: [parseDamageImmunitiesWTC],
+    parseDamageResistances: [parseDamageResistancesWTC],
+    parseConditionImmunities: [parseConditionImmunitiesWTC],
+    parseDamageVulnerabilities: [parseDamageVulnerabilitiesWTC],
+    parseAbilities: [parseAbilitiesWTC, parseMultilineAbilitiesWTC, parseVerticalKeyValueAbilitiesWTC],
+    parseSpeed: [parseSpeedWTC],
+    parseSkills: [parseSkillsWTC],
+    parseItems: [parseItemsWTC],
   };
 }
 
@@ -152,7 +152,7 @@ function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[
   ) as Abilities;
 }
 
-export function parseAbilitiesWTC(inputList: string[]) {
+export function parseAbilitiesWTC(inputList: string[]): Abilities {
   const abilityLine = inputList.find(isAbilityLine);
   if (!abilityLine) {
     throw new Error('Could not find ability line');
