@@ -10,6 +10,8 @@ import {
   Feature,
   Features,
   Health,
+  ImportActor,
+  ImportActorParser,
   ImportItems,
   Languages,
   Name,
@@ -21,8 +23,45 @@ import {
 } from '../interfaces';
 import { addSavingThrows } from './wtcTextBlock';
 
+export function trySingleActorParse(parser: ImportActorParser, lines: string[]): ImportActor {
+  const abilities = tryParseAbilities(parser.parseAbilities, lines);
+  return {
+    name: tryNameParse(parser.parseName, lines),
+    rating: tryRatingParse(parser.parseRating, lines),
+    type: tryTypeParse(parser.parseType, lines),
+    alignment: tryAlignmentParse(parser.parseAlignment, lines),
+    biography: tryBiographyParse(parser.parseBiography, lines),
+    languages: tryLanguageParse(parser.parseLanguages, lines),
+    size: trySizeParse(parser.parseSize, lines),
+    health: tryHealthParse(parser.parseHealth, lines),
+    senses: trySensesParse(parser.parseSenses, lines),
+    armorClass: tryParseArmorClass(parser.parseArmorClass, lines),
+    damageImmunities: tryParseDamageImmunities(parser.parseDamageImmunities, lines),
+    damageResistances: tryParseDamageResistances(parser.parseDamageResistances, lines),
+    conditionImmunities: tryParseConditionImmunities(parser.parseConditionImmunities, lines),
+    damageVulnerabilities: tryParseDamageVulnerabilities(parser.parseDamageVulnerabilities, lines),
+    abilities,
+    speed: tryParseSpeed(parser.parseSpeed, lines),
+    skills: tryParseSkills(parser.parseSkills, lines),
+    items: tryParseItems(parser.parseItems, lines, abilities),
+  };
+}
+
 export type ParserOutput = ActorTypes;
 export type ActorParser = (input: string[]) => ParserOutput;
+
+export function tryActorParse(parsers: ImportActorParser[], lines: string[]): ImportActor {
+  const parserErrors = [];
+  for (const parser of parsers) {
+    try {
+      const result = trySingleActorParse(parser, lines);
+      return result;
+    } catch (error) {
+      parserErrors.push(error);
+    }
+  }
+  throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
+}
 
 export function tryParsers(parsers: ActorParser[], input: string[]): ParserOutput {
   const parserErrors = [];

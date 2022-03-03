@@ -149,6 +149,27 @@ export interface ImportActor {
   items: ImportItems;
 }
 
+export interface ImportActorParser {
+  parseName: ((lines: string[]) => Name)[];
+  parseSize: ((lines: string[]) => Size)[];
+  parseType: ((lines: string[]) => ActorType)[];
+  parseAlignment: ((lines: string[]) => Alignment)[];
+  parseSenses: ((lines: string[]) => Senses)[];
+  parseLanguages: ((lines: string[]) => Languages)[];
+  parseBiography: ((lines: string[]) => Biography)[];
+  parseDamageImmunities: ((lines: string[]) => DamageTypes)[];
+  parseDamageResistances: ((lines: string[]) => DamageTypes)[];
+  parseConditionImmunities: ((lines: string[]) => ConditionTypes)[];
+  parseDamageVulnerabilities: ((lines: string[]) => DamageTypes)[];
+  parseHealth: ((lines: string[]) => Health)[];
+  parseRating: ((lines: string[]) => Rating)[];
+  parseArmorClass: ((lines: string[]) => ArmorClass)[];
+  parseAbilities: ((lines: string[]) => Abilities)[];
+  parseSpeed: ((lines: string[]) => Speed)[];
+  parseSkills: ((lines: string[]) => Skill[])[];
+  parseItems: ((lines: string[], abilities: Abilities) => ImportItems)[];
+}
+
 export interface Formula {
   value: number;
   str?: string;
