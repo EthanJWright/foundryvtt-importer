@@ -13,7 +13,6 @@ import {
   Features,
   Group,
   Health,
-  ImportActor,
   ImportActorParser,
   ImportItems,
   Languages,
