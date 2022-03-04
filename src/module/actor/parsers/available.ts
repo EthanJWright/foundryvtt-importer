@@ -1,3 +1,3 @@
-import { parseActorWTC } from './wtcTextBlock';
+import { ParseActorWTC } from './wtcTextBlock';
 
-export const actorParsers = [parseActorWTC()];
+export const actorParsers = [ParseActorWTC];
