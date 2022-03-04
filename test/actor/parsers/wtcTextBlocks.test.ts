@@ -151,7 +151,7 @@ describe('parseHealth', () => {
 describe('parseSenses', () => {
   it('should parse a valid senses string', () => {
     const senses = parseSensesWTC(['Senses darkvision 60 ft., passive Perception 17']);
-    expect(senses).toStrictEqual({ darkvision: 60, units: 'ft' });
+    expect(senses).toStrictEqual({ darkvision: 60, units: 'ft', passivePerception: 17 });
   });
   it('should throw an error when not passed a valid senses string', () => {
     const invalid = ['invalid'];
@@ -270,6 +270,17 @@ describe('parseAbilitiesWTC', () => {
     expect(() => {
       parseAbilitiesWTC(invalid);
     }).toThrow();
+  });
+
+  it('should parse kip the warlords abilities', () => {
+    const abilityText = ['STR DEX CON INT WIS CHA', '7(-2) 15(+2) 16(+3) 8(-1) 7(-2) 12(+1)'];
+    const abilities = parseAbilitiesWTC(abilityText);
+    expect(abilities.str.value).toBe(7);
+    expect(abilities.dex).toStrictEqual({ value: 15, mod: 2, savingThrow: 0 });
+    expect(abilities.con).toStrictEqual({ value: 16, mod: 3, savingThrow: 0 });
+    expect(abilities.int).toStrictEqual({ value: 8, mod: -1, savingThrow: 0 });
+    expect(abilities.wis).toStrictEqual({ value: 7, mod: -2, savingThrow: 0 });
+    expect(abilities.cha).toStrictEqual({ value: 12, mod: 1, savingThrow: 0 });
   });
 });
 
@@ -740,6 +751,21 @@ describe('Parse Text', () => {
       'restrained',
       'unconscious',
     ]);
+  });
+  it('should parse a kip warlord', () => {
+    const text =
+      'Kip, the "Warlord"\nMedium Humanoid (kobold)\nArmor Class 18 (breastplate, haste potion)\nHit Points 49 (9d8+9)\nSpeed 60 feet while hasted; 30 feet otherwise\nSTR DEX CON INT WIS CHA\n7(-2) 15(+2) 16(+3) 8(-1) 7(-2) 12(+1)\nSenses darkvision 60 ft., passive Perception 8\nLanguages Draconic\nChallenge 1 (200 XP)\nHasted. The "warlord" has advantage on Dexterity saving\nthrows and his speed is doubled. His AC is increased by\n2.\nEnlarged. The "warlord\'s" size is increased to medium\nand his attacks deal an extra 1d4 damage.\nBorrowed Power. The warlord has consumed a potion of\ngrowth and a potion of haste. At the end of each of his\nturns, roll a d6. A result of 1 indicates that the effect of\none of the potions has expired.\nPack Tactics. The kobold has advantage on an attack roll\nagainst a creature if at least one of the kobold\'s allies is\nwithin 5 feet of the creature and the ally isn\'t\nincapacitated.\nSunlight Sensitivity. While in sunlight, the kobold has\ndisadvantage on attack rolls, as well as on Wisdom\n(Perception) checks that rely on sight.\nActions\nMultiattack. The "warlord" makes two scimitar of speed\nattacks.\nScimitar of Speed. Melee Weapon Attack: +6 to hit, reach\n5 ft., one target. Hit: 8 (1d6+4) slashing damage, plus 2\n(1d4) slashing damage while enlarged.';
+    const actor = textToActor(text);
+    expect(actor.name).toBe('Kip, the "Warlord"');
+    expect(actor.abilities.str).toStrictEqual({ value: 7, mod: -2, savingThrow: 0 });
+    expect(actor.abilities.dex).toStrictEqual({ value: 15, mod: 2, savingThrow: 0 });
+    expect(actor.abilities.con).toStrictEqual({ value: 16, mod: 3, savingThrow: 0 });
+    expect(actor.abilities.int).toStrictEqual({ value: 8, mod: -1, savingThrow: 0 });
+    expect(actor.abilities.wis).toStrictEqual({ value: 7, mod: -2, savingThrow: 0 });
+    expect(actor.abilities.cha).toStrictEqual({ value: 12, mod: 1, savingThrow: 0 });
+    expect(actor.senses.darkvision).toEqual(60);
+    expect(actor.senses.passivePerception).toEqual(8);
+    expect(actor.languages).toEqual(['draconic']);
   });
 });
 
