@@ -60,7 +60,7 @@ export function tryActorParse(parsers: ImportActorParser[], lines: string[]): Im
       parserErrors.push(error);
     }
   }
-  throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
+  throw new Error(`Could not parse actor, errors: [${parserErrors.join(', ')}]`);
 }
 
 export function tryParsers(parsers: ActorParser[], input: string[]): ParserOutput {
@@ -77,37 +77,54 @@ export function tryParsers(parsers: ActorParser[], input: string[]): ParserOutpu
 }
 
 export function tryNameParse(parsers: ActorParser[], lines: string[]): Name {
-  const name = tryParsers(parsers, lines);
-  if (typeof name !== 'string') {
-    throw new Error(`Could not parse name: ${name}`);
+  try {
+    const name = tryParsers(parsers, lines);
+    if (typeof name !== 'string') {
+      throw new Error(`Could not parse name: ${name}`);
+    }
+    return name;
+  } catch (error) {
+    throw new Error(`Could not parse name: ${error}`);
   }
-  return name;
 }
 
 export function tryRatingParse(parsers: ActorParser[], lines: string[]): Rating {
-  const rating = tryParsers(parsers, lines);
-  if (!(rating as Rating).xp) {
-    return {
-      xp: 0,
-    };
+  try {
+    const rating = tryParsers(parsers, lines);
+    if (!(rating as Rating).xp) {
+      return {
+        xp: 0,
+      };
+    }
+    return rating as Rating;
+  } catch (error) {
+    throw new Error(`Could not parse rating: ${error}`);
   }
-  return rating as Rating;
 }
 
 export function tryTypeParse(parsers: ActorParser[], lines: string[]): ActorType {
-  const type = tryParsers(parsers, lines);
-  if (typeof type !== 'string') {
-    throw new Error(`Could not parse type: ${type}`);
+  try {
+    const type = tryParsers(parsers, lines);
+    if (typeof type !== 'string') {
+      throw new Error(`Could not parse type: ${type}`);
+    }
+    return type;
+  } catch (error) {
+    throw new Error(`Could not parse type: ${error}`);
   }
-  return type;
 }
 
 export function tryAlignmentParse(parsers: ActorParser[], lines: string[]): Alignment {
-  const alignment = tryParsers(parsers, lines);
-  if (typeof alignment !== 'string') {
-    throw new Error(`Could not parse alignment: ${alignment}`);
+  try {
+    const alignment = tryParsers(parsers, lines);
+    if (typeof alignment !== 'string') {
+      // alignment is optional
+      return '';
+    }
+    return alignment;
+  } catch (error) {
+    return '';
   }
-  return alignment;
 }
 
 export function tryBiographyParse(parsers: ActorParser[], lines: string[]): Biography {
@@ -125,43 +142,63 @@ export function tryBiographyParse(parsers: ActorParser[], lines: string[]): Biog
 }
 
 export function tryLanguageParse(parsers: ActorParser[], lines: string[]): Languages {
-  const languages = tryParsers(parsers, lines);
-  if (!Array.isArray(languages)) {
-    throw new Error(`Could not parse languages: ${languages}`);
+  try {
+    const languages = tryParsers(parsers, lines);
+    if (!Array.isArray(languages)) {
+      throw new Error(`Could not parse languages: ${languages}`);
+    }
+    return languages as Languages;
+  } catch (error) {
+    throw new Error(`Could not parse languages: ${error}`);
   }
-  return languages as Languages;
 }
 
 export function trySizeParse(parsers: ActorParser[], lines: string[]): Size {
-  const size = tryParsers(parsers, lines);
-  if (typeof size !== 'string') {
-    throw new Error(`Could not parse size: ${size}`);
+  try {
+    const size = tryParsers(parsers, lines);
+    if (typeof size !== 'string') {
+      throw new Error(`Could not parse size: ${size}`);
+    }
+    return size as Size;
+  } catch (error) {
+    throw new Error(`Could not parse size: ${error}`);
   }
-  return size as Size;
 }
 
 export function tryHealthParse(parsers: ActorParser[], lines: string[]): Health {
-  const health = tryParsers(parsers, lines);
-  if (!(health as Health).value) {
-    throw new Error(`Could not parse health: ${health}`);
+  try {
+    const health = tryParsers(parsers, lines);
+    if (!(health as Health).value) {
+      throw new Error(`Could not parse health: ${health}`);
+    }
+    return health as Health;
+  } catch (error) {
+    throw new Error(`Could not parse health: ${error}`);
   }
-  return health as Health;
 }
 
 export function trySensesParse(parsers: ActorParser[], lines: string[]): Senses {
-  const senses = tryParsers(parsers, lines);
-  if (!(senses as Senses).units) {
-    throw new Error(`Could not parse senses: ${senses}`);
+  try {
+    const senses = tryParsers(parsers, lines);
+    if (!(senses as Senses).units) {
+      throw new Error(`Could not parse senses: ${senses}`);
+    }
+    return senses as Senses;
+  } catch (error) {
+    throw new Error(`Could not parse senses: ${error}`);
   }
-  return senses as Senses;
 }
 
 export function tryParseArmorClass(parsers: ActorParser[], lines: string[]): ArmorClass {
-  const armorClass = tryParsers(parsers, lines);
-  if (!(armorClass as ArmorClass).value) {
-    throw new Error(`Could not parse armor class: ${armorClass}`);
+  try {
+    const armorClass = tryParsers(parsers, lines);
+    if (!(armorClass as ArmorClass).value) {
+      throw new Error(`Could not parse armor class: ${armorClass}`);
+    }
+    return armorClass as ArmorClass;
+  } catch (error) {
+    throw new Error(`Could not parse armor class: ${error}`);
   }
-  return armorClass as ArmorClass;
 }
 
 export function tryParseDamageImmunities(parsers: ActorParser[], lines: string[]): DamageType[] {
@@ -219,20 +256,28 @@ export function tryParseDamageVulnerabilities(parsers: ActorParser[], lines: str
 }
 
 export function tryParseAbilities(parsers: ActorParser[], lines: string[]): Abilities {
-  const stats = tryParsers(parsers, lines);
-  if (!(stats as Abilities).str) {
-    throw new Error(`Could not parse stats: ${stats}`);
+  try {
+    const stats = tryParsers(parsers, lines);
+    if (!(stats as Abilities).str) {
+      throw new Error(`Could not parse stats: ${stats}`);
+    }
+    const statsWithSaves = addSavingThrows(lines, stats as Abilities);
+    return statsWithSaves as Abilities;
+  } catch (error) {
+    throw new Error(`Could not parse stats: ${error}`);
   }
-  const statsWithSaves = addSavingThrows(lines, stats as Abilities);
-  return statsWithSaves as Abilities;
 }
 
 export function tryParseSpeed(parsers: ActorParser[], lines: string[]): Speed {
-  const speed = tryParsers(parsers, lines);
-  if (typeof speed !== 'number') {
-    throw new Error(`Could not parse speed: ${speed}`);
+  try {
+    const speed = tryParsers(parsers, lines);
+    if (typeof speed !== 'number') {
+      throw new Error(`Could not parse speed: ${speed}`);
+    }
+    return speed;
+  } catch (error) {
+    throw new Error(`Could not parse speed: ${error}`);
   }
-  return speed;
 }
 
 export function tryParseSkills(parsers: ActorParser[], lines: string[]): Skill[] {
@@ -251,11 +296,15 @@ export function tryParseSkills(parsers: ActorParser[], lines: string[]): Skill[]
 }
 
 export function tryParseFeatures(parsers: ActorParser[], lines: string[]): Features {
-  const features = tryParsers(parsers, lines);
-  if (!Array.isArray(features)) {
-    throw new Error(`Could not parse features: ${features}`);
+  try {
+    const features = tryParsers(parsers, lines);
+    if (!Array.isArray(features)) {
+      throw new Error(`Could not parse features: ${features}`);
+    }
+    return features as Feature[];
+  } catch (error) {
+    throw new Error(`Could not parse features: ${error}`);
   }
-  return features as Feature[];
 }
 
 export function tryItemParsers(parsers: ItemParser[], input: string[], abilities: Abilities): ParserOutput {
