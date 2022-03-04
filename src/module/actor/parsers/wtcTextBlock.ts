@@ -128,7 +128,12 @@ function containsAbility(line: string) {
 }
 
 function extractAbilityValues(valueLine: string): { abilities: number[]; modifiers: string[] } {
-  const abilityValuesWithSpaces = valueLine.split(' ');
+  let abilityValuesWithSpaces = valueLine.split(' ');
+  // if there is weird formatting such as no space between the value and parens
+  // like 7(-2), split using parens as well
+  if (abilityValuesWithSpaces.length < 12) {
+    abilityValuesWithSpaces = abilityValuesWithSpaces.flatMap((value) => value.split(/(?=\()/));
+  }
   const abilityValues = abilityValuesWithSpaces.filter((item) => item.length > 0);
   const abilities: number[] = [];
   const modifiers: string[] = [];
@@ -636,26 +641,25 @@ export function parseSensesWTC(lines: string[]): Senses {
       senses.special = special.replace(')', '');
     }
     // get number from string of form darkvision 60ft
-    const number = text.split(' ')[1].replace('ft', '');
-    const senseText = sense.split(' ')[0];
-    switch (senseText) {
-      case 'darkvision':
-        senses.darkvision = Number(number);
-        break;
-      case 'blindsight':
-        senses.blindsight = Number(number);
-        break;
-      case 'tremorsense':
-        senses.tremorsense = Number(number);
-        break;
-      case 'truesight':
-        senses.truesight = Number(number);
-        break;
-      case 'passive perception':
-        senses.passivePerception = Number(number);
-        break;
-      default:
-        break;
+    // get regex for number in text
+    const numberRegex = /\d+/;
+    const matches = text.match(numberRegex);
+    let number = 0;
+    if (!matches) {
+      return;
+    } else {
+      number = Number(matches[0]);
+    }
+    if (/darkvision/.test(sense)) {
+      senses.darkvision = number;
+    } else if (/blindsignt/i.test(sense)) {
+      senses.blindsight = number;
+    } else if (/tremorsense/i.test(sense)) {
+      senses.tremorsense = number;
+    } else if (/truesight/i.test(sense)) {
+      senses.truesight = number;
+    } else if (/passive/i.test(sense)) {
+      senses.passivePerception = number;
     }
   });
   senses.units = 'ft';
