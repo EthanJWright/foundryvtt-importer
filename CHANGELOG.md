@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.10](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.9...v0.2.10) (2022-03-04)
+
+
+### Bug Fixes
+
+* **actor:** parsing senses with regex instead of string match ([2187413](https://github.com/EthanJWright/foundryvtt-importer/commit/21874132a68188fe1d603fb2ad638f48de0a8b6d))
+* **actor:** remove unused import ([d05fe31](https://github.com/EthanJWright/foundryvtt-importer/commit/d05fe31dbec4390b44003eae16601957756f66fc))
+
 ### [0.2.9](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.8...v0.2.9) (2022-02-28)
 
 
