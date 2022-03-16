@@ -1,4 +1,4 @@
-import { parseSpell, parseWeapon } from '../../../src/module/item/parsers/textBlock';
+import { parseSpell, parseTypeFromActorFeature, parseWeapon } from '../../../src/module/item/parsers/textBlock';
 import { parseItem } from '../../../src/module/item/parsers/available';
 describe('parseWeapon', () => {
   it('should parse a shortsword', () => {
@@ -100,5 +100,13 @@ describe('tryParsers', () => {
       name: 'Magic Weapons',
       type: 'feat',
     });
+  });
+});
+
+describe('parseTypeFromActorFeature', () => {
+  it('should parse text without a die formula as a feat', () => {
+    const itemText =
+      "When the bugbear hits with a melee weapon attack, the attack deals one extra die of the weapon's damage to the target (included below).";
+    expect(parseTypeFromActorFeature(itemText)).toEqual('feat');
   });
 });
