@@ -69,7 +69,7 @@ export function registerSettings(): void {
       default: true,
     });
     (game as Game)?.settings?.register(CONSTANTS.module.name, 'actorImporter', {
-      name: 'Actor Importer',
+      name: 'Actor Importer (5E only)',
       hint: 'Display the actor importer button. This imports clipboard text formatted like a monster stat block (copied from a PDF) (requires reload)',
       scope: 'world',
       config: true,
@@ -77,7 +77,7 @@ export function registerSettings(): void {
       default: true,
     });
     (game as Game)?.settings?.register(CONSTANTS.module.name, 'itemImporter', {
-      name: 'Item Importer',
+      name: 'Item Importer (5E only)',
       hint: 'Display the item importer button. This imports clipboard text formatted like an Item or Spell (copied from a PDF) (requires reload)',
       scope: 'world',
       config: true,
