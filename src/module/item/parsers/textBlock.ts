@@ -78,14 +78,12 @@ export function parseDamageType(from: string): string {
 }
 
 export function parseType(description: string): ItemType {
-  if (/weapon/i.test(description)) return 'weapon';
+  // match if (1d8)
+  if (isWeaponType(description)) return 'weapon';
   if (/armor/i.test(description)) return 'equipment';
   if (/unil the next dawn/i.test(description)) return 'consumable';
   if (/beginning at/i.test(description)) return 'feat';
   if (/starting at/i.test(description)) return 'feat';
-  if (/melee weapon attack/i.test(description)) return 'weapon';
-  if (/ranged weapon attack/i.test(description)) return 'weapon';
-  if (/melee or ranged weapon attack/i.test(description)) return 'weapon';
   return 'consumable';
 }
 
@@ -132,13 +130,18 @@ export function buildDamageParts(description: string): string[][] {
   return parts;
 }
 
+// regex to match a die formula
+
+export function isWeaponType(input: string): boolean {
+  const dieRegex = /(\d+d\d+)/;
+  return dieRegex.test(input) && /weapon/i.test(input);
+}
+
 // the logic for parsing type is different if it is sourced from a monster
 export function parseTypeFromActorFeature(input: string): ItemType {
   if (/beginning at/i.test(input)) return 'feat';
   if (/starting at/i.test(input)) return 'feat';
-  if (/melee weapon attack/i.test(input)) return 'weapon';
-  if (/ranged weapon attack/i.test(input)) return 'weapon';
-  if (/melee or ranged weapon attack/i.test(input)) return 'weapon';
+  if (isWeaponType(input)) return 'weapon';
   return 'feat';
 }
 
@@ -183,7 +186,7 @@ export function actionTypeExtraData(actionType: string | undefined, { descriptio
 export function parseWeapon(name: string, description: string, inputAbility?: ShortAbility): WeaponType {
   const ability = inputAbility || 'str';
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'weapon') throw new Error(`${name} is not a weapon`);
+  if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
   const damage: Damage = { parts: buildDamageParts(description) };
   const actionType = parseActionType(description);
   if (actionType !== 'rwak' && actionType !== 'mwak') throw new Error(`${name} is not a weapon`);
@@ -298,7 +301,7 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function parseFeat(name: string, description: string, _?: ShortAbility): FeatType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'feat') throw new Error(`${name} is not a feat`);
+  if (itemType !== 'feat') throw new Error(`${name} is not a feat, it is an ${itemType}`);
   return {
     name,
     type: 'feat',
