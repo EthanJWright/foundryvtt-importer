@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.11](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.10...v0.2.11) (2022-03-16)
+
+
+### Bug Fixes
+
+* allow for all systems, update name to indicate exclusive features ([d5ba906](https://github.com/EthanJWright/foundryvtt-importer/commit/d5ba90632c3c98706ca37c9f6de58d47511158b7))
+* base weapon type off die pattern ([ae22154](https://github.com/EthanJWright/foundryvtt-importer/commit/ae2215446a16491207763adc5cdd4d7c428decdc))
+
 ### [0.2.10](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.9...v0.2.10) (2022-03-04)
 
 
