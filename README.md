@@ -32,8 +32,7 @@ Create foundry elements from external sources.
 
 ## Support
 
-Currently supports the 5e game system, although the table importer will likely
-work system agnostic.
+Currently some features only support the 5e game system.
 
 ## Key Features
 
@@ -59,7 +58,7 @@ Importing Reddit table collections are great when paired with the [Table Ninja](
 
 ---
 
-### Actors
+### Actors (5e only)
 
 Import actors from text based monster blocks. I currently either copy my pdf to
 text, or use a pdf tool (like zathura) that allows me to copy blocks of text.
@@ -67,7 +66,7 @@ text, or use a pdf tool (like zathura) that allows me to copy blocks of text.
 Paste the block of text into the clipboard utility, and a best effort monster
 will be generated matching the text.
 
-### Items
+### Items (5e only)
 
 Import items copied from text blocks from PDFs. Will best effort parse
 and generate an item based on the elements.
@@ -288,7 +287,7 @@ goods.csv
 11-12|Cloth
 ```
 
-## Actors
+## Actors (5e only)
 
 Actors can be created by copying the text of a mosnter block into the clipboard
 tool.
