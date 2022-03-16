@@ -70,7 +70,7 @@ export function tryParsers(parsers: ActorParser[], input: string[]): ParserOutpu
       const result = parser(input);
       return result;
     } catch (error) {
-      parserErrors.push(error);
+      parserErrors.push(`Parser error for [${parser.name}] -> ${error}`);
     }
   }
   throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
