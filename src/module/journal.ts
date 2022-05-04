@@ -102,7 +102,7 @@ async function createFoldersRecursive(
   const notes = node.notes.reverse();
   const reduced = notes.reduce(mergeParagraphs, []);
   const values = reduced.map(normalizeHeaders);
-  const finalNotes = values.map(noteMaps);
+  const finalNotes = values.map(noteMaps).reverse();
   let htmlNote = finalNotes.reduce((note: string, htmlNote: string) => {
     return `${htmlNote}${note}`;
   }, ``);
