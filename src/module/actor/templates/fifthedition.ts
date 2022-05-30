@@ -67,6 +67,7 @@ export interface FifthAttributes {
     max?: number;
     temp?: number;
     tempmax?: number;
+    formula?: string;
   };
   init?: {
     value: number;
