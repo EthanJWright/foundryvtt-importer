@@ -9,6 +9,7 @@ describe('Parsed Actor to 5th Structure', () => {
     expect(fifthSwashbuckler.attributes.ac.flat).toEqual(17);
     if (!fifthSwashbuckler?.skills?.acr) throw new Error('Missing ACR');
     expect(fifthSwashbuckler.skills.acr.value).toEqual(1);
+    expect(fifthSwashbuckler.attributes.hp.formula).toEqual('10d6+3');
   });
 
   it('should convert a spythronar sac', () => {

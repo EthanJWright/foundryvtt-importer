@@ -96,6 +96,7 @@ function convertAttributes({ armorClass, health, speed }: Attributes, senses: Se
       value: health.value,
       max: health.value,
       min: 0,
+      formula: health?.formula,
     },
     movement: {
       units: 'ft',
