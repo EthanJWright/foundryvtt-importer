@@ -14,6 +14,7 @@ export const swashbuckler: ImportActor = {
     value: 66,
     min: 24,
     max: 108,
+    formula: '10d6+3',
   },
   senses: {
     units: 'ft',

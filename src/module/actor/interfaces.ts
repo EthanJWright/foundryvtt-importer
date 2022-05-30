@@ -42,6 +42,7 @@ export interface Health {
   value: number;
   min: number;
   max: number;
+  formula?: string;
 }
 
 export interface Rating {

@@ -73,6 +73,24 @@ export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): F
   };
 }
 
+function acToFifth({ value, type }: ArmorClass) {
+  const flat = value;
+  let calc = 'flat';
+  if (type.match(/natural armor/i)) {
+    calc = 'natural';
+  } else if (type.match(/leather armor/i)) {
+    calc = 'equipped';
+  } else if (type.match(/plate armor/i)) {
+    calc = 'equipped';
+  } else if (type.match(/mail armor/i)) {
+    calc = 'equipped';
+  }
+  return {
+    calc,
+    flat,
+  };
+}
+
 interface Attributes {
   armorClass: ArmorClass;
   health: Health;
@@ -88,14 +106,12 @@ function convertAttributes({ armorClass, health, speed }: Attributes, senses: Se
       special: senses?.special,
       units: 'ft',
     },
-    ac: {
-      flat: armorClass.value,
-      calc: 'flat',
-    },
+    ac: acToFifth(armorClass),
     hp: {
       value: health.value,
       max: health.value,
       min: 0,
+      formula: health?.formula,
     },
     movement: {
       units: 'ft',
