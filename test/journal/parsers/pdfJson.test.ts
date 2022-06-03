@@ -1,10 +1,14 @@
 import {
+  CreateFolderParams,
+  createFoldersRecursive,
   formatList,
+  FoundryApi,
   getRootName,
   mergeParagraphs,
   normalizeHeaders,
   Note,
 } from '../../../src/module/journal/parsers/pdfJson';
+import { Config } from '../../../src/module/settings';
 
 describe('getRootName', () => {
   it('should get the root name from a file name', () => {
@@ -51,5 +55,35 @@ describe('mergeParagraphs', () => {
         value: 'This is a paragraph\nThis is another paragraph',
       },
     ]);
+  });
+});
+
+describe('createFolderRecursive', () => {
+  it('should create a folder recursively', async () => {
+    const mockFoundryApi: FoundryApi = {
+      createFolder: jest.fn().mockResolvedValue({}),
+      createJournalEntry: jest.fn().mockResolvedValue({}),
+    };
+    const createFolderParams: CreateFolderParams = {
+      node: {
+        value: 'Some Big Adventure',
+        tag: 'p',
+        notes: [{ tag: 'p', value: 'Introduction to adventure.' }],
+        children: [
+          {
+            value: 'Chapter 1',
+            tag: 'h3',
+            notes: [{ tag: 'p', value: 'Chapter 1 notes' }],
+            children: [],
+          },
+        ],
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rootFolder: { data: { _id: 3 } } as any,
+      currentDepth: 0,
+      settings: { folderDepth: 3 } as Config,
+    };
+    await createFoldersRecursive(createFolderParams, mockFoundryApi);
+    expect(mockFoundryApi.createFolder).toHaveBeenCalledTimes(1);
   });
 });
