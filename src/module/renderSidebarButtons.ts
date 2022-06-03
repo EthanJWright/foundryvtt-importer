@@ -2,7 +2,8 @@ import { importActorForm } from './importActorForm';
 import { importTableForm } from './importTableForm';
 import { importItemForm } from './importItemForm';
 
-import { Handler, importJSONForm } from './importForm';
+import { Handler } from './importForm';
+import { importJournalForm } from './importJournalForm';
 
 export function renderSidebarButtons(settings: Settings, tab: string, handler: Handler) {
   if (settings.id != tab) return;
@@ -17,7 +18,7 @@ export function renderSidebarButtons(settings: Settings, tab: string, handler: H
     e.preventDefault();
     switch (tab) {
       case 'journal': {
-        const form = new importJSONForm(handler, tab);
+        const form = new importJournalForm(handler, tab);
         form.render(true);
         break;
       }

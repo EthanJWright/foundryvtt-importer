@@ -1,7 +1,7 @@
 import CONSTANTS from './constants';
 import { Handler, HTMLImportData, UserData } from './importForm';
 
-export class importJSONForm extends FormApplication {
+export class importJournalForm extends FormApplication {
   _handler: Handler;
   tab: string;
 
