@@ -61,8 +61,12 @@ describe('mergeParagraphs', () => {
 describe('createFolderRecursive', () => {
   it('should create a folder recursively', async () => {
     const mockFoundryApi: FoundryApi = {
-      createFolder: jest.fn().mockResolvedValue({ data: { _id: 4 } }),
-      createJournalEntry: jest.fn().mockResolvedValue({}),
+      foundryFolder: {
+        create: jest.fn().mockResolvedValue({ data: { _id: 4 } }),
+      },
+      foundryJournalEntry: {
+        create: jest.fn().mockResolvedValue({}),
+      },
     };
     const createFolderParams: CreateFolderParams = {
       node: {
@@ -84,22 +88,22 @@ describe('createFolderRecursive', () => {
       settings: { folderDepth: 3 } as Config,
     };
     await createFoldersRecursive(createFolderParams, mockFoundryApi);
-    expect(mockFoundryApi.createFolder).toHaveBeenCalledTimes(1);
-    expect(mockFoundryApi.createFolder).toHaveBeenCalledWith({
+    expect(mockFoundryApi.foundryFolder.create).toHaveBeenCalledTimes(1);
+    expect(mockFoundryApi.foundryFolder.create).toHaveBeenCalledWith({
       name: 'Some Big Adventure',
       type: 'JournalEntry',
       parent: 3,
       sorting: 'm',
     });
-    expect(mockFoundryApi.createJournalEntry).toHaveBeenCalledTimes(2);
-    expect(mockFoundryApi.createJournalEntry).toHaveBeenNthCalledWith(1, {
+    expect(mockFoundryApi.foundryJournalEntry.create).toHaveBeenCalledTimes(2);
+    expect(mockFoundryApi.foundryJournalEntry.create).toHaveBeenNthCalledWith(1, {
       name: 'Some Big Adventure',
       content: '<div><p>Introduction to adventure.</p></div>',
       collectionName: 'Some Big Adventure',
       folder: 4,
       sort: 0,
     });
-    expect(mockFoundryApi.createJournalEntry).toHaveBeenNthCalledWith(2, {
+    expect(mockFoundryApi.foundryJournalEntry.create).toHaveBeenNthCalledWith(2, {
       name: 'Chapter 1',
       content: '<div><p>Chapter 1 notes</p></div>',
       collectionName: 'Chapter 1',

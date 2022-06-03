@@ -99,15 +99,19 @@ interface FoundryCreateJournalParams {
 }
 
 export interface FoundryApi {
-  createFolder: (params: FoundryCreateFolderParams) => Promise<StoredDocument<Folder>>;
-  createJournalEntry: (params: FoundryCreateJournalParams) => Promise<StoredDocument<JournalEntry>>;
+  foundryFolder: {
+    create: (params: FoundryCreateFolderParams) => Promise<StoredDocument<Folder>>;
+  };
+  foundryJournalEntry: {
+    create: (params: FoundryCreateJournalParams) => Promise<StoredDocument<JournalEntry>>;
+  };
 }
 
 export async function createFoldersRecursive(
   { node, rootFolder, currentFolder, currentDepth = 1, settings }: CreateFolderParams,
   api: FoundryApi,
 ): Promise<void> {
-  const { createFolder, createJournalEntry } = api;
+  const { foundryFolder, foundryJournalEntry } = api;
   let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
   // if node.value in collission_tracker, then we have a collision
   collission_tracker[node.value] = collission_tracker[node.value] ?? 0;
@@ -117,7 +121,7 @@ export async function createFoldersRecursive(
   if (node.children.length > 0 && currentDepth < settings.folderDepth) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
     folder =
-      (await createFolder({
+      (await foundryFolder.create({
         name: cleanName(name),
         type: 'JournalEntry',
         parent: current_id,
@@ -133,7 +137,7 @@ export async function createFoldersRecursive(
     return `${htmlNote}${note}`;
   }, ``);
   htmlNote = `<div>${htmlNote}</div>`;
-  await createJournalEntry({
+  await foundryJournalEntry.create({
     name: `${cleanName(name)}`,
     content: htmlNote,
     collectionName: node.value,
@@ -182,8 +186,8 @@ export async function journalFromJson(name: string, data: JournalNode[]) {
       await createFoldersRecursive(
         { node: section, rootFolder: folder, currentDepth: 1, settings },
         {
-          createFolder: Folder.create,
-          createJournalEntry: JournalEntry.create,
+          foundryFolder: Folder,
+          foundryJournalEntry: JournalEntry,
         },
       );
     });

@@ -1,1 +1,1 @@
-export { journalFromJson } from './pdfJson';
+export { journalFromJson, JournalNode, getRootName } from './pdfJson';
