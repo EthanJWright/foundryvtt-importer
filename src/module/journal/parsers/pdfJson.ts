@@ -1,13 +1,12 @@
-import { cleanName } from './formatters';
-import { UserData } from './importForm';
-import { Config } from './settings';
+import { cleanName } from '../../formatters';
+import { Config } from '../../settings';
 
-interface Note {
+export interface Note {
   value: string;
   tag: string;
 }
 
-interface JournalNode {
+export interface JournalNode {
   value: string;
   tag: string;
   notes: Array<Note>;
@@ -15,7 +14,7 @@ interface JournalNode {
   sortValue?: number;
 }
 
-function getRootName(jsonfile: string) {
+export function getRootName(jsonfile: string) {
   // get file name from full path
   const fileName = jsonfile.split('/').pop() || jsonfile;
   // remove extension
@@ -26,7 +25,7 @@ function getRootName(jsonfile: string) {
   return rootName.charAt(0).toUpperCase() + rootName.slice(1);
 }
 
-const formatList = (note: string) => {
+export const formatList = (note: string) => {
   let prepend = '';
   if (note.includes('1. ') && note.includes('2. ')) {
     const splitNote = note.split(/[0-9]+\./);
@@ -34,15 +33,16 @@ const formatList = (note: string) => {
       prepend = splitNote[0];
       splitNote.shift();
     }
-    const asList = splitNote.map((listItem: string) => {
-      return `<li>${listItem}</li>`;
+    let asList = splitNote.map((listItem: string) => {
+      return `<li>${listItem.replace('\n', '').trim()}</li>`;
     });
+    asList = asList.filter((item) => item !== '<li></li>');
     return `${prepend}<ol>${asList.join('')}</ol>`;
   }
   return `${note}`;
 };
 
-function normalizeHeaders(note: Note) {
+export function normalizeHeaders(note: Note) {
   if (note.tag.includes('h')) {
     if (Number(note.tag.replace('h', '')) > 10) {
       note.tag = 'p';
@@ -56,7 +56,7 @@ const noteMaps = (note: string) => {
   return formatList(note);
 };
 
-const mergeParagraphs = (noteList: Note[], current: Note) => {
+export const mergeParagraphs = (noteList: Note[], current: Note): Note[] => {
   if (current.tag !== 'p') {
     noteList.push(current);
     return noteList;
@@ -67,7 +67,7 @@ const mergeParagraphs = (noteList: Note[], current: Note) => {
   }
 
   if (noteList[noteList.length - 1].tag === 'p') {
-    noteList[noteList.length - 1].value += ` ${current.value}`;
+    noteList[noteList.length - 1].value += `\n${current.value}`;
   } else {
     noteList.push(current);
   }
@@ -75,13 +75,43 @@ const mergeParagraphs = (noteList: Note[], current: Note) => {
 };
 
 const collission_tracker: Record<string, number> = {};
-async function createFoldersRecursive(
-  node: JournalNode,
-  rootFolder: StoredDocument<Folder>,
-  currentFolder: StoredDocument<Folder> | undefined,
-  currentDepth = 1,
-  settings: Config,
-) {
+export interface CreateFolderParams {
+  node: JournalNode;
+  rootFolder: StoredDocument<Folder>;
+  currentFolder?: StoredDocument<Folder>;
+  currentDepth: number;
+  settings: Config;
+}
+
+interface FoundryCreateFolderParams {
+  name: string;
+  type: string;
+  parent: string;
+  sorting: string;
+}
+
+interface FoundryCreateJournalParams {
+  name: string;
+  content: string;
+  collectionName: string;
+  folder?: string;
+  sort: number;
+}
+
+export interface FoundryApi {
+  foundryFolder: {
+    create: (params: FoundryCreateFolderParams) => Promise<StoredDocument<Folder>>;
+  };
+  foundryJournalEntry: {
+    create: (params: FoundryCreateJournalParams) => Promise<StoredDocument<JournalEntry>>;
+  };
+}
+
+export async function createFoldersRecursive(
+  { node, rootFolder, currentFolder, currentDepth = 1, settings }: CreateFolderParams,
+  api: FoundryApi,
+): Promise<void> {
+  const { foundryFolder, foundryJournalEntry } = api;
   let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
   // if node.value in collission_tracker, then we have a collision
   collission_tracker[node.value] = collission_tracker[node.value] ?? 0;
@@ -91,7 +121,7 @@ async function createFoldersRecursive(
   if (node.children.length > 0 && currentDepth < settings.folderDepth) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
     folder =
-      (await Folder.create({
+      (await foundryFolder.create({
         name: cleanName(name),
         type: 'JournalEntry',
         parent: current_id,
@@ -107,7 +137,7 @@ async function createFoldersRecursive(
     return `${htmlNote}${note}`;
   }, ``);
   htmlNote = `<div>${htmlNote}</div>`;
-  await JournalEntry.create({
+  await foundryJournalEntry.create({
     name: `${cleanName(name)}`,
     content: htmlNote,
     collectionName: node.value,
@@ -135,12 +165,12 @@ async function createFoldersRecursive(
       return { ...child, sortValue: getSortValue(child.value) };
     });
     for (const child of children) {
-      await createFoldersRecursive(child, rootFolder, folder, currentDepth, settings);
+      await createFoldersRecursive({ node: child, rootFolder, currentFolder: folder, currentDepth, settings }, api);
     }
   }
 }
 
-async function journalFromJson(name: string, data: JournalNode[]) {
+export async function journalFromJson(name: string, data: JournalNode[]) {
   const folder = await Folder.create({
     name: cleanName(name),
     type: 'JournalEntry',
@@ -153,20 +183,14 @@ async function journalFromJson(name: string, data: JournalNode[]) {
     const settings = Config._load();
     console.log(`Building journals with a depth of ${settings.folderDepth}`);
     data.forEach(async (section: JournalNode) => {
-      await createFoldersRecursive(section, folder, undefined, 1, settings);
+      await createFoldersRecursive(
+        { node: section, rootFolder: folder, currentDepth: 1, settings },
+        {
+          foundryFolder: Folder,
+          foundryJournalEntry: JournalEntry,
+        },
+      );
     });
     console.log(`Finished generating ${name} Journals...`);
   }
-}
-
-export async function processInputJSON({ jsonfile }: UserData) {
-  const response = await fetch(jsonfile);
-  if (!response.ok) {
-    console.log(`Error reading ${jsonfile}`);
-    return;
-  }
-  const data = await response.text();
-  const json = JSON.parse(data) as JournalNode[];
-  const name = getRootName(jsonfile);
-  journalFromJson(name, json);
 }
