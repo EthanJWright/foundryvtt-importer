@@ -75,12 +75,37 @@ export const mergeParagraphs = (noteList: Note[], current: Note): Note[] => {
 };
 
 const collission_tracker: Record<string, number> = {};
+interface CreateFolderParams {
+  node: JournalNode;
+  rootFolder: StoredDocument<Folder>;
+  currentFolder?: StoredDocument<Folder>;
+  currentDepth: number;
+  settings: Config;
+}
+
+interface FoundryCreateFolderParams {
+  name: string;
+  type: string;
+  parent: string;
+  sorting: string;
+}
+
+interface FoundryCreateJournalParams {
+  name: string;
+  content: string;
+  collectionName: string;
+  folder?: string;
+  sort: number;
+}
+
+interface FoundryApi {
+  createFolder?: (params: FoundryCreateFolderParams) => Promise<StoredDocument<Folder>>;
+  createJournalEntry?: (params: FoundryCreateJournalParams) => Promise<StoredDocument<JournalEntry>>;
+}
+
 async function createFoldersRecursive(
-  node: JournalNode,
-  rootFolder: StoredDocument<Folder>,
-  currentFolder: StoredDocument<Folder> | undefined,
-  currentDepth = 1,
-  settings: Config,
+  { node, rootFolder, currentFolder, currentDepth = 1, settings }: CreateFolderParams,
+  { createFolder = Folder.create, createJournalEntry = JournalEntry.create }: FoundryApi,
 ) {
   let folder: StoredDocument<Folder> = currentFolder ?? rootFolder;
   // if node.value in collission_tracker, then we have a collision
@@ -91,7 +116,7 @@ async function createFoldersRecursive(
   if (node.children.length > 0 && currentDepth < settings.folderDepth) {
     const current_id = currentFolder?.data?._id ?? rootFolder.data._id;
     folder =
-      (await Folder.create({
+      (await createFolder({
         name: cleanName(name),
         type: 'JournalEntry',
         parent: current_id,
@@ -107,7 +132,7 @@ async function createFoldersRecursive(
     return `${htmlNote}${note}`;
   }, ``);
   htmlNote = `<div>${htmlNote}</div>`;
-  await JournalEntry.create({
+  await createJournalEntry({
     name: `${cleanName(name)}`,
     content: htmlNote,
     collectionName: node.value,
@@ -135,7 +160,7 @@ async function createFoldersRecursive(
       return { ...child, sortValue: getSortValue(child.value) };
     });
     for (const child of children) {
-      await createFoldersRecursive(child, rootFolder, folder, currentDepth, settings);
+      await createFoldersRecursive({ node: child, rootFolder, currentFolder: folder, currentDepth, settings }, {});
     }
   }
 }
@@ -153,7 +178,7 @@ export async function journalFromJson(name: string, data: JournalNode[]) {
     const settings = Config._load();
     console.log(`Building journals with a depth of ${settings.folderDepth}`);
     data.forEach(async (section: JournalNode) => {
-      await createFoldersRecursive(section, folder, undefined, 1, settings);
+      await createFoldersRecursive({ node: section, rootFolder: folder, currentDepth: 1, settings }, {});
     });
     console.log(`Finished generating ${name} Journals...`);
   }

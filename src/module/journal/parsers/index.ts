@@ -1,1 +1,1 @@
-export * from './pdfJson';
+export { journalFromJson } from './pdfJson';
