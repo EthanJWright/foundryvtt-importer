@@ -1,0 +1,1 @@
+export { processInputJSON } from './journalFromJson';
