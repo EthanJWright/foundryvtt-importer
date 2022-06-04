@@ -15,6 +15,7 @@ import {
   Health,
   ImportActorParser,
   ImportItems,
+  isAbilities,
   Languages,
   Name,
   Rating,
@@ -41,7 +42,12 @@ export const ParseActorWTC: ImportActorParser = {
   parseDamageResistances: [parseDamageResistancesWTC],
   parseConditionImmunities: [parseConditionImmunitiesWTC],
   parseDamageVulnerabilities: [parseDamageVulnerabilitiesWTC],
-  parseAbilities: [parseAbilitiesWTC, parseMultilineAbilitiesWTC, parseVerticalKeyValueAbilitiesWTC],
+  parseAbilities: [
+    parseAbilitiesWTC,
+    parseMultilineAbilitiesWTC,
+    parseVerticalKeyValueAbilitiesWTC,
+    parseVerticalNameValModFormatWTC,
+  ],
   parseSpeed: [parseSpeedWTC],
   parseSkills: [parseSkillsWTC],
   parseItems: [parseItemsWTC],
@@ -167,17 +173,22 @@ export function parseAbilitiesWTC(inputList: string[]): Abilities {
   }
   const abilityIndex = inputList.indexOf(abilityLine);
   const singleLine = /str/i.test(abilityLine);
-  if (singleLine) {
-    // match 3 to 6 letters
-    const abilityKeys = abilityLine.match(/\w{3,7}/g);
-    if (!abilityKeys || abilityKeys.length < 6) {
-      throw new Error('Could not find ability keys');
-    }
-    const valueLine = inputList[abilityIndex + 1];
-    const { abilities, modifiers } = extractAbilityValues(valueLine);
-    return zipStats(abilityKeys, abilities, modifiers);
+  if (!singleLine) {
+    throw new Error('Could not parse abilities from parseAbilitiesWTC');
   }
-  throw new Error('Could not parse ability line');
+
+  // match 3 to 6 letters
+  const abilityKeys = abilityLine.match(/\w{3,7}/g);
+  if (!abilityKeys || abilityKeys.length < 6) {
+    throw new Error('Could not find ability keys');
+  }
+  const valueLine = inputList[abilityIndex + 1];
+  const { abilities, modifiers } = extractAbilityValues(valueLine);
+  const finalAbilities = zipStats(abilityKeys, abilities, modifiers);
+  if (!isAbilities(finalAbilities)) {
+    throw new Error('Could not parse abilities from parseAbilitiesWTC');
+  }
+  return finalAbilities;
 }
 
 function indexOfAbility(lines: string[], ability: string): number {
@@ -197,7 +208,7 @@ function parseMod(line: string) {
   };
 }
 
-export function findStatBounds(input: string[]): { lastLine: number; firstLine: number } {
+export function findAbilityBounds(input: string[]): { lastLine: number; firstLine: number } {
   const lines = new Array(...input);
   const firstLine = lines.findIndex((line) => {
     return line.trim().toLowerCase() === 'str';
@@ -221,7 +232,7 @@ export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
-  return {
+  const parsed = {
     str: parseMod(lines[indexOfAbility(lines, 'STR') + 1]),
     dex: parseMod(lines[indexOfAbility(lines, 'DEX') + 1]),
     con: parseMod(lines[indexOfAbility(lines, 'CON') + 1]),
@@ -229,10 +240,14 @@ export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
     wis: parseMod(lines[indexOfAbility(lines, 'WIS') + 1]),
     cha: parseMod(lines[indexOfAbility(lines, 'CHA') + 1]),
   };
+  if (!isAbilities(parsed)) {
+    throw new Error('Could not parse abilities from parseMultilineAbilitiesWTC');
+  }
+  return parsed;
 }
 
 export function getVerticalKeyValueAbilities(input: string[]) {
-  const { firstLine, lastLine } = findStatBounds(input);
+  const { firstLine, lastLine } = findAbilityBounds(input);
   const lines = input.slice(firstLine, lastLine);
   const keyEndIndex = lines.findIndex((line) => {
     return !containsAbility(line);
@@ -245,7 +260,24 @@ export function getVerticalKeyValueAbilities(input: string[]) {
 export function parseVerticalKeyValueAbilitiesWTC(input: string[]): Abilities {
   const { keys, values } = getVerticalKeyValueAbilities(input);
   const { abilities, modifiers } = extractAbilityValues(values.join(' '));
-  return zipStats(keys, abilities, modifiers);
+  const zipped = zipStats(keys, abilities, modifiers);
+  if (!isAbilities(zipped)) {
+    throw new Error('Could not parse abilities with parseVerticalKeyValueAbilitiesWTC');
+  }
+  return zipped;
+}
+
+const ABILITIES_WTC = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+export function parseVerticalNameValModFormatWTC(input: string[]): Abilities {
+  const { firstLine, lastLine } = findAbilityBounds(input);
+  const lines = input.slice(firstLine, lastLine);
+  const removedAbilities = lines.filter((line) => !containsAbility(line));
+  const { abilities, modifiers } = extractAbilityValues(removedAbilities.join(' '));
+  const parsed = zipStats(ABILITIES_WTC, abilities, modifiers);
+  if (!isAbilities(parsed)) {
+    throw new Error('Could not parse abilities with parseVerticalNameValModFormatWTC');
+  }
+  return parsed;
 }
 
 export function parseSpeedWTC(lines: string[]) {
@@ -500,20 +532,6 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
   return firstMatch + 1;
 }
 
-export function tryStatParsers(lines: string[]): Abilities {
-  let stats: Abilities | undefined;
-  try {
-    stats = parseAbilitiesWTC(lines);
-  } catch (error) {
-    try {
-      stats = parseMultilineAbilitiesWTC(lines);
-    } catch {
-      stats = parseVerticalKeyValueAbilitiesWTC(lines);
-    }
-  }
-  if (!stats) throw new Error('could not parse stats.');
-  return stats;
-}
 export function parseBiographyWTC(lines: string[]): Biography {
   let firstBioIndex = -1;
   lines.forEach((line: string, index: number) => {
