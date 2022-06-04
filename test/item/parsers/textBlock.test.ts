@@ -80,6 +80,47 @@ describe('parseSpell', () => {
     const text = 'Some feat that isnt a spell.';
     expect(() => parseSpell('Not a spell', text, 'wis')).toThrow();
   });
+
+  it('should parse a breath weapon with recharge', () => {
+    const itemText =
+      'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.';
+    const parsed = parseSpell('Poison Breath (Recharge 5-6)', itemText, 'con');
+    expect(parsed).toEqual({
+      ability: 'con',
+      actionType: 'save',
+      hasSpellData: true,
+      activation: {
+        cost: 1,
+        type: 'action',
+      },
+      attackBonus: 0,
+      damage: {
+        parts: [['16d6', 'poison']],
+      },
+      description:
+        'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.',
+      name: 'Poison Breath (Recharge 5-6)',
+      range: {
+        value: 60,
+        units: 'self',
+      },
+      save: {
+        ability: 'con',
+        dc: 18,
+        scaling: 'spell',
+      },
+      target: {
+        type: 'cone',
+        units: 'ft',
+        value: 60,
+      },
+      type: 'feat',
+      recharge: {
+        value: 5,
+        charged: true,
+      },
+    });
+  });
 });
 
 describe('tryParsers', () => {

@@ -10,6 +10,7 @@ import {
   Uses,
   Target,
   FeatType,
+  Recharge,
 } from '../interfaces';
 
 import { Range } from '../interfaces';
@@ -44,7 +45,8 @@ export function parseRange(description: string): Range {
     return { value, long };
   }
   if (/cone/i.test(description)) {
-    return { units: 'self' };
+    const value = parseSpellCone(description);
+    return { units: 'self', value };
   }
   if (/within/.test(description)) {
     const rangeStr = description
@@ -205,6 +207,26 @@ export function parseWeapon(name: string, description: string, inputAbility?: Sh
   };
 }
 
+/**
+ * @param name the name of the spell
+ * @param description the description of the spell
+ * @returns { value: number, charged: boolean }
+ *
+ * @example
+ * parseSpell('Poison Breath (Recharge 5-6)', 'A poisonous gas cloud spreads from the dragon\'s mouth,
+ */
+function parseRecharge(name: string): Recharge {
+  if (!name.toLowerCase().includes('recharge')) {
+    throw new Error(`${name} is not a recharge spell`);
+  }
+  const [, recharge] = name.toLowerCase().split('recharge');
+  const [lower, upper] = recharge.split('-');
+  return {
+    value: parseInt(lower),
+    charged: upper ? true : false,
+  };
+}
+
 function parseUses(name: string, description: string): Uses {
   if (/\/day/i.test(name)) {
     const perDay = parseInt(name.split('/')[0].split('(')[1]);
@@ -281,6 +303,13 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
     // uses can be undefined
   }
 
+  let recharge;
+  try {
+    recharge = parseRecharge(name);
+  } catch (_) {
+    // recharge can be undefined
+  }
+
   return {
     name,
     type: 'feat',
@@ -288,6 +317,7 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
     ability,
     uses,
     save,
+    recharge,
     description,
     activation: parseActivation(description),
     damage,
