@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.15](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.14...v0.2.15) (2022-06-12)
+
+
+### Bug Fixes
+
+* **actor:** handle recharges and legendary actions ([#49](https://github.com/EthanJWright/foundryvtt-importer/issues/49)) ([50c6b1f](https://github.com/EthanJWright/foundryvtt-importer/commit/50c6b1faf6ffa2acafee7bc7a7452ae79a05c66c))
+
 ### [0.2.14](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.13...v0.2.14) (2022-06-03)
 
 ### [0.2.13](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.12...v0.2.13) (2022-05-30)
