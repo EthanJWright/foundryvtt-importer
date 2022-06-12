@@ -16,6 +16,13 @@ export interface Abilities {
   wis: Ability;
   cha: Ability;
 }
+
+// For this type guard, we are okay with an any
+// eslint-disable-next-line
+export function isAbilities(obj: any): obj is Abilities {
+  return 'str' in obj && 'dex' in obj && 'con' in obj && 'int' in obj && 'wis' in obj && 'cha' in obj;
+}
+
 export interface Skill {
   name: string;
   bonus: number;

@@ -15,6 +15,7 @@ import {
   Health,
   ImportActorParser,
   ImportItems,
+  isAbilities,
   Languages,
   Name,
   Rating,
@@ -24,7 +25,7 @@ import {
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_HEADERS = ['Actions', 'Reactions'];
+const FEATURE_SECTIONS = ['Actions', 'Features'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
@@ -41,7 +42,12 @@ export const ParseActorWTC: ImportActorParser = {
   parseDamageResistances: [parseDamageResistancesWTC],
   parseConditionImmunities: [parseConditionImmunitiesWTC],
   parseDamageVulnerabilities: [parseDamageVulnerabilitiesWTC],
-  parseAbilities: [parseAbilitiesWTC, parseMultilineAbilitiesWTC, parseVerticalKeyValueAbilitiesWTC],
+  parseAbilities: [
+    parseAbilitiesWTC,
+    parseMultilineAbilitiesWTC,
+    parseVerticalKeyValueAbilitiesWTC,
+    parseVerticalNameValModFormatWTC,
+  ],
   parseSpeed: [parseSpeedWTC],
   parseSkills: [parseSkillsWTC],
   parseItems: [parseItemsWTC],
@@ -167,17 +173,22 @@ export function parseAbilitiesWTC(inputList: string[]): Abilities {
   }
   const abilityIndex = inputList.indexOf(abilityLine);
   const singleLine = /str/i.test(abilityLine);
-  if (singleLine) {
-    // match 3 to 6 letters
-    const abilityKeys = abilityLine.match(/\w{3,7}/g);
-    if (!abilityKeys || abilityKeys.length < 6) {
-      throw new Error('Could not find ability keys');
-    }
-    const valueLine = inputList[abilityIndex + 1];
-    const { abilities, modifiers } = extractAbilityValues(valueLine);
-    return zipStats(abilityKeys, abilities, modifiers);
+  if (!singleLine) {
+    throw new Error('Could not parse abilities from parseAbilitiesWTC');
   }
-  throw new Error('Could not parse ability line');
+
+  // match 3 to 6 letters
+  const abilityKeys = abilityLine.match(/\w{3,7}/g);
+  if (!abilityKeys || abilityKeys.length < 6) {
+    throw new Error('Could not find ability keys');
+  }
+  const valueLine = inputList[abilityIndex + 1];
+  const { abilities, modifiers } = extractAbilityValues(valueLine);
+  const finalAbilities = zipStats(abilityKeys, abilities, modifiers);
+  if (!isAbilities(finalAbilities)) {
+    throw new Error('Could not parse abilities from parseAbilitiesWTC');
+  }
+  return finalAbilities;
 }
 
 function indexOfAbility(lines: string[], ability: string): number {
@@ -197,7 +208,7 @@ function parseMod(line: string) {
   };
 }
 
-export function findStatBounds(input: string[]): { lastLine: number; firstLine: number } {
+export function findAbilityBounds(input: string[]): { lastLine: number; firstLine: number } {
   const lines = new Array(...input);
   const firstLine = lines.findIndex((line) => {
     return line.trim().toLowerCase() === 'str';
@@ -221,7 +232,7 @@ export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
-  return {
+  const parsed = {
     str: parseMod(lines[indexOfAbility(lines, 'STR') + 1]),
     dex: parseMod(lines[indexOfAbility(lines, 'DEX') + 1]),
     con: parseMod(lines[indexOfAbility(lines, 'CON') + 1]),
@@ -229,10 +240,14 @@ export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
     wis: parseMod(lines[indexOfAbility(lines, 'WIS') + 1]),
     cha: parseMod(lines[indexOfAbility(lines, 'CHA') + 1]),
   };
+  if (!isAbilities(parsed)) {
+    throw new Error('Could not parse abilities from parseMultilineAbilitiesWTC');
+  }
+  return parsed;
 }
 
 export function getVerticalKeyValueAbilities(input: string[]) {
-  const { firstLine, lastLine } = findStatBounds(input);
+  const { firstLine, lastLine } = findAbilityBounds(input);
   const lines = input.slice(firstLine, lastLine);
   const keyEndIndex = lines.findIndex((line) => {
     return !containsAbility(line);
@@ -245,7 +260,24 @@ export function getVerticalKeyValueAbilities(input: string[]) {
 export function parseVerticalKeyValueAbilitiesWTC(input: string[]): Abilities {
   const { keys, values } = getVerticalKeyValueAbilities(input);
   const { abilities, modifiers } = extractAbilityValues(values.join(' '));
-  return zipStats(keys, abilities, modifiers);
+  const zipped = zipStats(keys, abilities, modifiers);
+  if (!isAbilities(zipped)) {
+    throw new Error('Could not parse abilities with parseVerticalKeyValueAbilitiesWTC');
+  }
+  return zipped;
+}
+
+const ABILITIES_WTC = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+export function parseVerticalNameValModFormatWTC(input: string[]): Abilities {
+  const { firstLine, lastLine } = findAbilityBounds(input);
+  const lines = input.slice(firstLine, lastLine);
+  const removedAbilities = lines.filter((line) => !containsAbility(line));
+  const { abilities, modifiers } = extractAbilityValues(removedAbilities.join(' '));
+  const parsed = zipStats(ABILITIES_WTC, abilities, modifiers);
+  if (!isAbilities(parsed)) {
+    throw new Error('Could not parse abilities with parseVerticalNameValModFormatWTC');
+  }
+  return parsed;
 }
 
 export function parseSpeedWTC(lines: string[]) {
@@ -326,57 +358,19 @@ export function parseStandardCSV(lines: string[], name: string): Group {
   };
 }
 
-function extractFeature(checking: string): Feature | undefined {
-  if (checking.match(/\.\s\w{3,}/)) {
-    const [name, ...rest] = checking.split(/(?=\.)/);
-    return {
-      name: name.trim(),
-      description: rest.join('').trim().replace(/\n/g, ' ').replace(/^\. /, ''),
-    };
-  }
-  return undefined;
-}
-
-export function parseFeaturesFromBlock(lines: string[], startIndex: number): Feature[] {
-  const features: Feature[] = [];
-  for (let i = startIndex; i < lines.length; i++) {
-    const checking = lines[i];
-    // see if checking has a . followed by 3 or more words
-    const feature = extractFeature(checking);
-    if (feature) {
-      features.push(feature);
-      continue;
-    }
-    return features;
-  }
-  return features;
-}
-
-function isFeatureHeader(check: string) {
-  return FEATURE_HEADERS.reduce(
-    (acc, feature) => acc || feature.toUpperCase().trim() === check.trim().toUpperCase(),
-    false,
-  );
-}
-
-function getFeatureLines(lines: string[]): number[] {
-  return lines.reduce((acc: number[], curr: string, index: number) => {
-    if (isFeatureHeader(curr)) acc.push(index);
-    return acc;
-  }, []);
-}
-
-export function getFeatureNames(line: string): string | undefined {
+export function getFeatureName(line: string): string | undefined {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
   const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
-  // pull out any () as sometimes the name will end with (2/day). and throw off
-  // regex
-  const matches = line.replace(')', '').match(re);
+  // Remove parens and content inside, and leading space
+  // Poison Recharge (5-6). Some text -> Poison Recharge. Some text
+  const parenRegex = / \(([^)]+)\)/;
+  const lineWithoutParens = line.replace(parenRegex, '');
+  const matches = lineWithoutParens.replace(')', '').match(re);
   if (matches) {
     const name = line.split('.')[0];
     // If our regex didn't grab a match at the beginning of the line, return
-    if (name.trim().split(' ').length > 3) {
+    if (name.replace(parenRegex, '').trim().split(' ').length > 3) {
       return;
     }
     return name;
@@ -387,11 +381,19 @@ export function getFeatureNames(line: string): string | undefined {
 
 interface Section {
   name: string;
+  description?: string;
   features: Feature[];
 }
 
 function reduceToFeatures(acc: string[], curr: string) {
-  const names = getFeatureNames(curr);
+  if (curr === 'Legendary Actions') {
+    acc.push('Legendary Actions.');
+    return acc;
+  }
+  if (FEATURE_SECTIONS.includes(curr)) {
+    return acc;
+  }
+  const names = getFeatureName(curr);
   if (names || acc.length === 0) {
     acc.push(curr.trim());
   } else {
@@ -407,10 +409,10 @@ function reduceToFeatures(acc: string[], curr: string) {
   return acc;
 }
 
-function featureStringsToFeatures(line: string) {
-  const fetchedName = getFeatureNames(line);
+function featureStringsToFeatures(line: string, sectionName: string) {
+  const fetchedName = getFeatureName(line);
   let name;
-  if (!fetchedName) name = 'Unknown Name';
+  if (!fetchedName) name = sectionName;
   else name = fetchedName.trim();
 
   let cleanLine = line.replace(name, '').trim();
@@ -422,37 +424,6 @@ function featureStringsToFeatures(line: string) {
   };
   return feature;
 }
-function cleanSectionElements(section: string[], sectionTitle: string): Feature[] {
-  const formatted: string[] = section.map((line: string) => line.replace(sectionTitle, '').trim()).filter((n) => n);
-  const preparedLines = formatted.reduce(reduceToFeatures, []);
-  return preparedLines.map(featureStringsToFeatures);
-}
-
-function buildSections(featureLine: number[], featureSections: string[][], lines: string[]): Section[] {
-  const sections: Section[] = [];
-  featureLine.forEach((value: number, index: number) => {
-    sections.push({
-      name: lines[value].trim(),
-      features: cleanSectionElements(featureSections[index], lines[value]),
-    });
-  });
-  return sections;
-}
-
-function parseFeatureSection(lines: string[]) {
-  let firstFeatureIndex = 0;
-  lines.forEach((line, index) => {
-    const name = getFeatureNames(line);
-    if (name && firstFeatureIndex === 0) firstFeatureIndex = index;
-  });
-  const validFeatures = lines.slice(firstFeatureIndex);
-  const features: Feature[] = cleanSectionElements(validFeatures, 'Features');
-  const featureSection: Section = {
-    name: 'Features',
-    features,
-  };
-  return featureSection;
-}
 
 export function featureFromSection(sections: Section[], match: string): Section {
   return (
@@ -460,31 +431,6 @@ export function featureFromSection(sections: Section[], match: string): Section 
       return name.toUpperCase() === match.toUpperCase();
     }) || { features: [], name: 'No matching feature' }
   );
-}
-
-export function parseFeatureSections(text: string): Section[] {
-  const lines = text.split('\n');
-  const featureLine = getFeatureLines(lines);
-  // create start and end indexes for each featureLine
-  const featureSections = featureLine.reduce((acc: string[][], value, index) => {
-    if (index === 0) {
-      acc.push(lines.slice(0, featureLine[index]));
-    }
-
-    if (featureLine.length >= index + 1) {
-      if (lines.length >= featureLine[index + 1]) {
-        acc.push(lines.slice(value, featureLine[index + 1]));
-      } else {
-        acc.push(lines.slice(value, lines.length));
-      }
-    }
-    return acc;
-  }, []);
-  const features = featureSections.shift();
-  if (!features) throw new Error('Could not parse first feature section');
-  const featureSection = parseFeatureSection(features);
-  const sections = buildSections(featureLine, featureSections, lines);
-  return [featureSection, ...sections];
 }
 
 export function findFirstSectionIndex(lines: string[], term: string): number {
@@ -500,20 +446,6 @@ export function findFirstSectionIndex(lines: string[], term: string): number {
   return firstMatch + 1;
 }
 
-export function tryStatParsers(lines: string[]): Abilities {
-  let stats: Abilities | undefined;
-  try {
-    stats = parseAbilitiesWTC(lines);
-  } catch (error) {
-    try {
-      stats = parseMultilineAbilitiesWTC(lines);
-    } catch {
-      stats = parseVerticalKeyValueAbilitiesWTC(lines);
-    }
-  }
-  if (!stats) throw new Error('could not parse stats.');
-  return stats;
-}
 export function parseBiographyWTC(lines: string[]): Biography {
   let firstBioIndex = -1;
   lines.forEach((line: string, index: number) => {
@@ -618,11 +550,11 @@ export function parseDamageVulnerabilitiesWTC(lines: string[]) {
 }
 
 export function parseFeaturesWTC(lines: string[]): Features {
-  const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
+  const firstFeatureLine = lines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
-  return featureStrings.map(featureStringsToFeatures);
+  return featureStrings.map((line) => featureStringsToFeatures(line, 'Feature'));
 }
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {

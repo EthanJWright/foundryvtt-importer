@@ -259,12 +259,12 @@ export function tryParseAbilities(parsers: ActorParser[], lines: string[]): Abil
   try {
     const stats = tryParsers(parsers, lines);
     if (!(stats as Abilities).str) {
-      throw new Error(`Could not parse stats: ${stats}`);
+      throw new Error(`Could not parse abilities: ${stats}`);
     }
     const statsWithSaves = addSavingThrows(lines, stats as Abilities);
     return statsWithSaves as Abilities;
   } catch (error) {
-    throw new Error(`Could not parse stats: ${error}`);
+    throw new Error(`Could not parse abilities: ${error}`);
   }
 }
 

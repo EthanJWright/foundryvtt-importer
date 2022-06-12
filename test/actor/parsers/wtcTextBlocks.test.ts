@@ -1,18 +1,14 @@
 import {
   parseAbilitiesWTC,
   parseSkillsWTC,
-  parseFeaturesFromBlock,
   findFirstSectionIndex,
   parseStandardCSV,
-  parseFeatureSections,
-  featureFromSection,
   parseMultilineAbilitiesWTC,
-  getFeatureNames,
+  getFeatureName,
   parseFeaturesWTC,
   parseRatingWTC,
-  findStatBounds,
+  findAbilityBounds,
   getVerticalKeyValueAbilities,
-  tryStatParsers,
   parseSensesWTC,
   parseHealthWTC,
   parseNameWTC,
@@ -28,6 +24,7 @@ import {
   parseDamageVulnerabilitiesWTC,
   parseVerticalKeyValueAbilitiesWTC,
   parseSpeedWTC,
+  parseVerticalNameValModFormatWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
@@ -113,7 +110,7 @@ describe('findStatBounds', () => {
     const actorText =
       'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
     const lines = actorText.split('\n');
-    const { firstLine, lastLine } = findStatBounds(lines);
+    const { firstLine, lastLine } = findAbilityBounds(lines);
     expect(lines[firstLine]).toBe('STR');
     expect(lines[lastLine - 1].trim()).toBe('18 (+4)');
   });
@@ -341,6 +338,70 @@ describe('parseMultilineAbilitiesWTC', () => {
   });
 });
 
+describe('parseVerticalNameValModFormatWTC', () => {
+  it('should parse a valid vertical name val mod format string', () => {
+    const abilities = parseVerticalNameValModFormatWTC([
+      'STR',
+      '23',
+      '(+6)',
+      'DEX',
+      '12',
+      '(+1)',
+      'CON',
+      '21',
+      '(+5)',
+      'INT',
+      '18',
+      '(+4)',
+      'WIS',
+      '15',
+      '(+2)',
+      'CHA',
+      '17',
+      '(+3)',
+    ]);
+    expect(abilities).toStrictEqual({
+      cha: {
+        mod: 3,
+        savingThrow: 0,
+        value: 17,
+      },
+      con: {
+        mod: 5,
+        savingThrow: 0,
+        value: 21,
+      },
+      dex: {
+        mod: 1,
+        savingThrow: 0,
+        value: 12,
+      },
+      int: {
+        mod: 4,
+        savingThrow: 0,
+
+        value: 18,
+      },
+      str: {
+        mod: 6,
+        savingThrow: 0,
+        value: 23,
+      },
+      wis: {
+        mod: 2,
+        savingThrow: 0,
+        value: 15,
+      },
+    });
+  });
+  it('should parse stats from a green dragon dnd beyond block', () => {
+    const actorText =
+      "Adult Green Dragon\nHuge dragon , lawful evil\nArmor Class 19 (natural armor)\nHit Points 207 (18d12 + 90)\nSpeed 40 ft., fly 80 ft., swim 40 ft.\nSTR\n23\n(+6)\nDEX\n12\n(+1)\nCON\n21\n(+5)\nINT\n18\n(+4)\nWIS\n15\n(+2)\nCHA\n17\n(+3)\nSaving Throws DEX +6, CON +10, WIS +7, CHA +8\nSkills Stealth +6, Insight +7, Perception +12, Deception +8, Persuasion +8\nDamage Immunities Poison\nCondition Immunities Poisoned\nSenses Blindsight 60 ft., Darkvision 120 ft.\nLanguages Common, Draconic\nChallenge 15 (13000 XP)\nProficiency Bonus +5\nAmphibious. The dragon can breathe air and water.\nLegendary Resistance (3/Day). If the dragon fails a saving throw, it can choose to succeed instead.\nActions\nMultiattack. The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws.\nBite. Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 7 (2d6) poison damage.\nClaw. Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage.\nTail. Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage.\nFrightful Presence. Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours.\nPoison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.\nLegendary Actions\nThe dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.\nDetect. The dragon makes a Wisdom (Perception) check.\nTail Attack. The dragon makes a tail attack.\nWing Attack (Costs 2 Actions). The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.";
+    const abilities = parseVerticalNameValModFormatWTC(actorText.split('\n'));
+    expect(abilities.cha.value).toBe(17);
+  });
+});
+
 describe('parseVerticalKeyValueAbilities', () => {
   it('should parse a valid vertical key value abilities string', () => {
     const abilities = parseVerticalKeyValueAbilitiesWTC([
@@ -433,7 +494,7 @@ describe('parseFeatures', () => {
     expect(features).toStrictEqual([
       { description: 'Big Bara adds her Charisma bonus to her AC (included above).', name: 'Imposing Majesty' },
       {
-        description: 'Big Bara is immune to disease and magic can’t put her to sleep. Actions',
+        description: 'Big Bara is immune to disease and magic can’t put her to sleep.',
         name: 'Warforged Resilience',
       },
       { description: 'Big Bara makes two attacks, either with her shortsword or armbow.', name: 'Multiattack' },
@@ -461,11 +522,11 @@ describe('parseFeatures', () => {
     }).toThrow();
   });
 
-  it('should parse both features', () => {
+  it('should parse two features', () => {
     const actorText =
       'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
-    const featureSplit = actorText.split('\n\n');
-    const features = parseFeaturesFromBlock(featureSplit, 4);
+    const featureSplit = actorText.split('\n');
+    const features = parseFeaturesWTC(featureSplit);
     expect(features).toEqual([
       {
         name: 'Lightfooted',
@@ -476,30 +537,20 @@ describe('parseFeatures', () => {
         description:
           'While the swashbuckler is wearing light or no armor and wielding no shield, its AC includes its Charisma mod.',
       },
+      {
+        description: 'The swashbuckler makes three attacks: one with a dagger and two with its rapier.',
+        name: 'Multiattack',
+      },
+      {
+        description:
+          'Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing damage.',
+        name: 'Dagger',
+      },
+      {
+        description: 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage.',
+        name: 'Rapier',
+      },
     ]);
-  });
-
-  it('should parse a sea hag', () => {
-    const actorText =
-      'Sea Spawn\nMedium humanoid, neutral evil\n                                                                   \nArmor Class 11 (natural armor)\nHit Points 32 (5d8 + 10)\nSpeed 20 ft., swim 30 ft.\n                                                                   \n   STR        DEX        CON          INT       WIS         CHA\n  15 (+2)     8 (-1)    15 (+2)      6 (-2)    10 (+0)      8 (-1)\n                                                                   \nSenses darkvision 120 ft., passive Perception 10\nLanguages understands Aquan and Common but can’t speak\nChallenge 1 (200 XP)\n                                                                   \nLimited Amphibiousness. The sea spawn can breathe air and\nwater, but needs to be submerged in the sea at least once a\nday for 1 minute to avoid suffocating.\n                                                                   \nActions\nMultiattack. The sea spawn makes three attacks: two\nunarmed strikes and one with its Piscine Anatomy.\n                                                                   \nUnarmed Strike. Melee Weapon Attack: +4 to hit, reach 5 ft.,\none target. Hit: 4 (1d4 + 2) bludgeoning damage.\n                                                                   \nPiscine Anatomy. The sea spawn has one or more of the\nfollowing attack options, provided it has the appropriate\nanatomy:\n                                                                   \n  Bite. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\n  Hit: 4 (1d4 + 2) piercing damage.\n                                                                   \n  Poison Quills. Melee Weapon Attack: +5 to hit, reach 5 ft.,\n  one creature. Hit: 3 (1d6) poison damage, and the target\n  must succeed on a DC 12 Constitution saving throw or be\n  poisoned for 1 minute. The target can repeat the saving\n  throw at the end of each of its turns, ending the effect on\n  itself on a success.\n  Tentacle. Melee Weapon Attack: +5 to hit, reach 10 ft., one\n  target. Hit: 5 (1d6 + 2) bludgeoning damage, and the target\n  is grappled (escape DC 12) if it is a Medium or smaller\n                                                                   \n  creature. Until this grapple ends, the sea spawn can’t use\n                                                                   \n  this tentacle on another target';
-    const sections = parseFeatureSections(actorText);
-    const { features } = featureFromSection(sections, 'actions');
-    expect(features.length).toBe(6);
-  });
-
-  it('should parse a different monster', () => {
-    const actorText =
-      'Nimblewright                                                   \n     Medium construct, unaligned                                      \n\n     Armor Class 18 (natural armor)                                   \n     Hit Points 45 (6d8 + 18)                                         \n     Speed 60 ft.                                                     \n\n        STR        DEX        CON          INT       WIS        CHA   \n       12 (+1)    18 (+4)    17 (+3)      8 (-1)    10 (+0)     6 (-2)\n\n     Saving Throws Dex +6                                             \n     Skills Acrobatics +8, Perception +2                              \n     Damage Resistances bludgeoning, piercing and slashing from       \n     nonmagical effects\n     Condition Immunities exhaustion, frightened, petrified, poisoned \n     Senses darkvision 60 ft., passive Perception 12                  \n     Languages understands one language known to its creator but      \n     can’t speak\n     Challenge 4 (1,100 XP)                                           \n                                                                      \n     Magic Resistance. The nimblewright has advantage on saving       \n     throws against spells and other magical effects.\n                                                                      \n     Magic Weapons. The nimblewright’s weapon attacks are             \n     magical.\n                                                                      \n     Repairable. As long as it has at least 1 hit point remaining, the\n     nimblewright regains 1 hit point when a mending spell is cast    \n     on it.\n                                                                      \n     Sure Footed. The nimblewright has advantage on Strength and      \n     Dexterity saving throws made against effects that would knock\n     it prone.                                                        \n                                                                      \n     Actions                                                          \n                                                                      \n     Multiattack. The nimblewright makes three attacks: two with      \n     its rapier and one with its dagger..                             \n     Rapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. \n     Hit: 8 (1d8 + 4) piercing damage.                                \n                                                                      \n     Dagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5ft. or\n                                                                      \n     range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing damage.\n                                                                      \n     Reactions\n     Parry. The nimblewright adds 2 to its AC against one melee\n     attack that would hit it. To do so, the nimblewright must see\n     the attacker and be wielding a melee weapon.';
-    const sections = parseFeatureSections(actorText);
-    const { features } = featureFromSection(sections, 'features');
-    expect(features).toBeDefined();
-    expect(sections.length).toBe(3);
-    expect(features).toHaveLength(4);
-    expect(features[0].name).toBe('Magic Resistance');
-    expect(features[1].name).toBe('Magic Weapons');
-    const { features: actions } = featureFromSection(sections, 'actions');
-    expect(actions).toHaveLength(3);
-    expect(actions[0].name).toBe('Multiattack');
   });
 });
 
@@ -561,7 +612,7 @@ describe('extractAbilities', () => {
   it('should parse big bara abilities', () => {
     const actorText =
       'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
-    const abilities = tryStatParsers(actorText.split('\n'));
+    const abilities = parseVerticalKeyValueAbilitiesWTC(actorText.split('\n'));
     expect(abilities.str.value).toBe(14);
     expect(abilities.str.mod).toBe(2);
   });
@@ -569,7 +620,7 @@ describe('extractAbilities', () => {
   it('should parse abilities of a spythronar sac', () => {
     const actorText =
       'Spythronar Sac\nTiny aberration, unaligned\nArmor Class 5\nHit Points 1 (1d4 – 1)\nSpeed 0 ft.\nSTR DEX CON INT WIS CHA\n1 (–5) 1 (–5) 8 (–1) 1 (–5) 3 (–4) 1 (–5)\nCondition Immunities blinded, charmed, deafened,\nexhaustion, frightened, paralyzed, petrified, poisoned,\nprone, restrained, unconscious\nSenses tremorsense 10 ft. (blind beyond this radius),\npassive Perception 6\nLanguages —\nChallenge 0 (10 XP) Proficiency Bonus +2\nFalse Appearance. The spythronar sac appears to be\na tangled ball of string, twigs, and dirt. Someone who\ncan see the sac can identify it with a successful DC 15\nIntelligence (Arcana or Nature) check.\nFragile. A creature who enters the spythronar sac’s\nspace must succeed on a DC 10 Dexterity saving throw,\nor the sac is destroyed.\nLightning Release. When the spythronar sac is\ndestroyed, it releases lightning in a 10-foot radius. A\ncreature who destroyed the sac by entering its space\nreceives no saving throw. Other creatures in that area\nmust succeed on a DC 10 Dexterity saving throw or\ntake 4 (1d8) lightning damage. Each spythronar swarm\nand web in this area instead gains advantage on its\nnext attack roll.\nShocking Birth. When a spythronar sac takes lightning\ndamage from a source other than another spythronar,\nit hatches, transforming into a spythronar swarm with\nhalf the normal hit points. This swarm rolls initiative and\nenters the combat.';
-    const abilities = tryStatParsers(actorText.split('\n'));
+    const abilities = parseAbilitiesWTC(actorText.split('\n'));
     expect(abilities).toStrictEqual({
       str: { value: 1, mod: -5, savingThrow: 0 },
       dex: { value: 1, mod: -5, savingThrow: 0 },
@@ -597,8 +648,14 @@ describe('Parse Skills', () => {
 describe('getFeatureNames', () => {
   it('should properly split Suave Defense', () => {
     const line = 'Suave Defense. While the swashbuckler is wearing light or no';
-    const name = getFeatureNames(line);
+    const name = getFeatureName(line);
     expect(name).toEqual('Suave Defense');
+  });
+  it('should get Poison Breath (Recharge 5-6) as a name', () => {
+    const actorText =
+      'Poison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.';
+    const name = getFeatureName(actorText);
+    expect(name).toEqual('Poison Breath (Recharge 5–6)');
   });
 });
 
@@ -767,6 +824,13 @@ describe('Parse Text', () => {
     expect(actor.senses.passivePerception).toEqual(8);
     expect(actor.languages).toEqual(['draconic']);
   });
+  it('should parse a green dragon', () => {
+    const actorText =
+      "Adult Green Dragon\nHuge dragon , lawful evil\nArmor Class 19 (natural armor)\nHit Points 207 (18d12 + 90)\nSpeed 40 ft., fly 80 ft., swim 40 ft.\nSTR\n23\n(+6)\nDEX\n12\n(+1)\nCON\n21\n(+5)\nINT\n18\n(+4)\nWIS\n15\n(+2)\nCHA\n17\n(+3)\nSaving Throws DEX +6, CON +10, WIS +7, CHA +8\nSkills Stealth +6, Insight +7, Perception +12, Deception +8, Persuasion +8\nDamage Immunities Poison\nCondition Immunities Poisoned\nSenses Blindsight 60 ft., Darkvision 120 ft.\nLanguages Common, Draconic\nChallenge 15 (13000 XP)\nProficiency Bonus +5\nAmphibious. The dragon can breathe air and water.\nLegendary Resistance (3/Day). If the dragon fails a saving throw, it can choose to succeed instead.\nActions\nMultiattack. The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws.\nBite. Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 7 (2d6) poison damage.\nClaw. Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage.\nTail. Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage.\nFrightful Presence. Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours.\nPoison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.\nLegendary Actions\nThe dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.\nDetect. The dragon makes a Wisdom (Perception) check.\nTail Attack. The dragon makes a tail attack.\nWing Attack (Costs 2 Actions). The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.";
+    const actor = textToActor(actorText);
+    expect(actor.name).toBe('Adult Green Dragon');
+    expect(actor.size).toBe('Huge');
+  });
 });
 
 describe('parseMultiLineStates', () => {
@@ -823,6 +887,24 @@ describe('getAllFeatures', () => {
       'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
     const features = parseFeaturesWTC(actorText.split('\n'));
     expect(features).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'Poisonous Cloud (2/Day)' })]));
+  });
+
+  it('should get all features for a green dragon', () => {
+    const actorText =
+      "Adult Green Dragon\nHuge dragon , lawful evil\nArmor Class 19 (natural armor)\nHit Points 207 (18d12 + 90)\nSpeed 40 ft., fly 80 ft., swim 40 ft.\nSTR\n23\n(+6)\nDEX\n12\n(+1)\nCON\n21\n(+5)\nINT\n18\n(+4)\nWIS\n15\n(+2)\nCHA\n17\n(+3)\nSaving Throws DEX +6, CON +10, WIS +7, CHA +8\nSkills Stealth +6, Insight +7, Perception +12, Deception +8, Persuasion +8\nDamage Immunities Poison\nCondition Immunities Poisoned\nSenses Blindsight 60 ft., Darkvision 120 ft.\nLanguages Common, Draconic\nChallenge 15 (13000 XP)\nProficiency Bonus +5\nAmphibious. The dragon can breathe air and water.\nLegendary Resistance (3/Day). If the dragon fails a saving throw, it can choose to succeed instead.\nActions\nMultiattack. The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws.\nBite. Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 7 (2d6) poison damage.\nClaw. Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage.\nTail. Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage.\nFrightful Presence. Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours.\nPoison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.\nLegendary Actions\nThe dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.\nDetect. The dragon makes a Wisdom (Perception) check.\nTail Attack. The dragon makes a tail attack.\nWing Attack (Costs 2 Actions). The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.";
+    const features = parseFeaturesWTC(actorText.split('\n'));
+    expect(features).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'Poison Breath (Recharge 5–6)',
+          description:
+            'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.',
+        }),
+        expect.objectContaining({ name: 'Detect' }),
+        expect.objectContaining({ name: 'Legendary Actions' }),
+        expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)' }),
+      ]),
+    );
   });
 });
 

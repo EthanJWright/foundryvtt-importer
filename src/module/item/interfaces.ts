@@ -57,6 +57,11 @@ export interface WeaponType {
   attackBonus: number;
 }
 
+export interface Recharge {
+  value: number;
+  charged: boolean;
+}
+
 export interface SpellType {
   name: string;
   type: 'spell' | 'feat';
@@ -65,6 +70,7 @@ export interface SpellType {
   activation?: Activation;
   damage?: Damage;
   range: Range;
+  recharge?: Recharge;
   ability?: ShortAbility;
   save?: Save;
   uses?: Uses;
