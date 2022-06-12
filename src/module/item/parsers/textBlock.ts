@@ -220,7 +220,14 @@ function parseRecharge(name: string): Recharge {
     throw new Error(`${name} is not a recharge spell`);
   }
   const [, recharge] = name.toLowerCase().split('recharge');
-  const [lower, upper] = recharge.split('-');
+
+  let range: string[] = [];
+  if (recharge.includes('-')) {
+    range = recharge.split('-');
+  } else if (recharge.includes('–')) {
+    range = recharge.split('–');
+  }
+  const [lower, upper] = range;
   return {
     value: parseInt(lower),
     charged: upper ? true : false,

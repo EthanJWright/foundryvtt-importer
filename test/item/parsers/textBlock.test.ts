@@ -142,6 +142,39 @@ describe('tryParsers', () => {
       type: 'feat',
     });
   });
+  it('should parse poison gas', () => {
+    const item =
+      'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.';
+    const parsed = parseItem('Poison Breath (Recharge 5–6)', item);
+    expect(parsed).toEqual({
+      ability: 'con',
+      actionType: 'save',
+      activation: { cost: 1, type: 'action' },
+      attackBonus: 0,
+      damage: { parts: [['16d6', 'poison']] },
+      description:
+        'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.',
+      hasSpellData: true,
+      name: 'Poison Breath (Recharge 5–6)',
+      range: { units: 'self', value: 60 },
+      recharge: { charged: true, value: 5 },
+      save: { ability: 'con', dc: 18, scaling: 'spell' },
+      target: { type: 'cone', units: 'ft', value: 60 },
+      type: 'feat',
+      uses: undefined,
+    });
+  });
+  it('should parse legendary actions', () => {
+    const item =
+      "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.";
+    const parsed = parseItem('Legendary Actions', item);
+    expect(parsed).toEqual({
+      description:
+        "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
+      name: 'Legendary Actions',
+      type: 'feat',
+    });
+  });
 });
 
 describe('parseTypeFromActorFeature', () => {
