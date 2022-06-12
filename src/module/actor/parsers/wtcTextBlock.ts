@@ -25,7 +25,7 @@ import {
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_HEADERS = ['Actions', 'Reactions', 'Legendary Actions'];
+const FEATURE_SECTIONS = ['Actions', 'Features'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
@@ -358,46 +358,6 @@ export function parseStandardCSV(lines: string[], name: string): Group {
   };
 }
 
-function extractFeature(checking: string): Feature | undefined {
-  if (checking.match(/\.\s\w{3,}/)) {
-    const [name, ...rest] = checking.split(/(?=\.)/);
-    return {
-      name: name.trim(),
-      description: rest.join('').trim().replace(/\n/g, ' ').replace(/^\. /, ''),
-    };
-  }
-  return undefined;
-}
-
-export function parseFeaturesFromBlock(lines: string[], startIndex: number): Feature[] {
-  const features: Feature[] = [];
-  for (let i = startIndex; i < lines.length; i++) {
-    const checking = lines[i];
-    // see if checking has a . followed by 3 or more words
-    const feature = extractFeature(checking);
-    if (feature) {
-      features.push(feature);
-      continue;
-    }
-    return features;
-  }
-  return features;
-}
-
-function isFeatureHeader(check: string) {
-  return FEATURE_HEADERS.reduce(
-    (acc, feature) => acc || feature.toUpperCase().trim() === check.trim().toUpperCase(),
-    false,
-  );
-}
-
-function getFeatureLines(lines: string[]): number[] {
-  return lines.reduce((acc: number[], curr: string, index: number) => {
-    if (isFeatureHeader(curr)) acc.push(index);
-    return acc;
-  }, []);
-}
-
 export function getFeatureName(line: string): string | undefined {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
@@ -426,6 +386,13 @@ interface Section {
 }
 
 function reduceToFeatures(acc: string[], curr: string) {
+  if (curr === 'Legendary Actions') {
+    acc.push('Legendary Actions.');
+    return acc;
+  }
+  if (FEATURE_SECTIONS.includes(curr)) {
+    return acc;
+  }
   const names = getFeatureName(curr);
   if (names || acc.length === 0) {
     acc.push(curr.trim());
@@ -457,39 +424,6 @@ function featureStringsToFeatures(line: string, sectionName: string) {
   };
   return feature;
 }
-function cleanSectionElements(section: string[], sectionTitle: string): Feature[] {
-  // regex if line only contains sectionTitle
-  const re = new RegExp(`^${sectionTitle}$`, 'i');
-  const formatted: string[] = section.map((line: string) => line.replace(re, '').trim()).filter((n) => n);
-  const preparedLines = formatted.reduce(reduceToFeatures, []);
-  return preparedLines.map((line) => featureStringsToFeatures(line, sectionTitle));
-}
-
-function buildSections(featureLine: number[], featureSections: string[][], lines: string[]): Section[] {
-  const sections: Section[] = [];
-  featureLine.forEach((value: number, index: number) => {
-    sections.push({
-      name: lines[value].trim(),
-      features: cleanSectionElements(featureSections[index], lines[value]),
-    });
-  });
-  return sections;
-}
-
-function parseFeatureSection(lines: string[]) {
-  let firstFeatureIndex = 0;
-  lines.forEach((line, index) => {
-    const name = getFeatureName(line);
-    if (name && firstFeatureIndex === 0) firstFeatureIndex = index;
-  });
-  const validFeatures = lines.slice(firstFeatureIndex);
-  const features: Feature[] = cleanSectionElements(validFeatures, 'Features');
-  const featureSection: Section = {
-    name: 'Features',
-    features,
-  };
-  return featureSection;
-}
 
 export function featureFromSection(sections: Section[], match: string): Section {
   return (
@@ -497,32 +431,6 @@ export function featureFromSection(sections: Section[], match: string): Section 
       return name.toUpperCase() === match.toUpperCase();
     }) || { features: [], name: 'No matching feature' }
   );
-}
-
-export function parseFeatureSections(text: string): Section[] {
-  const lines = text.split('\n');
-  const featureLine = getFeatureLines(lines);
-  // create start and end indexes for each featureLine
-  const featureSections = featureLine.reduce((acc: string[][], value, index) => {
-    if (index === 0) {
-      acc.push(lines.slice(0, featureLine[index]));
-    }
-
-    // if we are at the last feature line, just add the rest of the lines
-    if (featureLine.length >= index + 1) {
-      if (lines.length >= featureLine[index + 1]) {
-        acc.push(lines.slice(value, featureLine[index + 1]));
-      } else {
-        acc.push(lines.slice(value, lines.length));
-      }
-    }
-    return acc;
-  }, []);
-  const features = featureSections.shift();
-  if (!features) throw new Error('Could not parse first feature section');
-  const featureSection = parseFeatureSection(features);
-  const sections = buildSections(featureLine, featureSections, lines);
-  return [featureSection, ...sections];
 }
 
 export function findFirstSectionIndex(lines: string[], term: string): number {
