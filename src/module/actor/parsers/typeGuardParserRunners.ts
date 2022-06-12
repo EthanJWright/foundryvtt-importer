@@ -68,7 +68,6 @@ export function tryParsers(parsers: ActorParser[], input: string[]): ParserOutpu
   for (const parser of parsers) {
     try {
       const result = parser(input);
-      console.log(`Returning result: ${JSON.stringify(result)}`);
       return result;
     } catch (error) {
       parserErrors.push(`Parser error for [${parser.name}] -> ${error}`);

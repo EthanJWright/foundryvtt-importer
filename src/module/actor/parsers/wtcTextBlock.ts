@@ -25,7 +25,7 @@ import {
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_HEADERS = ['Actions', 'Reactions'];
+const FEATURE_HEADERS = ['Actions', 'Reactions', 'Legendary Actions'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
@@ -398,17 +398,19 @@ function getFeatureLines(lines: string[]): number[] {
   }, []);
 }
 
-export function getFeatureNames(line: string): string | undefined {
+export function getFeatureName(line: string): string | undefined {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
   const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
-  // pull out any () as sometimes the name will end with (2/day). and throw off
-  // regex
-  const matches = line.replace(')', '').match(re);
+  // Remove parens and content inside, and leading space
+  // Poison Recharge (5-6). Some text -> Poison Recharge. Some text
+  const parenRegex = / \(([^)]+)\)/;
+  const lineWithoutParens = line.replace(parenRegex, '');
+  const matches = lineWithoutParens.replace(')', '').match(re);
   if (matches) {
     const name = line.split('.')[0];
     // If our regex didn't grab a match at the beginning of the line, return
-    if (name.trim().split(' ').length > 3) {
+    if (name.replace(parenRegex, '').trim().split(' ').length > 3) {
       return;
     }
     return name;
@@ -419,11 +421,12 @@ export function getFeatureNames(line: string): string | undefined {
 
 interface Section {
   name: string;
+  description?: string;
   features: Feature[];
 }
 
 function reduceToFeatures(acc: string[], curr: string) {
-  const names = getFeatureNames(curr);
+  const names = getFeatureName(curr);
   if (names || acc.length === 0) {
     acc.push(curr.trim());
   } else {
@@ -439,10 +442,10 @@ function reduceToFeatures(acc: string[], curr: string) {
   return acc;
 }
 
-function featureStringsToFeatures(line: string) {
-  const fetchedName = getFeatureNames(line);
+function featureStringsToFeatures(line: string, sectionName: string) {
+  const fetchedName = getFeatureName(line);
   let name;
-  if (!fetchedName) name = 'Unknown Name';
+  if (!fetchedName) name = sectionName;
   else name = fetchedName.trim();
 
   let cleanLine = line.replace(name, '').trim();
@@ -455,9 +458,11 @@ function featureStringsToFeatures(line: string) {
   return feature;
 }
 function cleanSectionElements(section: string[], sectionTitle: string): Feature[] {
-  const formatted: string[] = section.map((line: string) => line.replace(sectionTitle, '').trim()).filter((n) => n);
+  // regex if line only contains sectionTitle
+  const re = new RegExp(`^${sectionTitle}$`, 'i');
+  const formatted: string[] = section.map((line: string) => line.replace(re, '').trim()).filter((n) => n);
   const preparedLines = formatted.reduce(reduceToFeatures, []);
-  return preparedLines.map(featureStringsToFeatures);
+  return preparedLines.map((line) => featureStringsToFeatures(line, sectionTitle));
 }
 
 function buildSections(featureLine: number[], featureSections: string[][], lines: string[]): Section[] {
@@ -474,7 +479,7 @@ function buildSections(featureLine: number[], featureSections: string[][], lines
 function parseFeatureSection(lines: string[]) {
   let firstFeatureIndex = 0;
   lines.forEach((line, index) => {
-    const name = getFeatureNames(line);
+    const name = getFeatureName(line);
     if (name && firstFeatureIndex === 0) firstFeatureIndex = index;
   });
   const validFeatures = lines.slice(firstFeatureIndex);
@@ -503,6 +508,7 @@ export function parseFeatureSections(text: string): Section[] {
       acc.push(lines.slice(0, featureLine[index]));
     }
 
+    // if we are at the last feature line, just add the rest of the lines
     if (featureLine.length >= index + 1) {
       if (lines.length >= featureLine[index + 1]) {
         acc.push(lines.slice(value, featureLine[index + 1]));
@@ -636,11 +642,11 @@ export function parseDamageVulnerabilitiesWTC(lines: string[]) {
 }
 
 export function parseFeaturesWTC(lines: string[]): Features {
-  const firstFeatureLine = lines.findIndex((line) => getFeatureNames(line) !== undefined);
+  const firstFeatureLine = lines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
-  return featureStrings.map(featureStringsToFeatures);
+  return featureStrings.map((line) => featureStringsToFeatures(line, 'Feature'));
 }
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {
