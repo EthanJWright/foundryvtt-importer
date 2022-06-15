@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.16](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.15...v0.2.16) (2022-06-15)
+
 ### [0.2.15](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.14...v0.2.15) (2022-06-12)
 
 
