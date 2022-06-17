@@ -1,7 +1,20 @@
 import { UserData } from '../../importForm';
-import { getRootName, journalFromJson, JournalNode } from '../parsers';
+import { buildTextBlock } from '../builder/textBlock';
+import { getRootName, journalFromJson, JournalNode, parseTextBlock } from '../parsers';
 
-export async function processInputJSON({ jsonfile }: UserData) {
+export async function processInputJSON({ jsonfile, clipboardInput }: UserData) {
+  if (clipboardInput) {
+    const input = parseTextBlock(clipboardInput);
+    await buildTextBlock(
+      input,
+      {
+        foundryFolder: Folder,
+        foundryJournalEntry: JournalEntry,
+      },
+      {},
+    );
+    return;
+  }
   const response = await fetch(jsonfile);
   if (!response.ok) {
     console.log(`Error reading ${jsonfile}`);

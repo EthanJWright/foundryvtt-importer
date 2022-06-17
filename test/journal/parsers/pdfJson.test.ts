@@ -1,8 +1,8 @@
+import { FoundryApi } from '../../../src/module/journal/builder';
 import {
   CreateFolderParams,
   createFoldersRecursive,
   formatList,
-  FoundryApi,
   getRootName,
   mergeParagraphs,
   normalizeHeaders,

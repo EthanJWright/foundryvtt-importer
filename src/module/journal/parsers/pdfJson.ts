@@ -1,5 +1,6 @@
 import { cleanName } from '../../formatters';
 import { Config } from '../../settings';
+import { FoundryApi } from '../builder';
 
 export interface Note {
   value: string;
@@ -81,30 +82,6 @@ export interface CreateFolderParams {
   currentFolder?: StoredDocument<Folder>;
   currentDepth: number;
   settings: Config;
-}
-
-interface FoundryCreateFolderParams {
-  name: string;
-  type: string;
-  parent: string;
-  sorting: string;
-}
-
-interface FoundryCreateJournalParams {
-  name: string;
-  content: string;
-  collectionName: string;
-  folder?: string;
-  sort: number;
-}
-
-export interface FoundryApi {
-  foundryFolder: {
-    create: (params: FoundryCreateFolderParams) => Promise<StoredDocument<Folder>>;
-  };
-  foundryJournalEntry: {
-    create: (params: FoundryCreateJournalParams) => Promise<StoredDocument<JournalEntry>>;
-  };
 }
 
 export async function createFoldersRecursive(
