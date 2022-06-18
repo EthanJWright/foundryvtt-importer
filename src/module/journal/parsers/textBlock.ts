@@ -3,6 +3,7 @@ import { formatList } from './pdfJson';
 export interface TextBlock {
   name: string;
   content: string;
+  sortValue?: number;
 }
 
 function newLineToHTML(content: string): string {
