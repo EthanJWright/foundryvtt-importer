@@ -30,6 +30,9 @@ Create foundry elements from external sources.
 
 ![Item Importing from PDF](https://media3.giphy.com/media/geoyoPvqw6hSn3CJgQ/giphy.gif?cid=790b76113d7feb89632e00f526f0c16b20f63f8127036c60&rid=giphy.gif&ct=g)
 
+*Import Journal Entries*
+![Import Journal Entries](https://media0.giphy.com/media/8Qcl0KVgOfpnpHkY8I/giphy.gif?cid=790b76112d96f67469f7fb7f86bf6f92bfbdb9f64e05924d&rid=giphy.gif&ct=g)
+
 ## Support
 
 Currently some features only support the 5e game system.
@@ -72,6 +75,11 @@ Import items copied from text blocks from PDFs. Will best effort parse
 and generate an item based on the elements.
 
 ### Journals
+
+Copy and paste text from anywhere, toggle if you want this to convert to one or
+multiple journal entries.
+
+or
 
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
 tool which attempts to process modules that may be found in DMs guild.
