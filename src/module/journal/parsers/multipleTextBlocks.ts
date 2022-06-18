@@ -8,7 +8,8 @@ export interface MultipleTextBlocks {
 function isSizeOfTitle(line: string) {
   const shortEnough = line.split(' ').length < 7;
   const hasBullet = line.includes('•');
-  return shortEnough && !hasBullet;
+  const endsWithColon = line.endsWith(':');
+  return shortEnough && !hasBullet && line.length > 0 && !endsWithColon;
 }
 
 export const parseMultipleTextBlocks = (input: string): MultipleTextBlocks => {
