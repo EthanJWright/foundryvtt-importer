@@ -10,5 +10,6 @@ export async function buildTextBlock(input: TextBlock, api: FoundryApi, opts: Jo
     name: input?.name ?? 'Unknown Name',
     content: input.content,
     folder: opts?.folder,
+    sort: input.sortValue,
   });
 }

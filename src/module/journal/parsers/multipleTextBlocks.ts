@@ -24,11 +24,13 @@ export const parseMultipleTextBlocks = (input: string): MultipleTextBlocks => {
     }
   });
   entries = entries.filter(({ name, content }) => name !== '' && content !== '');
+  let index = 0;
   return {
     entries: entries.map((entry) => {
       return {
         name: entry.name,
         content: formatContent(entry.content),
+        sortValue: index++,
       };
     }),
   };
