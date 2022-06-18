@@ -349,6 +349,15 @@ Hit: 8 (1d8 + 4) piercing damage.
 
 ## Journals
 
+### Using your clipboard
+
+You can create very quick journal entries by pasting journal data. If you
+select 'Should become multiple journal entries' the module will make best
+effort guesses at where the data should be logically split, and create a folder
+of unique journal entries.
+
+### Using JSON
+
 Journal entries can be created through a tree like JSON structure as seen
 below.
 
