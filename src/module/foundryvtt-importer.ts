@@ -1,11 +1,11 @@
 import { Config, registerSettings } from './settings';
 import { preloadTemplates } from './preloadTemplates';
-import { processInputJSON } from './journal';
 import { processTableJSON } from './table/process';
 import { renderSidebarButtons } from './renderSidebarButtons';
 import CONSTANTS from './constants';
 import { processItemInput } from './item/handleInput';
 import { processActorInput } from './actor/handleInput';
+import { processInputJSON } from './journal/routes';
 
 Hooks.on('renderSidebarTab', (settings: Settings) => {
   if (!(game as Game)?.user?.isGM) return;
