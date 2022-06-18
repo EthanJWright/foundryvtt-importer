@@ -1,4 +1,4 @@
-import { parseTextBlock } from '../../../src/module/journal/parsers/textBlock';
+import { parseTextBlock, startsWithName } from '../../../src/module/journal/parsers/textBlock';
 
 describe('parseTextBlock', () => {
   it('should parse PC raid test', () => {
@@ -9,5 +9,17 @@ describe('parseTextBlock', () => {
         name: 'The PCs Raid the Villa',
       }),
     );
+  });
+});
+
+describe('startsWithName', () => {
+  it('should flag the sentence as starting with a name', () => {
+    const input = 'Treasure. There is treasure in the room.';
+    expect(startsWithName(input)).toEqual(true);
+  });
+  it('should flag a string with a two word name', () => {
+    const input =
+      'Treasure Chests. The padlocks on the chests are illusory but feel real to the touch. A detect magic spell or similar magic reveals an aura of illusion magic around each one. Attempts to pick or break the locks fail, but a knock spell or similar magic causes a lock to open. did not start with a name';
+    expect(startsWithName(input)).toEqual(true);
   });
 });

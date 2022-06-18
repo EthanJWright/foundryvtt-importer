@@ -9,7 +9,9 @@ function isSizeOfTitle(line: string) {
   const shortEnough = line.split(' ').length < 7;
   const hasBullet = line.includes('•');
   const endsWithColon = line.endsWith(':');
-  return shortEnough && !hasBullet && line.length > 0 && !endsWithColon;
+  // first character and last character are parens
+  const hasParens = line.trim().startsWith('(') && line.trim().endsWith(')');
+  return shortEnough && !hasBullet && line.length > 0 && !endsWithColon && !hasParens;
 }
 
 export const parseMultipleTextBlocks = (input: string): MultipleTextBlocks => {
