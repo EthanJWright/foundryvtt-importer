@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.18](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.17...v0.2.18) (2022-06-18)
+
+
+### Bug Fixes
+
+* **journal:** entry for ddb validation ([#53](https://github.com/EthanJWright/foundryvtt-importer/issues/53)) ([152687c](https://github.com/EthanJWright/foundryvtt-importer/commit/152687cd354861f0bbc695811394cc7a1268172d))
+
 ### [0.2.17](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.16...v0.2.17) (2022-06-18)
 
 
