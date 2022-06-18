@@ -20,7 +20,8 @@ function bulletToList(content: string): string {
 function allCapWordsToBold(content: string): string {
   return content.replace(/\b[A-Z]{2,}\b/g, (match) => `<b>${match}</b>`);
 }
-function formatContent(content: string): string {
+
+export function formatContent(content: string): string {
   const formatters = [formatList, bulletToList, dashListToHTLML, allCapWordsToBold, newLineToHTML];
   return formatters.reduce((acc, current) => {
     acc = current(acc);
