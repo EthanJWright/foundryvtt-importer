@@ -32,7 +32,7 @@ Create foundry elements from external sources.
 
 *Import Journal Entries*
 
-![Import Journal Entries](https://media0.giphy.com/media/8Qcl0KVgOfpnpHkY8I/giphy.gif?cid=790b76112d96f67469f7fb7f86bf6f92bfbdb9f64e05924d&rid=giphy.gif&ct=g)
+![Import Journal Entries](https://media3.giphy.com/media/s1eayXpAxvewapb55H/giphy.gif?cid=790b76118c77469b29e65fb1182ad4ccf7cf480e949caa1b&rid=giphy.gif&ct=g)
 
 ## Support
 
