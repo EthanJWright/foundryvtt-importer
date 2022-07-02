@@ -13,8 +13,16 @@ function isTitle(line: string) {
   const hasParens = line.trim().startsWith('(') && line.trim().endsWith(')');
   const endsWithComma = line.endsWith(',');
   const startsWithDash = line.startsWith('-');
+  const endsWithDash = line.endsWith('-');
   return (
-    shortEnough && !hasBullet && line.length > 0 && !endsWithColon && !hasParens && !endsWithComma && !startsWithDash
+    shortEnough &&
+    !hasBullet &&
+    line.length > 0 &&
+    !endsWithColon &&
+    !hasParens &&
+    !endsWithComma &&
+    !startsWithDash &&
+    !endsWithDash
   );
 }
 
