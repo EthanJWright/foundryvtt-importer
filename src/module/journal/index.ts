@@ -1,1 +1,1 @@
-export { processInputJson } from './journalFromJson';
+export { processInputJSON } from './routes/journalFromJson';
