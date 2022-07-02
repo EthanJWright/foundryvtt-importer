@@ -5,16 +5,22 @@ export interface MultipleTextBlocks {
   entries: TextBlock[];
 }
 
-function isTitle(line: string) {
+export function isTitle(line: string) {
   const shortEnough = line.split(' ').length < 7;
-  const hasBullet = line.includes('•');
   const endsWithColon = line.endsWith(':');
   // first character and last character are parens
   const hasParens = line.trim().startsWith('(') && line.trim().endsWith(')');
-  const endsWithComma = line.endsWith(',');
-  const startsWithDash = line.startsWith('-');
   return (
-    shortEnough && !hasBullet && line.length > 0 && !endsWithColon && !hasParens && !endsWithComma && !startsWithDash
+    shortEnough &&
+    !line.includes('•') &&
+    line.length > 0 &&
+    !endsWithColon &&
+    !hasParens &&
+    !line.endsWith(',') &&
+    !line.startsWith('-') &&
+    !line.endsWith('-') &&
+    !line.startsWith('–') &&
+    !line.endsWith('–')
   );
 }
 
@@ -26,6 +32,10 @@ export const parseMultipleTextBlocks = (input: string): MultipleTextBlocks => {
       const name = line.trim();
       entries.push({ name, content: '' });
     } else {
+      if (entries[entries.length - 1] === undefined) {
+        const name = line.trim();
+        entries.push({ name, content: '' });
+      }
       entries[entries.length - 1].content += `\n${line}`;
     }
   });
