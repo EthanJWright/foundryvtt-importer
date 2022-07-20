@@ -18,18 +18,20 @@ import { Feature } from '../../actor/interfaces';
 import { parseGenericFormula } from '../../actor/parsers/generic';
 import { FifthItemType, FifthItem } from '../../actor/templates/fifthedition';
 
-export function parseSpellCone(description: string) {
-  // like 20-foot-radius sphere
-  const unitText = description.split('cone')[0].trim();
+function parseMeasurement(description: string, keyWord: string) {
+  const unitText = description.split(keyWord)[0].trim();
   const lastItem = unitText.split(' ').pop() || '';
   return parseInt(lastItem.split('-')[0]);
 }
 
+export function parseSpellCone(description: string) {
+  // like 20-foot-radius sphere
+  return parseMeasurement(description, 'cone');
+}
+
 export function parseSpellSphere(description: string) {
   // like 20-foot-radius sphere
-  const unitText = description.split('radius')[0].trim();
-  const lastItem = unitText.split(' ').pop() || '';
-  return parseInt(lastItem.split('-')[0]);
+  return parseMeasurement(description, 'radius');
 }
 
 export function parseRange(description: string): Range {
