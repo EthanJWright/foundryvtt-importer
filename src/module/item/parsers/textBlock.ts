@@ -237,22 +237,20 @@ function parseRecharge(name: string): Recharge {
 }
 
 function parseUses(name: string, description: string): Uses {
-  if (/\/day/i.test(name)) {
-    const perDay = parseInt(name.split('/')[0].split('(')[1]);
+  function parseDay(from: string): Uses {
+    const perDay = parseInt(from.split('/')[0].split('(')[1]);
     return {
       per: 'day',
       value: perDay,
       max: perDay,
     };
   }
+  if (/\/day/i.test(name)) {
+    return parseDay(name);
+  }
 
   if (/\/day/i.test(description)) {
-    const perDay = parseInt(description.split('/')[0].split('(')[1]);
-    return {
-      per: 'day',
-      value: perDay,
-      max: perDay,
-    };
+    return parseDay(description);
   }
   throw new Error(`Unable to parse uses from ${name}`);
 }
