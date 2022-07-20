@@ -26,7 +26,11 @@ import { addSavingThrows } from './wtcTextBlock';
 export function trySingleActorParse(parser: ImportActorParser, lines: string[]): ImportActor {
   const abilities = tryParseAbilities(parser.parseAbilities, lines);
   return {
-    name: tryNameParse(parser.parseName, lines),
+    name: tryParser<string>(parser.parseName, lines, (value) => {
+      if (typeof value === 'string') {
+        return value;
+      } else throw new Error('Name must be string');
+    }),
     rating: tryRatingParse(parser.parseRating, lines),
     type: tryTypeParse(parser.parseType, lines),
     alignment: tryAlignmentParse(parser.parseAlignment, lines),
@@ -69,6 +73,23 @@ export function tryParsers(parsers: ActorParser[], input: string[]): ParserOutpu
     try {
       const result = parser(input);
       return result;
+    } catch (error) {
+      parserErrors.push(`Parser error for [${parser.name}] -> ${error}`);
+    }
+  }
+  throw new Error(`Could not parse element: ${JSON.stringify(parserErrors.join('\n'), null, 2)}`);
+}
+
+export function tryParser<T extends ActorTypes>(
+  parsers: ActorParser[],
+  lines: string[],
+  typeGuard: (result: unknown) => T,
+): T {
+  const parserErrors = [];
+  for (const parser of parsers) {
+    try {
+      const result = parser(lines);
+      return typeGuard(result);
     } catch (error) {
       parserErrors.push(`Parser error for [${parser.name}] -> ${error}`);
     }
