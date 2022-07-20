@@ -65,19 +65,6 @@ export function isRedditCollection(userInput: string) {
   return userInput.split(/\nd[0-9]{1,2}/).length > 1;
 }
 
-export function addRedditRange(line: string): TableEntry {
-  let regex = WEIGHT_REGEX;
-  if (hasWeightsRange(line)) {
-    regex = WEIGHT_RANGE_REGEX;
-  }
-  const matches = line.trim().match(regex);
-  if (!matches || matches.length > 1) throw new Error(`Invalid line: ${line} ${matches}`);
-  return {
-    text: line.replace(regex, '').trim(),
-    range: rangeStringMap(matches[0]),
-  };
-}
-
 export function parseRedditTable(userInput: string): FoundryTable {
   const raw = userInput.split('\n');
   const lines = raw.filter((line) => line !== '');
@@ -87,7 +74,7 @@ export function parseRedditTable(userInput: string): FoundryTable {
   let results: TableEntry[] | undefined = undefined;
   let formula = `1d${lines.length}`;
   if (hasWeights(lines[0])) {
-    results = lines.map(addRedditRange);
+    results = lines.map(addWeight);
     formula = formulaFromEntries(results);
   } else {
     results = lines.map((line: string, index: number) => {
