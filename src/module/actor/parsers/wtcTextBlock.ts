@@ -9,6 +9,7 @@ import {
   Biography,
   ConditionTypes,
   DamageType,
+  DamageTypes,
   Feature,
   Features,
   Group,
@@ -496,28 +497,31 @@ function getListRelated(to: string, inStrings: string[]) {
   return conditionImmunityLine;
 }
 
-export function parseDamageImmunitiesWTC(lines: string[]) {
-  const damageImmunityLine = getListRelated('damage immunities', lines);
-  if (!damageImmunityLine) throw new Error('could not parse damage immunities');
-  return damageImmunityLine
-    .replace('Damage Immunities', '')
+/*
+ * List name, i.e. 'damage immunities'
+ */
+function parseNamedList(lines: string[], listName: string): DamageTypes | ConditionTypes {
+  const nameWithWordsCapitalized = listName
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  const listDataLine = getListRelated(listName, lines);
+  if (!listDataLine) throw new Error(`could not parse ${listName}`);
+  return listDataLine
+    .replace(nameWithWordsCapitalized, '')
     .replace('and', '')
     .trim()
     .split(',')
-    .map((immunity) => immunity.trim())
+    .map((value) => value.trim())
     .filter((line) => line !== '') as DamageType[];
 }
 
+export function parseDamageImmunitiesWTC(lines: string[]) {
+  return parseNamedList(lines, 'damage immunities') as DamageTypes;
+}
+
 export function parseDamageResistancesWTC(lines: string[]) {
-  const damageLine = getListRelated('damage resistances', lines);
-  if (!damageLine) throw new Error('could not parse damage resistances');
-  return damageLine
-    .replace('Damage Resistances', '')
-    .replace('and', '')
-    .trim()
-    .split(',')
-    .map((immunity) => immunity.trim())
-    .filter((line) => line !== '') as DamageType[];
+  return parseNamedList(lines, 'damage resistances') as DamageTypes;
 }
 
 function containsMoreItems(line: string) {
@@ -526,27 +530,11 @@ function containsMoreItems(line: string) {
 }
 
 export function parseConditionImmunitiesWTC(lines: string[]) {
-  const conditionImmunityLine = getListRelated('condition immunities', lines);
-  if (!conditionImmunityLine) throw new Error('could not parse condition immunities');
-  return conditionImmunityLine
-    .replace('Condition Immunities', '')
-    .replace('and', '')
-    .trim()
-    .split(',')
-    .map((condition) => condition.trim())
-    .filter((line) => line !== '') as ConditionTypes;
+  return parseNamedList(lines, 'condition immunities') as ConditionTypes;
 }
 
 export function parseDamageVulnerabilitiesWTC(lines: string[]) {
-  const damage = getListRelated('damage vulnerabilities', lines);
-  if (!damage) throw new Error('could not parse damage vulnerabilities');
-  return damage
-    .replace('Damage Vulnerabilities', '')
-    .replace('and', '')
-    .trim()
-    .split(',')
-    .map((condition) => condition.trim())
-    .filter((line) => line !== '') as DamageType[];
+  return parseNamedList(lines, 'damage vulnerabilities') as DamageTypes;
 }
 
 export function parseFeaturesWTC(lines: string[]): Features {

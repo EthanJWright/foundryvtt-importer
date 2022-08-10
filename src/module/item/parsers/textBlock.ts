@@ -18,18 +18,20 @@ import { Feature } from '../../actor/interfaces';
 import { parseGenericFormula } from '../../actor/parsers/generic';
 import { FifthItemType, FifthItem } from '../../actor/templates/fifthedition';
 
-export function parseSpellCone(description: string) {
-  // like 20-foot-radius sphere
-  const unitText = description.split('cone')[0].trim();
+function parseMeasurement(description: string, keyWord: string) {
+  const unitText = description.split(keyWord)[0].trim();
   const lastItem = unitText.split(' ').pop() || '';
   return parseInt(lastItem.split('-')[0]);
 }
 
+export function parseSpellCone(description: string) {
+  // like 20-foot-radius sphere
+  return parseMeasurement(description, 'cone');
+}
+
 export function parseSpellSphere(description: string) {
   // like 20-foot-radius sphere
-  const unitText = description.split('radius')[0].trim();
-  const lastItem = unitText.split(' ').pop() || '';
-  return parseInt(lastItem.split('-')[0]);
+  return parseMeasurement(description, 'radius');
 }
 
 export function parseRange(description: string): Range {
@@ -235,22 +237,20 @@ function parseRecharge(name: string): Recharge {
 }
 
 function parseUses(name: string, description: string): Uses {
-  if (/\/day/i.test(name)) {
-    const perDay = parseInt(name.split('/')[0].split('(')[1]);
+  function parseDay(from: string): Uses {
+    const perDay = parseInt(from.split('/')[0].split('(')[1]);
     return {
       per: 'day',
       value: perDay,
       max: perDay,
     };
   }
+  if (/\/day/i.test(name)) {
+    return parseDay(name);
+  }
 
   if (/\/day/i.test(description)) {
-    const perDay = parseInt(description.split('/')[0].split('(')[1]);
-    return {
-      per: 'day',
-      value: perDay,
-      max: perDay,
-    };
+    return parseDay(description);
   }
   throw new Error(`Unable to parse uses from ${name}`);
 }
