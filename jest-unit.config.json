@@ -1,0 +1,12 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "testTimeout": 30000,
+  "testMatch": ["<rootDir>/test/**/*.test.ts"],
+  "coveragePathIgnorePatterns": ["/node_modules/", "<rootDir>/.*/package.json", "<rootDir>/.*/package-lock.json"],
+  "globals": {
+    "ts-jest": {
+      "tsconfig": "<rootDir>/test/tsconfig.test.json"
+    }
+  }
+}
