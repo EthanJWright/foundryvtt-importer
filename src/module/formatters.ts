@@ -6,5 +6,6 @@ export function cleanName(name: string): string {
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ')
-    .replace(/%20/g, ' ');
+    .replace(/%20/g, ' ')
+    .trim();
 }

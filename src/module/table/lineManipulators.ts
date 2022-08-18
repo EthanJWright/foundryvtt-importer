@@ -17,6 +17,8 @@ export const rangeStringMap = (current: string): [number, number] => {
   let start, end: number;
   if (current.includes('-')) {
     [start, end] = current.split('-').map(Number);
+  } else if (current.includes('–')) {
+    [start, end] = current.split('–').map(Number);
   } else {
     start = Number(current);
     end = start;

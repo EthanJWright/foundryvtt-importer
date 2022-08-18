@@ -145,4 +145,15 @@ describe('DND 5e Table format', () => {
     expect(parsed.formula).toBe('1d8');
     expect(parsed.results.length).toBe(8);
   });
+  it('should parse a DND Beyond 5e table', () => {
+    const table =
+      'Urban Chase Complications d20 \tComplication\n1 \tA large obstacle such as a horse or cart blocks your way. Make a DC 15 Dexterity (Acrobatics) check to get past the obstacle. On a failed check, the obstacle counts as 10 feet of difficult terrain.\n2 \tA crowd blocks your way. Make a DC 10 Strength (Athletics) or Dexterity (Acrobatics) check (your choice) to make your way through the crowd unimpeded. On a failed check, the crowd counts as 10 feet of difficult terrain.\n3 \tA large stained-glass window or similar barrier blocks your path. Make a DC 10 Strength saving throw to smash through the barrier and keep going. On a failed save, you bounce off the barrier and fall prone.\n4 \tA maze of barrels, crates, or similar obstacles stands in your way. Make a DC 10 Dexterity (Acrobatics) or Intelligence check (your choice) to navigate the maze. On a failed check, the maze counts as 10 feet of difficult terrain.\n5 \tThe ground beneath your feet is slippery with rain, spilled oil, or some other liquid. Make a DC 10 Dexterity saving throw. On a failed save, you fall prone.\n6 \tYou come upon a pack of dogs fighting over food. Make a DC 10 Dexterity (Acrobatics) check to get through the pack unimpeded. On a failed check, you are bitten and take 1d4 piercing damage, and the dogs count as 5 feet of difficult terrain.\n7 \tYou run into a brawl in progress. Make a DC 15 Strength (Athletics), Dexterity (Acrobatics), or Charisma (Intimidation) check (your choice) to get past the brawlers unimpeded. On a failed check, you take 2d4 bludgeoning damage, and the brawlers count as 10 feet of difficult terrain.\n8 \tA beggar blocks your way. Make a DC 10 Strength (Athletics), Dexterity (Acrobatics), or Charisma (Intimidation) check (your choice) to slip past the beggar. You succeed automatically if you toss the beggar a coin. On a failed check, the beggar counts as 5 feet of difficult terrain.\n9 \tAn overzealous guard (see the Monster Manual for game statistics) mistakes you for someone else. If you move 20 feet or more on your turn, the guard makes an opportunity attack against you with a spear (+3 to hit; 1d6 + 1 piercing damage on a hit).\n10 \tYou are forced to make a sharp turn to avoid colliding with something impassable. Make a DC 10 Dexterity saving throw to navigate the turn. On a failed save, you collide with something hard and take 1d4 bludgeoning damage.\n11–20 \tNo complication.';
+    const parsed = parseFromTxt(table);
+    // console.log(`${JSON.stringify(parsed, null, 2)}`);
+    expect(parsed.name).toBe('Urban Chase Complications');
+    expect(parsed.formula).toBe('1d20');
+    expect(parsed.results.length).toBe(11);
+    expect(parsed.results[parsed.results.length - 1].text).toBe('No complication.');
+    expect(parsed.results[parsed.results.length - 1].range[1]).toEqual(20);
+  });
 });
