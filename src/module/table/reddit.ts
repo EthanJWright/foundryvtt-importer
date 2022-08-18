@@ -26,11 +26,25 @@ export interface TableCollection {
 }
 
 export function isRedditTable(userInput: string): boolean {
-  return /^d[0-9]{1,3}/.test(userInput.trim());
+  const parsed = parseWeightedTable(userInput);
+  parsed.results.forEach((entry: TableEntry) => {
+    if (entry.range[0] === NaN || entry.range[1] === NaN) {
+      return false;
+    }
+  });
+  return parsed.results.length > 0 && /^d[0-9]{1,3}/.test(userInput.trim());
 }
 
 export function isRedditCollection(userInput: string) {
-  return userInput.split(/\nd[0-9]{1,2}/).length > 1;
+  const parsed = parseRedditCollection(userInput);
+  parsed.collection.forEach((table) => {
+    table.results.forEach((entry) => {
+      if (entry.range[0] === NaN || entry.range[1] === NaN) {
+        return false;
+      }
+    });
+  });
+  return parsed.collection.length > 1 && userInput.split(/\nd[0-9]{1,2}/).length > 1;
 }
 
 export function applyWeights(name: string, lines: string[]): FoundryTable {

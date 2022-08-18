@@ -91,24 +91,48 @@ export function numWithWeights(entries: string[]) {
   }, 0);
 }
 
-export const parseFromTxt: TableParser = (table: string) => {
+const trimDieLine = (line: string): string => {
+  return `1d${line.trim().split(' ')[0].replace('1d', '').replace('d', '')}`;
+};
+
+export const parseFromTxt: TableParser = (input: string) => {
+  const table = input.replace('/t', '\n');
   const lines = breakLines(table);
-  const name = lines.shift() || 'Parsed Table';
+  let name = lines.shift() || 'Parsed Table';
   const numWeighted: number = numWithWeights(lines);
   let formula;
-  if (hasDieNumber(lines[0])) {
+  if (hasDieNumber(name)) {
+    const split = name.split(/(d[0-9]{1,4})/);
+    const dieLine = split[1];
+    name = split[0];
+    formula = trimDieLine(dieLine);
+  } else if (hasDieNumber(lines[0])) {
     const dieLine = lines.shift();
     if (!dieLine) {
       throw new Error('No die line found');
     }
-    formula = `1d${dieLine.split(' ')[0].replace('1d', '').replace('d', '')}`;
+    formula = trimDieLine(dieLine);
   }
   let results;
   if (numWeighted > 0) {
-    results = lines.reduce(entryTxtReduce, []);
+    // remove any lines until we find the first line with weights
+    let firstWeightIndex = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+      if (hasWeights(lines[i])) {
+        firstWeightIndex = i;
+        break;
+      }
+    }
+
+    results = lines.slice(firstWeightIndex).reduce(entryTxtReduce, []);
   } else {
     results = lines.map(entryStringMap);
   }
+  results = results.map((entry) => {
+    entry.text = entry.text.trim();
+    return entry;
+  });
   return {
     name: nameFromFile(name),
     formula: formula ?? formulaFromEntries(results),
@@ -118,10 +142,10 @@ export const parseFromTxt: TableParser = (table: string) => {
 
 const entryTxtReduce = (acc: TableEntry[], curr: string): TableEntry[] => {
   if (hasWeights(curr)) {
-    const [stringRange, text] = curr.split(' ');
+    const [stringRange, ...text] = curr.split(' ');
     const [start, end] = rangeStringMap(stringRange);
     acc.push({
-      text,
+      text: text.join(' '),
       range: [start, end],
     });
   } else {
