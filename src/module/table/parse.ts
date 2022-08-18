@@ -115,7 +115,17 @@ export const parseFromTxt: TableParser = (input: string) => {
   }
   let results;
   if (numWeighted > 0) {
-    results = lines.reduce(entryTxtReduce, []);
+    // remove any lines until we find the first line with weights
+    let firstWeightIndex = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+      if (hasWeights(lines[i])) {
+        firstWeightIndex = i;
+        break;
+      }
+    }
+
+    results = lines.slice(firstWeightIndex).reduce(entryTxtReduce, []);
   } else {
     results = lines.map(entryStringMap);
   }
