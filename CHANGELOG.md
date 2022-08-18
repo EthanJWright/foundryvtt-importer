@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.24](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.23...v0.2.24) (2022-08-18)
+
+
+### Features
+
+* **tables:** support 5e dnd roll table format ([#60](https://github.com/EthanJWright/foundryvtt-importer/issues/60)) ([9586914](https://github.com/EthanJWright/foundryvtt-importer/commit/9586914f6ab4f32785272165d1f3e75f6e93c6c5))
+
 ### [0.2.23](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.22...v0.2.23) (2022-08-10)
 
 ### [0.2.22](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.21...v0.2.22) (2022-07-02)
