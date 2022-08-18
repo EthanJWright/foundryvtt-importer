@@ -1,9 +1,5 @@
-import {
-  hasDieNumber,
-  isRedditCollection,
-  parseRedditCollection,
-  parseWeightedTable,
-} from '../../src/module/table/reddit';
+import { isRedditCollection, parseRedditCollection, parseWeightedTable } from '../../src/module/table/reddit';
+import { hasDieNumber } from '../../src/module/table/stringInspectors';
 import { hasWeights } from '../../src/module/table/lineManipulators';
 
 describe('hasDieNumber', () => {
