@@ -81,16 +81,21 @@ async function redditTableRoute(input: string) {
 
 export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
   if (clipboardInput) {
-    if (isJSONTable(clipboardInput)) {
-      jsonRoute(clipboardInput);
-    } else if (isCSVTable(clipboardInput)) {
-      csvRoute('CSV Imported Table', clipboardInput);
-    } else if (isRedditCollection(clipboardInput)) {
-      redditTableRoute(clipboardInput);
-    } else if (isRedditTable(clipboardInput)) {
-      redditTableRoute(clipboardInput);
-    } else {
-      txtRoute(clipboardInput);
+    try {
+      if (isJSONTable(clipboardInput)) {
+        await jsonRoute(clipboardInput);
+      } else if (isCSVTable(clipboardInput)) {
+        await csvRoute('CSV Imported Table', clipboardInput);
+      } else if (isRedditCollection(clipboardInput)) {
+        await redditTableRoute(clipboardInput);
+      } else if (isRedditTable(clipboardInput)) {
+        await redditTableRoute(clipboardInput);
+      } else {
+        await txtRoute(clipboardInput);
+      }
+    } catch (e) {
+      console.log(`Error while processing table: ${e} | attempting base text route parsing.`);
+      await txtRoute(clipboardInput);
     }
     return;
   }

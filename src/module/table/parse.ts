@@ -1,6 +1,7 @@
 import { cleanName } from '../formatters';
 import { TableParser } from './process';
 import { addWeight, breakLines, hasWeights, rangeStringMap } from './lineManipulators';
+import { hasDieNumber } from './stringInspectors';
 
 export type TableData = ConstructorParameters<typeof foundry.documents.BaseRollTable>[0];
 
@@ -94,14 +95,39 @@ export const parseFromTxt: TableParser = (table: string) => {
   const lines = breakLines(table);
   const name = lines.shift() || 'Parsed Table';
   const numWeighted: number = numWithWeights(lines);
-  if (numWeighted > lines.length / 2) {
-    throw new Error('Entries have weights');
+  let formula;
+  if (hasDieNumber(lines[0])) {
+    const dieLine = lines.shift();
+    if (!dieLine) {
+      throw new Error('No die line found');
+    }
+    formula = `1d${dieLine.split(' ')[0].replace('1d', '').replace('d', '')}`;
+  }
+  let results;
+  if (numWeighted > 0) {
+    results = lines.reduce(entryTxtReduce, []);
+  } else {
+    results = lines.map(entryStringMap);
   }
   return {
     name: nameFromFile(name),
-    formula: `1d${lines.length}`,
-    results: [...lines.map(entryStringMap)],
+    formula: formula ?? formulaFromEntries(results),
+    results,
   };
+};
+
+const entryTxtReduce = (acc: TableEntry[], curr: string): TableEntry[] => {
+  if (hasWeights(curr)) {
+    const [stringRange, text] = curr.split(' ');
+    const [start, end] = rangeStringMap(stringRange);
+    acc.push({
+      text,
+      range: [start, end],
+    });
+  } else {
+    acc[acc.length - 1].text += ` ${curr}`;
+  }
+  return acc;
 };
 
 const entryCSVMap = (current: string): TableEntry => {

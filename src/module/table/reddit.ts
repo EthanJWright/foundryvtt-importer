@@ -1,16 +1,12 @@
 import { formulaFromEntries, FoundryTable, TableEntry } from './parse';
 import { addWeight, breakLines, hasWeights } from './lineManipulators';
+import { hasDieNumber } from './stringInspectors';
 
 export function cleanName(name: string) {
   return name
     .replace(/d[0-9]{1,3}/, '')
     .replace(/[0-9]{1,3}/, '')
     .trim();
-}
-
-export function hasDieNumber(line: string) {
-  // match d4, d6, d8, d10, d12, d20, d100
-  return /^d[0-9]{1,4}/.test(line.trim());
 }
 
 export function parseWeightedTable(userInput: string): FoundryTable {
