@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.25](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.24...v0.2.25) (2022-08-18)
+
+
+### Bug Fixes
+
+* **table:** DNDBeyond format and edge cases ([#61](https://github.com/EthanJWright/foundryvtt-importer/issues/61)) ([7e8a30a](https://github.com/EthanJWright/foundryvtt-importer/commit/7e8a30a981279a74546422f476f84936f384e626))
+
 ### [0.2.24](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.23...v0.2.24) (2022-08-18)
 
 
