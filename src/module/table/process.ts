@@ -83,14 +83,19 @@ export async function processTableJSON({ jsonfile, clipboardInput }: UserData) {
   if (clipboardInput) {
     try {
       if (isJSONTable(clipboardInput)) {
+        console.log(`Parsing as JSON`);
         await jsonRoute(clipboardInput);
       } else if (isCSVTable(clipboardInput)) {
+        console.log(`Parsing as CSV`);
         await csvRoute('CSV Imported Table', clipboardInput);
       } else if (isRedditCollection(clipboardInput)) {
+        console.log(`Parsing as Reddit Collection`);
         await redditTableRoute(clipboardInput);
       } else if (isRedditTable(clipboardInput)) {
+        console.log(`Parsing as Reddit Table`);
         await redditTableRoute(clipboardInput);
       } else {
+        console.log(`Parsing as TXT`);
         await txtRoute(clipboardInput);
       }
     } catch (e) {
