@@ -11,8 +11,13 @@
       "discord": "GabenMessiah (Ethan)#0551"
     }
   ],
-  "minimumCoreVersion": "0.8.8",
-  "compatibleCoreVersion": "9",
+  "minimumCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "10",
+  "compatibility": {
+    "minimum": 8,
+    "verified": "10.285",
+    "maximum": "10"
+  },
   "scripts": [],
   "esmodules": ["module/foundryvtt-importer.js"],
   "styles": ["styles/foundryvtt-importer.css"],
