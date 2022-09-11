@@ -22,7 +22,6 @@
   "esmodules": ["module/foundryvtt-importer.js"],
   "styles": ["styles/foundryvtt-importer.css"],
   "packs": [],
-  "dependencies": [],
   "languages": [
     {
       "lang": "en",
