@@ -51,3 +51,37 @@ export const parseMultipleTextBlocks = (input: string): MultipleTextBlocks => {
     }),
   };
 };
+
+export const parseMultipleTextPages = (input: string) => {
+  const lines = input.split('\n');
+  let entries: TextBlock[] = [];
+  lines.forEach((line) => {
+    if (isTitle(line)) {
+      const name = line.trim();
+      entries.push({ name, content: '' });
+    } else {
+      if (entries[entries.length - 1] === undefined) {
+        const name = line.trim();
+        entries.push({ name, content: '' });
+      }
+      entries[entries.length - 1].content += `\n${line}`;
+    }
+  });
+  entries = entries.filter(({ name, content }) => name !== '' && content !== '');
+  let index = 0;
+  return {
+    pages: entries.map((entry) => {
+      return {
+        title: { show: true },
+        name: entry.name,
+        type: 'text',
+        text: {
+          content: formatContent(entry.content),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          format: (CONST as unknown as any).JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+        },
+        sortValue: index++,
+      };
+    }),
+  };
+};
