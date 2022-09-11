@@ -1,4 +1,5 @@
 {
+  "id": "foundry-vtt-content-parser",
   "name": "foundry-vtt-content-parser",
   "title": "Foundry VTT Content Parser",
   "description": "import foundry entities from external sources",
@@ -11,8 +12,12 @@
       "discord": "GabenMessiah (Ethan)#0551"
     }
   ],
-  "minimumCoreVersion": "0.8.8",
-  "compatibleCoreVersion": "9",
+  "minimumCoreVersion": "0.8.6",
+  "compatibility": {
+    "minimum": 8,
+    "verified": "10",
+    "maximum": "10"
+  },
   "scripts": [],
   "esmodules": ["module/foundryvtt-importer.js"],
   "styles": ["styles/foundryvtt-importer.css"],

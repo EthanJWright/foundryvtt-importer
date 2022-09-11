@@ -1,3 +1,4 @@
+import { isGame } from '../../guards/game';
 import { UserData } from '../../importForm';
 import { buildTextBlock } from '../builder/textBlock';
 import { getRootName, journalFromJson, JournalNode, parseTextBlock } from '../parsers';
