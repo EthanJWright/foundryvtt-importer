@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.26](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.25...v0.2.26) (2022-08-29)
+
+
+### Bug Fixes
+
+* **module:** add url so link exists in foundry ([#64](https://github.com/EthanJWright/foundryvtt-importer/issues/64)) ([7023024](https://github.com/EthanJWright/foundryvtt-importer/commit/70230242334788a9a8f745d78a59821b872cc25f))
+
 ### [0.2.25](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.24...v0.2.25) (2022-08-18)
 
 
