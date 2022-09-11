@@ -13,16 +13,16 @@
     }
   ],
   "minimumCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "10",
   "compatibility": {
     "minimum": 8,
-    "verified": "10",
+    "verified": "10.285",
     "maximum": "10"
   },
   "scripts": [],
   "esmodules": ["module/foundryvtt-importer.js"],
   "styles": ["styles/foundryvtt-importer.css"],
   "packs": [],
-  "dependencies": [],
   "languages": [
     {
       "lang": "en",
@@ -38,6 +38,5 @@
   "readme": "",
   "bugs": "",
   "changelog": "",
-  "system": [],
   "library": false
 }
