@@ -1,7 +1,17 @@
+import { supportsJournalPages } from '../../game';
 import { UserData } from '../../importForm';
 import { buildTextBlock } from '../builder/textBlock';
 import { getRootName, journalFromJson, JournalNode, parseTextBlock } from '../parsers';
-import { parseMultipleTextBlocks } from '../parsers/multipleTextBlocks';
+import { parseMultipleTextBlocks, parseMultipleTextPages } from '../parsers/multipleTextBlocks';
+
+async function multipleRoutePages(input: string): Promise<void> {
+  const { pages } = parseMultipleTextPages(input);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (JournalEntry as unknown as any).implementation.create({
+    pages,
+    name: 'Parsed Journal Entries',
+  });
+}
 
 async function multipleRoute(input: string): Promise<void> {
   const folder = await Folder.create({
@@ -27,7 +37,12 @@ async function multipleRoute(input: string): Promise<void> {
 export async function processInputJSON({ jsonfile, clipboardInput, buildMultiple }: UserData) {
   if (clipboardInput) {
     if (buildMultiple) {
-      return await multipleRoute(clipboardInput);
+      if (supportsJournalPages()) {
+        return await multipleRoutePages(clipboardInput);
+      } else {
+        // TODO: remove this once we have deprecated v9 support
+        return await multipleRoute(clipboardInput);
+      }
     }
     const input = parseTextBlock(clipboardInput);
     await buildTextBlock(
