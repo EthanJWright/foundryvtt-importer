@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.28](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.27...v0.2.28) (2022-09-12)
+
+
+### Bug Fixes
+
+* **module.json:** versions and updates for foundry v10 ([#66](https://github.com/EthanJWright/foundryvtt-importer/issues/66)) ([02e4dcf](https://github.com/EthanJWright/foundryvtt-importer/commit/02e4dcf5cf4faf090aa1a5529478f73fe620d7e9))
+
 ### [0.2.27](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.26...v0.2.27) (2022-09-11)
 
 ### [0.2.26](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.25...v0.2.26) (2022-08-29)
