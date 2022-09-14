@@ -3,7 +3,7 @@ import {
   parseSkillsWTC,
   findFirstSectionIndex,
   parseStandardCSV,
-  parseMultilineAbilitiesWTC,
+  parseMultiLineAbilitiesWTC,
   getFeatureName,
   parseFeaturesWTC,
   parseRatingWTC,
@@ -283,7 +283,7 @@ describe('parseAbilitiesWTC', () => {
 
 describe('parseMultilineAbilitiesWTC', () => {
   it('should parse a valid multi line abilities string', () => {
-    const abilities = parseMultilineAbilitiesWTC([
+    const abilities = parseMultiLineAbilitiesWTC([
       'STR',
       '12 (+1)',
       'DEX',
@@ -333,7 +333,7 @@ describe('parseMultilineAbilitiesWTC', () => {
   it('should throw an error when not passed a valid abilities string', () => {
     const invalid = ['invalid'];
     expect(() => {
-      parseMultilineAbilitiesWTC(invalid);
+      parseMultiLineAbilitiesWTC(invalid);
     }).toThrow();
   });
 });
@@ -838,7 +838,7 @@ describe('parseMultiLineStates', () => {
     const actorText =
       'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nMedium humanoid (any race), any alignment\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
     const lines: string[] = actorText.split('\n');
-    const abilities = parseMultilineAbilitiesWTC(lines);
+    const abilities = parseMultiLineAbilitiesWTC(lines);
     expect(abilities).toEqual({
       str: {
         value: 12,
@@ -913,5 +913,23 @@ describe('getChallenge', () => {
     const input = 'Challenge 1/8 (25 XP))';
     const rating = parseRatingWTC([input]);
     expect(rating).toEqual({ cr: 0.125, xp: 25 });
+  });
+});
+
+describe('MCDM monsters', () => {
+  it('should parse an mcdm monster', () => {
+    // TODO: this works so far but maybe make CR optional
+    const actorText =
+      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
+    const actor = textToActor(actorText);
+    expect(actor.name).toEqual('Goblin Spinecleaver');
+    expect(actor.size).toEqual('Small');
+    expect(actor.abilities.str.value).toEqual(16);
+    expect(actor.abilities.dex.value).toEqual(14);
+    expect(actor.abilities.con.value).toEqual(14);
+    expect(actor.abilities.int.value).toEqual(10);
+    expect(actor.abilities.wis.value).toEqual(10);
+    expect(actor.abilities.cha.value).toEqual(8);
+    expect(actor.items[0].name).toEqual('Crafty');
   });
 });

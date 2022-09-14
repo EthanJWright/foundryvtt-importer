@@ -30,7 +30,7 @@ const FEATURE_SECTIONS = ['Actions', 'Features'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
-  parseRating: [parseRatingWTC],
+  parseRating: [parseRatingWTC, parseRatingMCDM],
   parseType: [parseTypeWTC],
   parseAlignment: [parseAlignmentWTC],
   parseBiography: [parseBiographyWTC],
@@ -45,7 +45,7 @@ export const ParseActorWTC: ImportActorParser = {
   parseDamageVulnerabilities: [parseDamageVulnerabilitiesWTC],
   parseAbilities: [
     parseAbilitiesWTC,
-    parseMultilineAbilitiesWTC,
+    parseMultiLineAbilitiesWTC,
     parseVerticalKeyValueAbilitiesWTC,
     parseVerticalNameValModFormatWTC,
   ],
@@ -229,7 +229,7 @@ export function findAbilityBounds(input: string[]): { lastLine: number; firstLin
   return { firstLine, lastLine };
 }
 
-export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
+export function parseMultiLineAbilitiesWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
@@ -458,6 +458,43 @@ export function parseBiographyWTC(lines: string[]): Biography {
     throw new Error('Could not find a valid biography');
   }
   return lines[firstBioIndex].trim();
+}
+
+export function parseRatingMCDM(lines: string[]): Rating {
+  const challengeLine = lines.find((line) => line.includes('CR'));
+  if (!challengeLine) {
+    throw new Error('Could not find a valid challenge rating');
+  }
+  const cr = challengeLine.split(' ').find((number) => {
+    try {
+      return parseInt(number) >= 0;
+    } catch (e) {
+      return false;
+    }
+  });
+  if (!cr) {
+    throw new Error('Could not find a valid challenge rating');
+  }
+
+  const xpLine = lines.find((line) => line.includes('XP'));
+  if (!xpLine) {
+    throw new Error('Could not find a valid experience rating');
+  }
+  const xp = xpLine.split(' ').find((number) => {
+    try {
+      return parseInt(number) >= 0;
+    } catch (e) {
+      return false;
+    }
+  });
+  if (!xp) {
+    throw new Error('Could not find a valid experience rating');
+  }
+
+  return {
+    cr: parseInt(cr),
+    xp: parseInt(xp),
+  };
 }
 
 export function parseRatingWTC(lines: string[]): Rating {
