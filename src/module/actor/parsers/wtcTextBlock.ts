@@ -20,13 +20,14 @@ import {
   Languages,
   Name,
   Rating,
+  SectionLabel,
   Senses,
   Size,
   Skill,
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_SECTIONS = ['Actions', 'Features'];
+const FEATURE_SECTIONS = ['ACTIONS', 'FEATURES', 'REACTIONS', 'LEGENDARY ACTIONS', 'BONUS ACTIONS'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
@@ -386,12 +387,26 @@ interface Section {
   features: Feature[];
 }
 
-function reduceToFeatures(acc: string[], curr: string) {
-  if (curr === 'Legendary Actions') {
-    acc.push('Legendary Actions.');
-    return acc;
+function toSection(line: string): SectionLabel | undefined {
+  const name = line.toUpperCase();
+  if (name === 'ACTIONS') {
+    return 'action';
   }
-  if (FEATURE_SECTIONS.includes(curr)) {
+  if (name === 'REACTIONS') {
+    return 'reaction';
+  }
+  if (name === 'LEGENDARY ACTIONS') {
+    return 'legendary';
+  }
+  if (name === 'BONUS ACTIONS') {
+    return 'bonus';
+  }
+  return;
+}
+
+function reduceToFeatures(acc: string[], curr: string) {
+  if (FEATURE_SECTIONS.includes(curr.toUpperCase())) {
+    acc.push(curr.toUpperCase());
     return acc;
   }
   const names = getFeatureName(curr);
@@ -410,10 +425,10 @@ function reduceToFeatures(acc: string[], curr: string) {
   return acc;
 }
 
-function featureStringsToFeatures(line: string, sectionName: string) {
+function featureStringsToFeatures(line: string, sectionName?: SectionLabel) {
   const fetchedName = getFeatureName(line);
-  let name;
-  if (!fetchedName) name = sectionName;
+  let name = '';
+  if (!fetchedName) name = sectionName ?? '';
   else name = fetchedName.trim();
 
   let cleanLine = line.replace(name, '').trim();
@@ -422,6 +437,7 @@ function featureStringsToFeatures(line: string, sectionName: string) {
   const feature: Feature = {
     name,
     description: cleanLine,
+    section: sectionName,
   };
   return feature;
 }
@@ -574,12 +590,39 @@ export function parseDamageVulnerabilitiesWTC(lines: string[]) {
   return parseNamedList(lines, 'damage vulnerabilities') as DamageTypes;
 }
 
+interface FeatureSection {
+  feature: string;
+  section?: SectionLabel;
+}
+function addSectionReduction(acc: FeatureSection[], feature: string) {
+  if (FEATURE_SECTIONS.includes(feature)) {
+    // this is a section label, not a feature
+    acc.push({ section: toSection(feature), feature: 'EMPTY' });
+  }
+  const lastAdded = acc[acc.length - 1];
+  if (lastAdded && lastAdded.section && lastAdded.feature === 'EMPTY') {
+    lastAdded.feature = feature;
+    return acc;
+  }
+
+  if (lastAdded && lastAdded.section) {
+    const { section } = lastAdded;
+    acc.push({ section, feature });
+    return acc;
+  }
+
+  acc.push({ feature });
+  return acc;
+}
+
 export function parseFeaturesWTC(lines: string[]): Features {
   const firstFeatureLine = lines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
-  return featureStrings.map((line) => featureStringsToFeatures(line, 'Feature'));
+  const withSections = featureStrings.reduce(addSectionReduction, []);
+  const compiledFeatures = withSections.map((entry) => featureStringsToFeatures(entry.feature, entry.section));
+  return compiledFeatures.filter((feature) => !FEATURE_SECTIONS.includes(feature.description));
 }
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {

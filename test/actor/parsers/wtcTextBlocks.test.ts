@@ -515,11 +515,30 @@ describe('parseFeatures', () => {
       },
     ]);
   });
+
   it('should throw an error when not passed a valid features string', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseFeaturesWTC(invalid);
     }).toThrow();
+  });
+
+  it('should parse section for features', () => {
+    const actorText =
+      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
+    const features = parseFeaturesWTC(actorText.split('\n'));
+    expect(features).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'Greataxe',
+          section: 'action',
+        }),
+        expect.objectContaining({
+          section: 'reaction',
+          name: 'Tricksy Warrior',
+        }),
+      ]),
+    );
   });
 
   it('should parse two features', () => {
@@ -531,24 +550,29 @@ describe('parseFeatures', () => {
       {
         name: 'Lightfooted',
         description: 'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
+        section: undefined,
       },
       {
         name: 'Suave Defense',
         description:
           'While the swashbuckler is wearing light or no armor and wielding no shield, its AC includes its Charisma mod.',
+        section: undefined,
       },
       {
         description: 'The swashbuckler makes three attacks: one with a dagger and two with its rapier.',
         name: 'Multiattack',
+        section: 'action',
       },
       {
         description:
           'Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing damage.',
         name: 'Dagger',
+        section: 'action',
       },
       {
         description: 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage.',
         name: 'Rapier',
+        section: 'action',
       },
     ]);
   });
@@ -899,6 +923,7 @@ describe('getAllFeatures', () => {
           name: 'Poison Breath (Recharge 5–6)',
           description:
             'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.',
+          section: 'action',
         }),
         expect.objectContaining({ name: 'Detect' }),
         expect.objectContaining({ name: 'Legendary Actions' }),
@@ -920,7 +945,7 @@ describe('MCDM monsters', () => {
   it('should parse an mcdm monster', () => {
     // TODO: this works so far but maybe make CR optional
     const actorText =
-      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
+      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy��������s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Spinecleaver');
     expect(actor.size).toEqual('Small');
