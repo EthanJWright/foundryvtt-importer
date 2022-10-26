@@ -492,26 +492,38 @@ describe('parseFeatures', () => {
       'a success.',
     ]);
     expect(features).toStrictEqual([
-      { description: 'Big Bara adds her Charisma bonus to her AC (included above).', name: 'Imposing Majesty' },
+      {
+        description: 'Big Bara adds her Charisma bonus to her AC (included above).',
+        name: 'Imposing Majesty',
+        section: undefined,
+      },
       {
         description: 'Big Bara is immune to disease and magic can’t put her to sleep.',
         name: 'Warforged Resilience',
+        section: undefined,
       },
-      { description: 'Big Bara makes two attacks, either with her shortsword or armbow.', name: 'Multiattack' },
+      {
+        description: 'Big Bara makes two attacks, either with her shortsword or armbow.',
+        name: 'Multiattack',
+        section: 'action',
+      },
       {
         description:
           'Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poison damage.',
         name: 'Shortsword',
+        section: 'action',
       },
       {
         description:
           'Ranged Weapon Attack: +7 to hit, range 30/120 ft., one target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poison damage.',
         name: 'Armbow',
+        section: 'action',
       },
       {
         description:
           'Poison gas fills a 20-foot-radius sphere centered on a point Big Bara can see within 50 feet of her. The gas spreads around corners and remains until the start of Big Bara’s next turn. Each creature that starts its turn in the gas must succeed on a DC 16 Constitution saving throw or be poisoned for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.',
         name: 'Poisonous Cloud (2/Day)',
+        section: 'action',
       },
     ]);
   });
@@ -926,8 +938,7 @@ describe('getAllFeatures', () => {
           section: 'action',
         }),
         expect.objectContaining({ name: 'Detect' }),
-        expect.objectContaining({ name: 'Legendary Actions' }),
-        expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)' }),
+        expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)', section: 'legendary' }),
       ]),
     );
   });

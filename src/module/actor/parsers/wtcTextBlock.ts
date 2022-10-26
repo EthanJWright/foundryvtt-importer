@@ -55,6 +55,11 @@ export const ParseActorWTC: ImportActorParser = {
   parseItems: [parseItemsWTC],
 };
 
+const pascal = (s: string) =>
+  s.replace(/(\w)(\w*)/g, function (_, g1, g2) {
+    return g1.toUpperCase() + g2.toLowerCase();
+  });
+
 export function parseHealthWTC(lines: string[]) {
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
   const { min, max, str, value } = parseGenericFormula(healthLine, /Hit Points (.*)/);
@@ -413,6 +418,16 @@ function reduceToFeatures(acc: string[], curr: string) {
   if (names || acc.length === 0) {
     acc.push(curr.trim());
   } else {
+    // the next line after 'legendary resistance' is a description of the
+    // resistance, so the section header gets lost
+    // need to check if the previous line was a section header, and if so
+    // create a new entry including the previous header
+    const lastEntry = acc[acc.length - 1];
+    if (FEATURE_SECTIONS.includes(lastEntry.toUpperCase()) && curr) {
+      acc.push(`${pascal(lastEntry)} ${curr.trim()}`);
+      return acc;
+    }
+
     // if the line was a continuation, dont add a space
     const bindWith = acc[acc.length - 1].endsWith('-') ? '' : ' ';
     // if line ended with a - for a continuation, remove it
@@ -599,6 +614,7 @@ function addSectionReduction(acc: FeatureSection[], feature: string) {
     // this is a section label, not a feature
     acc.push({ section: toSection(feature), feature: 'EMPTY' });
   }
+
   const lastAdded = acc[acc.length - 1];
   if (lastAdded && lastAdded.section && lastAdded.feature === 'EMPTY') {
     lastAdded.feature = feature;
@@ -622,7 +638,9 @@ export function parseFeaturesWTC(lines: string[]): Features {
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
   const withSections = featureStrings.reduce(addSectionReduction, []);
   const compiledFeatures = withSections.map((entry) => featureStringsToFeatures(entry.feature, entry.section));
-  return compiledFeatures.filter((feature) => !FEATURE_SECTIONS.includes(feature.description));
+  return compiledFeatures.filter((feature) => {
+    return !FEATURE_SECTIONS.includes(feature.description) || feature.description === feature.name;
+  });
 }
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {
