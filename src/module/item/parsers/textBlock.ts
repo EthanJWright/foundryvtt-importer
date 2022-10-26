@@ -14,7 +14,7 @@ import {
 } from '../interfaces';
 
 import { Range } from '../interfaces';
-import { Feature } from '../../actor/interfaces';
+import { Feature, SectionLabel } from '../../actor/interfaces';
 import { parseGenericFormula } from '../../actor/parsers/generic';
 import { FifthItemType, FifthItem } from '../../actor/templates/fifthedition';
 import { ItemParserInput } from '../typeGuardParserRunners';
@@ -92,7 +92,36 @@ export function parseType(description: string): ItemType {
   return 'consumable';
 }
 
-export function parseActivation(description: string): Activation | undefined {
+export function parseActivation(description: string, section?: SectionLabel): Activation | undefined {
+  if (section) {
+    switch (section) {
+      case 'action': {
+        return {
+          type: 'action',
+          cost: 1,
+        };
+      }
+      case 'bonus': {
+        return {
+          type: 'bonus',
+          cost: 1,
+        };
+      }
+      case 'reaction': {
+        return {
+          type: 'reaction',
+          cost: 1,
+        };
+      }
+      case 'legendary': {
+        return {
+          type: 'legendary',
+          cost: 1,
+        };
+      }
+    }
+  }
+
   if (/attack/i.test(description))
     return {
       type: 'action',
@@ -188,7 +217,7 @@ export function actionTypeExtraData(actionType: string | undefined, { descriptio
   return building;
 }
 
-export function parseWeapon({ name, description, ability }: ItemParserInput): WeaponType {
+export function parseWeapon({ name, description, ability, section }: ItemParserInput): WeaponType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
   const damage: Damage = { parts: buildDamageParts(description) };
@@ -199,7 +228,7 @@ export function parseWeapon({ name, description, ability }: ItemParserInput): We
     name,
     type: itemType,
     description,
-    activation: parseActivation(description),
+    activation: parseActivation(description, section),
     damage,
     actionType,
     range: parseRange(description),
@@ -274,7 +303,7 @@ function parseTarget(description: string): Target {
   throw new Error(`Unable to parse target from ${description}`);
 }
 
-export function parseSpell({ name, description, ability }: ItemParserInput): SpellType {
+export function parseSpell({ name, description, ability, section }: ItemParserInput): SpellType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'spell' && itemType !== 'feat') throw new Error(`${name} is not a spell`);
   let damage: undefined | Damage = undefined;
@@ -325,7 +354,7 @@ export function parseSpell({ name, description, ability }: ItemParserInput): Spe
     save,
     recharge,
     description,
-    activation: parseActivation(description),
+    activation: parseActivation(description, section),
     damage,
     actionType,
     range: parseRange(description),

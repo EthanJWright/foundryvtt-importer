@@ -15,5 +15,5 @@ export const parseItem = ({
   ability?: ShortAbility;
   section?: SectionLabel;
 }): ImportItem => {
-  return tryItemParsers({ parsers: itemParsers, name, description, ability });
+  return tryItemParsers({ parsers: itemParsers, name, description, ability, section });
 };
