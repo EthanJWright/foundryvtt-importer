@@ -424,7 +424,8 @@ function reduceToFeatures(acc: string[], curr: string) {
     // create a new entry including the previous header
     const lastEntry = acc[acc.length - 1];
     if (FEATURE_SECTIONS.includes(lastEntry.toUpperCase()) && curr) {
-      acc.push(`${pascal(lastEntry)} ${curr.trim()}`);
+      const stitchedFeature = `${pascal(lastEntry)}. ${curr.trim()}`;
+      acc.push(stitchedFeature);
       return acc;
     }
 

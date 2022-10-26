@@ -939,6 +939,7 @@ describe('getAllFeatures', () => {
         }),
         expect.objectContaining({ name: 'Detect' }),
         expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)', section: 'legendary' }),
+        expect.objectContaining({ name: 'Legendary Actions' }),
       ]),
     );
   });
@@ -967,5 +968,12 @@ describe('MCDM monsters', () => {
     expect(actor.abilities.wis.value).toEqual(10);
     expect(actor.abilities.cha.value).toEqual(8);
     expect(actor.items[0].name).toEqual('Crafty');
+  });
+
+  it('should parse an MCDM goblin boss', () => {
+    const actorText =
+      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const actor = textToActor(actorText);
+    expect(actor.name).toEqual('Goblin Boss');
   });
 });
