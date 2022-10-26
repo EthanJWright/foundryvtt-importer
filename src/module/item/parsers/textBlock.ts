@@ -17,6 +17,7 @@ import { Range } from '../interfaces';
 import { Feature } from '../../actor/interfaces';
 import { parseGenericFormula } from '../../actor/parsers/generic';
 import { FifthItemType, FifthItem } from '../../actor/templates/fifthedition';
+import { ItemParserInput } from '../typeGuardParserRunners';
 
 function parseMeasurement(description: string, keyWord: string) {
   const unitText = description.split(keyWord)[0].trim();
@@ -187,8 +188,7 @@ export function actionTypeExtraData(actionType: string | undefined, { descriptio
   return building;
 }
 
-export function parseWeapon(name: string, description: string, inputAbility?: ShortAbility): WeaponType {
-  const ability = inputAbility || 'str';
+export function parseWeapon({ name, description, ability }: ItemParserInput): WeaponType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
   const damage: Damage = { parts: buildDamageParts(description) };
@@ -203,7 +203,7 @@ export function parseWeapon(name: string, description: string, inputAbility?: Sh
     damage,
     actionType,
     range: parseRange(description),
-    ability,
+    ability: ability || 'str',
     attackBonus: 0,
     ...actionTypeExtraData(actionType, { name, description }),
   };
@@ -274,7 +274,7 @@ function parseTarget(description: string): Target {
   throw new Error(`Unable to parse target from ${description}`);
 }
 
-export function parseSpell(name: string, description: string, inputAbility?: ShortAbility): SpellType {
+export function parseSpell({ name, description, ability }: ItemParserInput): SpellType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'spell' && itemType !== 'feat') throw new Error(`${name} is not a spell`);
   let damage: undefined | Damage = undefined;
@@ -290,7 +290,6 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
     // action type can be undefined
   }
   let save: Save | undefined = undefined;
-  let ability = inputAbility;
   if (actionType === 'save') {
     const dc = description.split('DC')[1].trim().split(' ')[0].trim();
     const uncleanAbility = description.split(dc)[1].trim().split(' ')[0].trim();
@@ -335,8 +334,7 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function parseFeat(name: string, description: string, _?: ShortAbility): FeatType {
+export function parseFeat({ name, description }: ItemParserInput): FeatType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'feat') throw new Error(`${name} is not a feat, it is an ${itemType}`);
   return {
@@ -347,7 +345,7 @@ export function parseFeat(name: string, description: string, _?: ShortAbility): 
 }
 
 export function parsedToWeapon(name: string, inputDescription: string, inputAbility?: string): FifthItem {
-  const parsedWeapon = parseWeapon(name, inputDescription, inputAbility as ShortAbility);
+  const parsedWeapon = parseWeapon({ name, description: inputDescription, ability: inputAbility as ShortAbility });
   const { type, description, activation, damage, actionType, range, ability, attackBonus } = parsedWeapon;
   return {
     name,

@@ -645,7 +645,9 @@ export function parseFeaturesWTC(lines: string[]): Features {
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {
   const features = parseFeaturesWTC(lines);
-  return features.map(({ name, description }) => parseItem(name, description, getMaxAbility(abilities)));
+  return features.map(({ name, description, section }) =>
+    parseItem({ name, description, ability: getMaxAbility(abilities) }),
+  );
 }
 
 export function parseSensesWTC(lines: string[]): Senses {
