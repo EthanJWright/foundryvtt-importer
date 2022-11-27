@@ -20,17 +20,18 @@ import {
   Languages,
   Name,
   Rating,
+  SectionLabel,
   Senses,
   Size,
   Skill,
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_SECTIONS = ['Actions', 'Features'];
+const FEATURE_SECTIONS = ['ACTIONS', 'FEATURES', 'REACTIONS', 'LEGENDARY ACTIONS', 'BONUS ACTIONS'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
-  parseRating: [parseRatingWTC],
+  parseRating: [parseRatingWTC, parseRatingMCDM],
   parseType: [parseTypeWTC],
   parseAlignment: [parseAlignmentWTC],
   parseBiography: [parseBiographyWTC],
@@ -45,7 +46,7 @@ export const ParseActorWTC: ImportActorParser = {
   parseDamageVulnerabilities: [parseDamageVulnerabilitiesWTC],
   parseAbilities: [
     parseAbilitiesWTC,
-    parseMultilineAbilitiesWTC,
+    parseMultiLineAbilitiesWTC,
     parseVerticalKeyValueAbilitiesWTC,
     parseVerticalNameValModFormatWTC,
   ],
@@ -53,6 +54,11 @@ export const ParseActorWTC: ImportActorParser = {
   parseSkills: [parseSkillsWTC],
   parseItems: [parseItemsWTC],
 };
+
+const pascal = (s: string) =>
+  s.replace(/(\w)(\w*)/g, function (_, g1, g2) {
+    return g1.toUpperCase() + g2.toLowerCase();
+  });
 
 export function parseHealthWTC(lines: string[]) {
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
@@ -229,7 +235,7 @@ export function findAbilityBounds(input: string[]): { lastLine: number; firstLin
   return { firstLine, lastLine };
 }
 
-export function parseMultilineAbilitiesWTC(lines: string[]): Abilities {
+export function parseMultiLineAbilitiesWTC(lines: string[]): Abilities {
   if (lines[indexOfAbility(lines, 'STR') + 1].trim().toUpperCase() === 'DEX') {
     throw new Error('Invalid format for multi line stat parsing.');
   }
@@ -386,18 +392,43 @@ interface Section {
   features: Feature[];
 }
 
-function reduceToFeatures(acc: string[], curr: string) {
-  if (curr === 'Legendary Actions') {
-    acc.push('Legendary Actions.');
-    return acc;
+function toSection(line: string): SectionLabel | undefined {
+  const name = line.toUpperCase();
+  if (name === 'ACTIONS') {
+    return 'action';
   }
-  if (FEATURE_SECTIONS.includes(curr)) {
+  if (name === 'REACTIONS') {
+    return 'reaction';
+  }
+  if (name === 'LEGENDARY ACTIONS') {
+    return 'legendary';
+  }
+  if (name === 'BONUS ACTIONS') {
+    return 'bonus';
+  }
+  return;
+}
+
+function reduceToFeatures(acc: string[], curr: string) {
+  if (FEATURE_SECTIONS.includes(curr.toUpperCase())) {
+    acc.push(curr.toUpperCase());
     return acc;
   }
   const names = getFeatureName(curr);
   if (names || acc.length === 0) {
     acc.push(curr.trim());
   } else {
+    // the next line after 'legendary resistance' is a description of the
+    // resistance, so the section header gets lost
+    // need to check if the previous line was a section header, and if so
+    // create a new entry including the previous header
+    const lastEntry = acc[acc.length - 1];
+    if (FEATURE_SECTIONS.includes(lastEntry.toUpperCase()) && curr) {
+      const stitchedFeature = `${pascal(lastEntry)}. ${curr.trim()}`;
+      acc.push(stitchedFeature);
+      return acc;
+    }
+
     // if the line was a continuation, dont add a space
     const bindWith = acc[acc.length - 1].endsWith('-') ? '' : ' ';
     // if line ended with a - for a continuation, remove it
@@ -410,10 +441,10 @@ function reduceToFeatures(acc: string[], curr: string) {
   return acc;
 }
 
-function featureStringsToFeatures(line: string, sectionName: string) {
+function featureStringsToFeatures(line: string, sectionName?: SectionLabel) {
   const fetchedName = getFeatureName(line);
-  let name;
-  if (!fetchedName) name = sectionName;
+  let name = '';
+  if (!fetchedName) name = sectionName ?? '';
   else name = fetchedName.trim();
 
   let cleanLine = line.replace(name, '').trim();
@@ -422,6 +453,7 @@ function featureStringsToFeatures(line: string, sectionName: string) {
   const feature: Feature = {
     name,
     description: cleanLine,
+    section: sectionName,
   };
   return feature;
 }
@@ -458,6 +490,43 @@ export function parseBiographyWTC(lines: string[]): Biography {
     throw new Error('Could not find a valid biography');
   }
   return lines[firstBioIndex].trim();
+}
+
+export function parseRatingMCDM(lines: string[]): Rating {
+  const challengeLine = lines.find((line) => line.includes('CR'));
+  if (!challengeLine) {
+    throw new Error('Could not find a valid challenge rating');
+  }
+  const cr = challengeLine.split(' ').find((number) => {
+    try {
+      return parseInt(number) >= 0;
+    } catch (e) {
+      return false;
+    }
+  });
+  if (!cr) {
+    throw new Error('Could not find a valid challenge rating');
+  }
+
+  const xpLine = lines.find((line) => line.includes('XP'));
+  if (!xpLine) {
+    throw new Error('Could not find a valid experience rating');
+  }
+  const xp = xpLine.split(' ').find((number) => {
+    try {
+      return parseInt(number) >= 0;
+    } catch (e) {
+      return false;
+    }
+  });
+  if (!xp) {
+    throw new Error('Could not find a valid experience rating');
+  }
+
+  return {
+    cr: parseInt(cr),
+    xp: parseInt(xp),
+  };
 }
 
 export function parseRatingWTC(lines: string[]): Rating {
@@ -537,17 +606,51 @@ export function parseDamageVulnerabilitiesWTC(lines: string[]) {
   return parseNamedList(lines, 'damage vulnerabilities') as DamageTypes;
 }
 
+interface FeatureSection {
+  feature: string;
+  section?: SectionLabel;
+}
+function addSectionReduction(acc: FeatureSection[], feature: string) {
+  if (FEATURE_SECTIONS.includes(feature)) {
+    // this is a section label, not a feature
+    acc.push({ section: toSection(feature), feature: 'EMPTY' });
+  }
+
+  const lastAdded = acc[acc.length - 1];
+  // this is an un populated feature
+  if (lastAdded && lastAdded.section && lastAdded.feature === 'EMPTY') {
+    lastAdded.feature = feature;
+    return acc;
+  }
+
+  // Use the last added section for this feature section
+  if (lastAdded && lastAdded.section) {
+    const { section } = lastAdded;
+    acc.push({ section, feature });
+    return acc;
+  }
+
+  acc.push({ feature });
+  return acc;
+}
+
 export function parseFeaturesWTC(lines: string[]): Features {
   const firstFeatureLine = lines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
-  return featureStrings.map((line) => featureStringsToFeatures(line, 'Feature'));
+  const withSections = featureStrings.reduce(addSectionReduction, []);
+  const compiledFeatures = withSections.map((entry) => featureStringsToFeatures(entry.feature, entry.section));
+  return compiledFeatures.filter((feature) => {
+    return !FEATURE_SECTIONS.includes(feature.description) || feature.description === feature.name;
+  });
 }
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {
   const features = parseFeaturesWTC(lines);
-  return features.map(({ name, description }) => parseItem(name, description, getMaxAbility(abilities)));
+  return features.map(({ name, description, section }) =>
+    parseItem({ name, description, ability: getMaxAbility(abilities), section }),
+  );
 }
 
 export function parseSensesWTC(lines: string[]): Senses {
