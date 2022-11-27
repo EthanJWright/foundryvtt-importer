@@ -38,9 +38,11 @@ export interface ArmorClass {
   type: string;
 }
 
+export type SectionLabel = 'action' | 'bonus' | 'reaction' | 'legendary';
 export interface Feature {
   name: string;
   description: string;
+  section?: SectionLabel;
 }
 
 export type Features = Feature[];

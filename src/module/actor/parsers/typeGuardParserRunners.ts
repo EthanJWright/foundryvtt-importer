@@ -41,16 +41,23 @@ export function trySingleActorParse(parser: ImportActorParser, lines: string[]):
         return value;
       } else throw new Error('Name must be string');
     }),
-    rating: tryParser<Rating>(parser.parseRating, lines, (value) => {
-      if ((value as Rating).xp) {
-        return value as Rating;
-      } else {
-        const emptyRating: Rating = {
+    rating: tryParser<Rating>(
+      parser.parseRating,
+      lines,
+      (value) => {
+        if ((value as Rating).xp) {
+          return value as Rating;
+        } else {
+          throw new Error('Rating must be of type Rating');
+        }
+      },
+      {
+        isOptional: true,
+        defaultValue: {
           xp: 0,
-        };
-        return emptyRating;
-      }
-    }),
+        },
+      },
+    ),
     type: tryParser<ActorType>(parser.parseType, lines, (value) => {
       if (typeof value !== 'string') {
         throw new Error(`Could not parse type: ${value}`);

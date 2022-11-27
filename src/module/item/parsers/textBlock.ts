@@ -14,9 +14,10 @@ import {
 } from '../interfaces';
 
 import { Range } from '../interfaces';
-import { Feature } from '../../actor/interfaces';
+import { Feature, SectionLabel } from '../../actor/interfaces';
 import { parseGenericFormula } from '../../actor/parsers/generic';
 import { FifthItemType, FifthItem } from '../../actor/templates/fifthedition';
+import { ItemParserInput } from '../typeGuardParserRunners';
 
 function parseMeasurement(description: string, keyWord: string) {
   const unitText = description.split(keyWord)[0].trim();
@@ -38,13 +39,13 @@ export function parseRange(description: string): Range {
   if (/reach/i.test(description)) {
     const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
     const value = parseInt(stringValue);
-    return { value };
+    return { value, units: 'ft' };
   }
   if (/range/i.test(description)) {
     const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
     const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
     if (value === NaN) throw new Error(`Unable to parse range from ${description}`);
-    return { value, long };
+    return { value, long, units: 'ft' };
   }
   if (/cone/i.test(description)) {
     const value = parseSpellCone(description);
@@ -58,7 +59,7 @@ export function parseRange(description: string): Range {
       .trim();
     const value = parseInt(rangeStr);
     if (value === NaN) throw new Error(`Unable to parse range from ${description}`);
-    return { value };
+    return { value, units: 'ft' };
   }
   throw new Error(`Unable to parse range: ${description}`);
 }
@@ -91,7 +92,36 @@ export function parseType(description: string): ItemType {
   return 'consumable';
 }
 
-export function parseActivation(description: string): Activation | undefined {
+export function parseActivation(description: string, section?: SectionLabel): Activation | undefined {
+  if (section) {
+    switch (section) {
+      case 'action': {
+        return {
+          type: 'action',
+          cost: 1,
+        };
+      }
+      case 'bonus': {
+        return {
+          type: 'bonus',
+          cost: 1,
+        };
+      }
+      case 'reaction': {
+        return {
+          type: 'reaction',
+          cost: 1,
+        };
+      }
+      case 'legendary': {
+        return {
+          type: 'legendary',
+          cost: 1,
+        };
+      }
+    }
+  }
+
   if (/attack/i.test(description))
     return {
       type: 'action',
@@ -144,6 +174,7 @@ export function isWeaponType(input: string): boolean {
 // the logic for parsing type is different if it is sourced from a monster
 export function parseTypeFromActorFeature(input: string): ItemType {
   if (/beginning at/i.test(input)) return 'feat';
+  if (/spell attack/i.test(input)) return 'spell';
   if (/starting at/i.test(input)) return 'feat';
   if (isWeaponType(input)) return 'weapon';
   return 'feat';
@@ -187,8 +218,7 @@ export function actionTypeExtraData(actionType: string | undefined, { descriptio
   return building;
 }
 
-export function parseWeapon(name: string, description: string, inputAbility?: ShortAbility): WeaponType {
-  const ability = inputAbility || 'str';
+export function parseWeapon({ name, description, ability, section }: ItemParserInput): WeaponType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
   const damage: Damage = { parts: buildDamageParts(description) };
@@ -199,11 +229,11 @@ export function parseWeapon(name: string, description: string, inputAbility?: Sh
     name,
     type: itemType,
     description,
-    activation: parseActivation(description),
+    activation: parseActivation(description, section),
     damage,
     actionType,
     range: parseRange(description),
-    ability,
+    ability: ability || 'str',
     attackBonus: 0,
     ...actionTypeExtraData(actionType, { name, description }),
   };
@@ -274,7 +304,7 @@ function parseTarget(description: string): Target {
   throw new Error(`Unable to parse target from ${description}`);
 }
 
-export function parseSpell(name: string, description: string, inputAbility?: ShortAbility): SpellType {
+export function parseSpell({ name, description, ability, section }: ItemParserInput): SpellType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'spell' && itemType !== 'feat') throw new Error(`${name} is not a spell`);
   let damage: undefined | Damage = undefined;
@@ -290,7 +320,6 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
     // action type can be undefined
   }
   let save: Save | undefined = undefined;
-  let ability = inputAbility;
   if (actionType === 'save') {
     const dc = description.split('DC')[1].trim().split(' ')[0].trim();
     const uncleanAbility = description.split(dc)[1].trim().split(' ')[0].trim();
@@ -317,6 +346,13 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
     // recharge can be undefined
   }
 
+  let target;
+  try {
+    target = parseTarget(description);
+  } catch (_) {
+    // target can be undefined
+  }
+
   return {
     name,
     type: 'feat',
@@ -326,28 +362,36 @@ export function parseSpell(name: string, description: string, inputAbility?: Sho
     save,
     recharge,
     description,
-    activation: parseActivation(description),
+    activation: parseActivation(description, section),
     damage,
     actionType,
     range: parseRange(description),
     attackBonus: 0,
-    target: parseTarget(description),
+    target,
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function parseFeat(name: string, description: string, _?: ShortAbility): FeatType {
+export function parseFeat({ name, description, section }: ItemParserInput): FeatType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'feat') throw new Error(`${name} is not a feat, it is an ${itemType}`);
+  let activation;
+  try {
+    activation = parseActivation(description, section);
+  } catch (_) {
+    // activation can be undefined
+  }
   return {
     name,
     type: 'feat',
     description,
+    activation,
+    attackBonus: 0,
+    formula: '',
   };
 }
 
 export function parsedToWeapon(name: string, inputDescription: string, inputAbility?: string): FifthItem {
-  const parsedWeapon = parseWeapon(name, inputDescription, inputAbility as ShortAbility);
+  const parsedWeapon = parseWeapon({ name, description: inputDescription, ability: inputAbility as ShortAbility });
   const { type, description, activation, damage, actionType, range, ability, attackBonus } = parsedWeapon;
   return {
     name,

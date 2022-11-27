@@ -3,7 +3,7 @@ import {
   parseSkillsWTC,
   findFirstSectionIndex,
   parseStandardCSV,
-  parseMultilineAbilitiesWTC,
+  parseMultiLineAbilitiesWTC,
   getFeatureName,
   parseFeaturesWTC,
   parseRatingWTC,
@@ -25,6 +25,7 @@ import {
   parseVerticalKeyValueAbilitiesWTC,
   parseSpeedWTC,
   parseVerticalNameValModFormatWTC,
+  parseItemsWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
@@ -283,7 +284,7 @@ describe('parseAbilitiesWTC', () => {
 
 describe('parseMultilineAbilitiesWTC', () => {
   it('should parse a valid multi line abilities string', () => {
-    const abilities = parseMultilineAbilitiesWTC([
+    const abilities = parseMultiLineAbilitiesWTC([
       'STR',
       '12 (+1)',
       'DEX',
@@ -333,7 +334,7 @@ describe('parseMultilineAbilitiesWTC', () => {
   it('should throw an error when not passed a valid abilities string', () => {
     const invalid = ['invalid'];
     expect(() => {
-      parseMultilineAbilitiesWTC(invalid);
+      parseMultiLineAbilitiesWTC(invalid);
     }).toThrow();
   });
 });
@@ -492,34 +493,65 @@ describe('parseFeatures', () => {
       'a success.',
     ]);
     expect(features).toStrictEqual([
-      { description: 'Big Bara adds her Charisma bonus to her AC (included above).', name: 'Imposing Majesty' },
+      {
+        description: 'Big Bara adds her Charisma bonus to her AC (included above).',
+        name: 'Imposing Majesty',
+        section: undefined,
+      },
       {
         description: 'Big Bara is immune to disease and magic can’t put her to sleep.',
         name: 'Warforged Resilience',
+        section: undefined,
       },
-      { description: 'Big Bara makes two attacks, either with her shortsword or armbow.', name: 'Multiattack' },
+      {
+        description: 'Big Bara makes two attacks, either with her shortsword or armbow.',
+        name: 'Multiattack',
+        section: 'action',
+      },
       {
         description:
           'Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poison damage.',
         name: 'Shortsword',
+        section: 'action',
       },
       {
         description:
           'Ranged Weapon Attack: +7 to hit, range 30/120 ft., one target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poison damage.',
         name: 'Armbow',
+        section: 'action',
       },
       {
         description:
           'Poison gas fills a 20-foot-radius sphere centered on a point Big Bara can see within 50 feet of her. The gas spreads around corners and remains until the start of Big Bara’s next turn. Each creature that starts its turn in the gas must succeed on a DC 16 Constitution saving throw or be poisoned for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.',
         name: 'Poisonous Cloud (2/Day)',
+        section: 'action',
       },
     ]);
   });
+
   it('should throw an error when not passed a valid features string', () => {
     const invalid = ['invalid'];
     expect(() => {
       parseFeaturesWTC(invalid);
     }).toThrow();
+  });
+
+  it('should parse section for features', () => {
+    const actorText =
+      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
+    const features = parseFeaturesWTC(actorText.split('\n'));
+    expect(features).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'Greataxe',
+          section: 'action',
+        }),
+        expect.objectContaining({
+          section: 'reaction',
+          name: 'Tricksy Warrior',
+        }),
+      ]),
+    );
   });
 
   it('should parse two features', () => {
@@ -531,24 +563,29 @@ describe('parseFeatures', () => {
       {
         name: 'Lightfooted',
         description: 'The swashbuckler can take the Dash or Disengage action as a bonus action on each of its turns.',
+        section: undefined,
       },
       {
         name: 'Suave Defense',
         description:
           'While the swashbuckler is wearing light or no armor and wielding no shield, its AC includes its Charisma mod.',
+        section: undefined,
       },
       {
         description: 'The swashbuckler makes three attacks: one with a dagger and two with its rapier.',
         name: 'Multiattack',
+        section: 'action',
       },
       {
         description:
           'Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing damage.',
         name: 'Dagger',
+        section: 'action',
       },
       {
         description: 'Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) piercing damage.',
         name: 'Rapier',
+        section: 'action',
       },
     ]);
   });
@@ -838,7 +875,7 @@ describe('parseMultiLineStates', () => {
     const actorText =
       'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nMedium humanoid (any race), any alignment\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
     const lines: string[] = actorText.split('\n');
-    const abilities = parseMultilineAbilitiesWTC(lines);
+    const abilities = parseMultiLineAbilitiesWTC(lines);
     expect(abilities).toEqual({
       str: {
         value: 12,
@@ -899,12 +936,41 @@ describe('getAllFeatures', () => {
           name: 'Poison Breath (Recharge 5–6)',
           description:
             'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.',
+          section: 'action',
         }),
         expect.objectContaining({ name: 'Detect' }),
-        expect.objectContaining({ name: 'Legendary Actions' }),
-        expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)' }),
+        expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)', section: 'legendary' }),
+        expect.objectContaining({
+          name: 'Legendary Actions',
+          section: 'legendary',
+          description:
+            "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
+        }),
       ]),
     );
+  });
+
+  it('should get proper features for a goblin boss', () => {
+    const text =
+      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const features = parseFeaturesWTC(text.split('\n'));
+    expect(features).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'Multiattack', section: 'action' })]),
+    );
+  });
+
+  it('should parse a goblin cutpurse', () => {
+    const text =
+      'Goblin Cursespitter\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 15 (leather armor, shield)\nHit Points 27 (5d6 + 10)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 15 (+2)\nSaves Wis +2\nSkills Stealth +4\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The cursespitter doesn’t provoke opportunity attacks when\nthey move out of an enemy’s reach.\nACTIONS\nToxic Touch. Melee or Ranged Spell Attack: +4 to hit, reach 5 ft.\nor range 30 ft., one target. Hit: 7 (2d6) poison damage, and the\ntarget must succeed on a DC 12 Constitution saving throw or be\npoisoned for 1 minute (save ends at end of turn).\nBrittle Bone Hex. The cursespitter chooses one creature they\ncan see within 60 feet of them. The target’s bones are wracked\nwith pain until the end of their next turn. The first time the target\nwillingly moves or uses an action, bonus action, or reaction before\nthen, they must succeed on a DC 12 Constitution saving throw or\ntake 9 (2d8) necrotic damage.\nTo Me! The cursespitter chooses up to two willing creatures they\ncan see within 30 feet of them. Each creature is teleported to an\nunoccupied space within 5 feet of the cursespitter.\nDizzying Hex (2/Day). The cursespitter chooses one creature they\ncan see within 60 feet of them. The target must make a DC 12 Wis-\ndom saving throw. On a failed save, the target falls prone and can’t\nstand back up for 1 minute (save ends at end of turn).\nREACTIONS\nCowardly Commander. When a creature the cursespitter\ncan see hits them with an attack, the cursespitter chooses a will-\ning ally within 5 feet of them. The attack hits the ally instead';
+    const lines = text.split('\n');
+    const features = parseFeaturesWTC(lines);
+    const commander = features.find((f) => f.name === 'Cowardly Commander');
+    expect(commander).toEqual({
+      description:
+        'When a creature the cursespitter can see hits them with an attack, the cursespitter chooses a willing ally within 5 feet of them. The attack hits the ally instead',
+      name: 'Cowardly Commander',
+      section: 'reaction',
+    });
   });
 });
 
@@ -913,5 +979,83 @@ describe('getChallenge', () => {
     const input = 'Challenge 1/8 (25 XP))';
     const rating = parseRatingWTC([input]);
     expect(rating).toEqual({ cr: 0.125, xp: 25 });
+  });
+});
+
+describe('MCDM monsters', () => {
+  it('should parse an mcdm monster', () => {
+    // TODO: this works so far but maybe make CR optional
+    const actorText =
+      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy��������s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
+    const actor = textToActor(actorText);
+    expect(actor.name).toEqual('Goblin Spinecleaver');
+    expect(actor.size).toEqual('Small');
+    expect(actor.abilities.str.value).toEqual(16);
+    expect(actor.abilities.dex.value).toEqual(14);
+    expect(actor.abilities.con.value).toEqual(14);
+    expect(actor.abilities.int.value).toEqual(10);
+    expect(actor.abilities.wis.value).toEqual(10);
+    expect(actor.abilities.cha.value).toEqual(8);
+    expect(actor.items[0].name).toEqual('Crafty');
+  });
+
+  it('should parse an MCDM goblin boss', () => {
+    const actorText =
+      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const actor = textToActor(actorText);
+    expect(actor.name).toEqual('Goblin Boss');
+  });
+});
+
+describe('parseItemsWTC', () => {
+  it('should parse a goblins items', () => {
+    const text =
+      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const lines = text.split('\n');
+    const abilities = parseAbilitiesWTC(lines);
+    const items = parseItemsWTC(lines, abilities);
+    const sword = items.find((i) => i.name === 'Shortsword');
+    expect(sword).toBeDefined();
+    expect(sword).toEqual({
+      ability: 'dex',
+      actionType: 'mwak',
+      activation: {
+        cost: 1,
+        type: 'action',
+      },
+      attackBonus: 0,
+      damage: {
+        parts: [['1d6 + 3', 'piercing']],
+      },
+      description: 'Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage.',
+      name: 'Shortsword',
+      range: {
+        units: 'ft',
+        value: 5,
+      },
+      type: 'weapon',
+    });
+  });
+
+  it('should parse a goblin cutpurse', () => {
+    const text =
+      'Goblin Cursespitter\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 15 (leather armor, shield)\nHit Points 27 (5d6 + 10)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 15 (+2)\nSaves Wis +2\nSkills Stealth +4\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The cursespitter doesn’t provoke opportunity attacks when\nthey move out of an enemy’s reach.\nACTIONS\nToxic Touch. Melee or Ranged Spell Attack: +4 to hit, reach 5 ft.\nor range 30 ft., one target. Hit: 7 (2d6) poison damage, and the\ntarget must succeed on a DC 12 Constitution saving throw or be\npoisoned for 1 minute (save ends at end of turn).\nBrittle Bone Hex. The cursespitter chooses one creature they\ncan see within 60 feet of them. The target’s bones are wracked\nwith pain until the end of their next turn. The first time the target\nwillingly moves or uses an action, bonus action, or reaction before\nthen, they must succeed on a DC 12 Constitution saving throw or\ntake 9 (2d8) necrotic damage.\nTo Me! The cursespitter chooses up to two willing creatures they\ncan see within 30 feet of them. Each creature is teleported to an\nunoccupied space within 5 feet of the cursespitter.\nDizzying Hex (2/Day). The cursespitter chooses one creature they\ncan see within 60 feet of them. The target must make a DC 12 Wis-\ndom saving throw. On a failed save, the target falls prone and can’t\nstand back up for 1 minute (save ends at end of turn).\nREACTIONS\nCowardly Commander. When a creature the cursespitter\ncan see hits them with an attack, the cursespitter chooses a will-\ning ally within 5 feet of them. The attack hits the ally instead';
+    const lines = text.split('\n');
+    const abilities = parseAbilitiesWTC(lines);
+    const items = parseItemsWTC(lines, abilities);
+    const commander = items.find((i) => i.name === 'Cowardly Commander');
+    expect(commander).toBeDefined();
+    expect(commander).toEqual(
+      expect.objectContaining({
+        activation: {
+          cost: 1,
+          type: 'reaction',
+        },
+        description:
+          'When a creature the cursespitter can see hits them with an attack, the cursespitter chooses a willing ally within 5 feet of them. The attack hits the ally instead',
+        name: 'Cowardly Commander',
+        type: 'feat',
+      }),
+    );
   });
 });
