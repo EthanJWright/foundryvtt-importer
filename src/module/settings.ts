@@ -6,7 +6,7 @@ export interface ClientSettingsReader {
 
 export class Config {
   folderDepth = 3;
-  journalImporter = false;
+  journalImporter = true;
   tableImporter = true;
   actorImporter = true;
   itemImporter = true;
