@@ -39,13 +39,13 @@ export function parseRange(description: string): Range {
   if (/reach/i.test(description)) {
     const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
     const value = parseInt(stringValue);
-    return { value };
+    return { value, units: 'ft' };
   }
   if (/range/i.test(description)) {
     const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
     const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
     if (value === NaN) throw new Error(`Unable to parse range from ${description}`);
-    return { value, long };
+    return { value, long, units: 'ft' };
   }
   if (/cone/i.test(description)) {
     const value = parseSpellCone(description);
@@ -59,7 +59,7 @@ export function parseRange(description: string): Range {
       .trim();
     const value = parseInt(rangeStr);
     if (value === NaN) throw new Error(`Unable to parse range from ${description}`);
-    return { value };
+    return { value, units: 'ft' };
   }
   throw new Error(`Unable to parse range: ${description}`);
 }
