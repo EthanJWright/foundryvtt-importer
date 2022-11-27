@@ -939,7 +939,12 @@ describe('getAllFeatures', () => {
         }),
         expect.objectContaining({ name: 'Detect' }),
         expect.objectContaining({ name: 'Wing Attack (Costs 2 Actions)', section: 'legendary' }),
-        expect.objectContaining({ name: 'Legendary Actions' }),
+        expect.objectContaining({
+          name: 'Legendary Actions',
+          section: 'legendary',
+          description:
+            "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
+        }),
       ]),
     );
   });
