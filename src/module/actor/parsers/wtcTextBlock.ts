@@ -617,11 +617,13 @@ function addSectionReduction(acc: FeatureSection[], feature: string) {
   }
 
   const lastAdded = acc[acc.length - 1];
+  // this is an un populated feature
   if (lastAdded && lastAdded.section && lastAdded.feature === 'EMPTY') {
     lastAdded.feature = feature;
     return acc;
   }
 
+  // Use the last added section for this feature section
   if (lastAdded && lastAdded.section) {
     const { section } = lastAdded;
     acc.push({ section, feature });
