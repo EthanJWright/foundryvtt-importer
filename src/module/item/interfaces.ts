@@ -74,7 +74,7 @@ export interface SpellType {
   ability?: ShortAbility;
   save?: Save;
   uses?: Uses;
-  target: Target;
+  target?: Target;
   actionType?: 'save';
   attackBonus?: number;
 }
@@ -88,6 +88,8 @@ export interface FeatType {
   range?: Range;
   ability?: ShortAbility;
   save?: Save;
+  attackBonus?: number;
+  formula?: string;
 }
 
 // These are currently unspecified

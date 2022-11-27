@@ -174,6 +174,7 @@ export function isWeaponType(input: string): boolean {
 // the logic for parsing type is different if it is sourced from a monster
 export function parseTypeFromActorFeature(input: string): ItemType {
   if (/beginning at/i.test(input)) return 'feat';
+  if (/spell attack/i.test(input)) return 'spell';
   if (/starting at/i.test(input)) return 'feat';
   if (isWeaponType(input)) return 'weapon';
   return 'feat';
@@ -345,6 +346,13 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
     // recharge can be undefined
   }
 
+  let target;
+  try {
+    target = parseTarget(description);
+  } catch (_) {
+    // target can be undefined
+  }
+
   return {
     name,
     type: 'feat',
@@ -359,17 +367,26 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
     actionType,
     range: parseRange(description),
     attackBonus: 0,
-    target: parseTarget(description),
+    target,
   };
 }
 
-export function parseFeat({ name, description }: ItemParserInput): FeatType {
+export function parseFeat({ name, description, section }: ItemParserInput): FeatType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
   if (itemType !== 'feat') throw new Error(`${name} is not a feat, it is an ${itemType}`);
+  let activation;
+  try {
+    activation = parseActivation(description, section);
+  } catch (_) {
+    // activation can be undefined
+  }
   return {
     name,
     type: 'feat',
     description,
+    activation,
+    attackBonus: 0,
+    formula: '',
   };
 }
 

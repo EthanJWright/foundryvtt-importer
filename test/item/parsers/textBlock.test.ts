@@ -1,5 +1,6 @@
 import { parseSpell, parseTypeFromActorFeature, parseWeapon } from '../../../src/module/item/parsers/textBlock';
 import { parseItem } from '../../../src/module/item/parsers/available';
+import { ItemParserInput } from '../../../src/module/item/typeGuardParserRunners';
 describe('parseWeapon', () => {
   it('should parse a shortsword', () => {
     const name = 'Shortsword';
@@ -25,6 +26,7 @@ describe('parseWeapon', () => {
       name: 'Shortsword',
       range: {
         value: 5,
+        units: 'ft',
       },
       type: 'weapon',
     });
@@ -57,6 +59,7 @@ describe('parseSpell', () => {
       name: 'Poisonous Cloud (2/Day)',
       range: {
         value: 50,
+        units: 'ft',
       },
       save: {
         ability: 'con',
@@ -121,26 +124,60 @@ describe('parseSpell', () => {
       },
     });
   });
+
+  it('should be able to parse toxic touch', () => {
+    const description =
+      'Melee or Ranged Spell Attack: +4 to hit, reach 5 ft. or range 30 ft., one target. Hit: 7 (2d6) poison damage, and the target must succeed on a DC 12 Constitution saving throw or be poisoned for 1 minute (save ends at end of turn).';
+    const toxicSpell: ItemParserInput = {
+      name: 'Toxic Touch',
+      description,
+      section: 'action',
+    };
+    const spell = parseSpell(toxicSpell);
+    expect(spell).toEqual({
+      activation: {
+        cost: 1,
+        type: 'action',
+      },
+      attackBonus: 0,
+      damage: {
+        parts: [['2d6', 'poison']],
+      },
+      description:
+        'Melee or Ranged Spell Attack: +4 to hit, reach 5 ft. or range 30 ft., one target. Hit: 7 (2d6) poison damage, and the target must succeed on a DC 12 Constitution saving throw or be poisoned for 1 minute (save ends at end of turn).',
+      hasSpellData: true,
+      name: 'Toxic Touch',
+      range: {
+        units: 'ft',
+        value: 5,
+      },
+      type: 'feat',
+    });
+  });
 });
 
 describe('tryParsers', () => {
   it('should parse magic resistance', () => {
     const item = 'The nimblewright has advantage on saving throws against spells and other magical effects.';
     const parsed = parseItem({ name: 'Magic Resistance', description: item, ability: 'wis' });
-    expect(parsed).toEqual({
-      description: 'The nimblewright has advantage on saving throws against spells and other magical effects.',
-      name: 'Magic Resistance',
-      type: 'feat',
-    });
+    expect(parsed).toEqual(
+      expect.objectContaining({
+        description: 'The nimblewright has advantage on saving throws against spells and other magical effects.',
+        name: 'Magic Resistance',
+        type: 'feat',
+      }),
+    );
   });
   it('should parse magic weapons', () => {
     const item = 'The nimblewright’s weapon attacks are magical.';
     const parsed = parseItem({ name: 'Magic Weapons', description: item, ability: 'str' });
-    expect(parsed).toEqual({
-      description: 'The nimblewright’s weapon attacks are magical.',
-      name: 'Magic Weapons',
-      type: 'feat',
-    });
+    expect(parsed).toEqual(
+      expect.objectContaining({
+        description: 'The nimblewright’s weapon attacks are magical.',
+        name: 'Magic Weapons',
+        type: 'feat',
+      }),
+    );
   });
   it('should parse poison gas', () => {
     const item =
@@ -168,12 +205,14 @@ describe('tryParsers', () => {
     const item =
       "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.";
     const parsed = parseItem({ name: 'Legendary Actions', description: item });
-    expect(parsed).toEqual({
-      description:
-        "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
-      name: 'Legendary Actions',
-      type: 'feat',
-    });
+    expect(parsed).toEqual(
+      expect.objectContaining({
+        description:
+          "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
+        name: 'Legendary Actions',
+        type: 'feat',
+      }),
+    );
   });
 });
 
