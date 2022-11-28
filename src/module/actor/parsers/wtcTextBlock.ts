@@ -27,7 +27,7 @@ import {
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_SECTIONS = ['ACTIONS', 'FEATURES', 'REACTIONS', 'LEGENDARY ACTIONS', 'BONUS ACTIONS'];
+const FEATURE_SECTIONS = ['ACTIONS', 'FEATURES', 'REACTIONS', 'LEGENDARY ACTIONS', 'BONUS ACTIONS', 'VILLAIN ACTIONS'];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
@@ -405,6 +405,9 @@ function toSection(line: string): SectionLabel | undefined {
   }
   if (name === 'BONUS ACTIONS') {
     return 'bonus';
+  }
+  if (name === 'VILLAIN ACTIONS') {
+    return 'legendary';
   }
   return;
 }
