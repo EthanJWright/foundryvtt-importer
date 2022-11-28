@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.31](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.30...v0.2.31) (2022-11-28)
+
+
+### Bug Fixes
+
+* **actor:** Villain actions are placed in feature and formatted ([#72](https://github.com/EthanJWright/foundryvtt-importer/issues/72)) ([2f66af2](https://github.com/EthanJWright/foundryvtt-importer/commit/2f66af20b7c72c758354db3498e1033497e158bc))
+
 ### [0.2.30](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.29...v0.2.30) (2022-11-28)
 
 

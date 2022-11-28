@@ -601,6 +601,20 @@ describe('parseFeatures', () => {
       'If the sniper misses with a ranged weapon attack while they are hidden, they remain hidden. Additionally, if the sniper hits a target with a ranged weapon attack while they have advantage on the attack roll, the attack deals an extra 1d6 damage.',
     );
   });
+
+  it('should clean an mcdm villain actions feature', () => {
+    const actorText =
+      'Queen Bargnot\nSmall Humanoid (Goblin), Neutral Evil\nArmor Class 17 (studded leather armor, shield)\nHit Points 54 (12d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 3 Leader\n700 XP\nSTR DEX CON INT WIS CHA\n10 (+0) 17 (+3) 13 (+1) 14 (+2) 12 (+1) 13 (+1)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +3, Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. Queen Bargnot doesn’t provoke opportunity attacks when\nshe moves out of an enemy’s reach.\nTake My Pain (3/Day). When Queen Bargnot fails a saving throw\nagainst a spell or effect, she can choose a willing creature within\n30 feet of her. Queen Bargnot succeeds on the saving throw, the\ncreature is targeted with the same spell or effect as if they were in\nher space, and they automatically fail their saving throw.\nACTIONS\nMultiattack. Queen Bargnot makes three attacks with her\nShortsword or two attacks with her Shortbow.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nGet In Here. Queen Bargnot shouts for aid and 1d4 goblin\nminions appear in unoccupied spaces within 60 feet of her.\nREACTIONS\nNo Dying! When a willing creature Queen Bargnot can see\nwithin 30 feet of her is reduced to 0 hit points, she can choose to\nhave them reduced to 1 hit point instead.\nVILLAIN ACTIONS\nQueen Bargnot has three villain actions. She can take each\naction once during an encounter after an enemy creature’s turn.\nShe can take these actions in any order but can only use one\nper round.\nAction 1: What Are You Waiting For?! Each creature of\nQueen Bargnot’s choice within 60 feet of her that can hear\nher can move up to their speed or make a melee weapon\nattack (no action required).\nAction 2: Focus Fire. Queen Bargnot chooses an enemy she can\nsee with 60 feet of her. Queen Bargnot and each creature of\nher choice within 60 feet of her that can hear her can move\nup to their speed toward the target (no action required).\nAction 3: Kill! Each creature of Queen Bargnot’s choice within\n60 feet of her that can hear her can make a weapon attack\nwith advantage (no action required). If the attack hits, it deals\nan extra 1d6 damage.';
+    const features = parseFeaturesWTC(actorText.split('\n'));
+    const villainActions = features.find((f) => f.name === 'Villain Actions');
+    expect(villainActions).toBeDefined();
+    expect(villainActions).toEqual({
+      description:
+        'Queen Bargnot has three villain actions. She can take each action once during an encounter after an enemy creature’s turn. She can take these actions in any order but can only use one per round. <br><b>Action 1:</b>  What Are You Waiting For?! Each creature of Queen Bargnot’s choice within 60 feet of her that can hear her can move up to their speed or make a melee weapon attack (no action required). <br><b>Action 2:</b>  Focus Fire. Queen Bargnot chooses an enemy she can see with 60 feet of her. Queen Bargnot and each creature of her choice within 60 feet of her that can hear her can move up to their speed toward the target (no action required). <br><b>Action 3:</b>  Kill! Each creature of Queen Bargnot’s choice within 60 feet of her that can hear her can make a weapon attack with advantage (no action required). If the attack hits, it deals an extra 1d6 damage.',
+      name: 'Villain Actions',
+      section: 'legendary',
+    });
+  });
 });
 
 describe('extractAbilities', () => {
@@ -1073,7 +1087,7 @@ describe('parseItemsWTC', () => {
         'If the sniper misses with a ranged weapon attack while they are hidden, they remain hidden. Additionally, if the sniper hits a target with a ranged weapon attack while they have advantage on the attack roll, the attack deals an extra 1d6 damage.',
       formula: '',
       name: 'Sniper',
-      type: 'weapon',
+      type: 'feat',
     });
   });
 
