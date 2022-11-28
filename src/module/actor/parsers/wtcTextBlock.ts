@@ -637,13 +637,30 @@ function addSectionReduction(acc: FeatureSection[], feature: string) {
   return acc;
 }
 
+const mcdmClean = (description: string) => {
+  if (description.includes('Action 1:') && description.includes('Action 2:')) {
+    return description.replace(/Action \d:/g, (match) => {
+      // split match on the number
+      const afterColon = match.split(':')[1];
+      const trimColon = match.split(':')[0];
+      const number = trimColon.split(' ')[1];
+      return `<br><b>Action ${number}:</b> ${afterColon}`;
+    });
+  }
+  return description;
+};
+
 export function parseFeaturesWTC(lines: string[]): Features {
   const firstFeatureLine = lines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = lines.slice(firstFeatureLine);
   const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
   const withSections = featureStrings.reduce(addSectionReduction, []);
-  const compiledFeatures = withSections.map((entry) => featureStringsToFeatures(entry.feature, entry.section));
+  let compiledFeatures = withSections.map((entry) => featureStringsToFeatures(entry.feature, entry.section));
+  compiledFeatures = compiledFeatures.filter((feature) => {
+    feature.description = mcdmClean(feature.description);
+    return feature;
+  });
   return compiledFeatures.filter((feature) => {
     return !FEATURE_SECTIONS.includes(feature.description) || feature.description === feature.name;
   });
