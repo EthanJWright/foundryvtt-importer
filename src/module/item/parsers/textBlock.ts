@@ -372,8 +372,6 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
 }
 
 export function parseFeat({ name, description, section }: ItemParserInput): FeatType {
-  const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'feat') throw new Error(`${name} is not a feat, it is an ${itemType}`);
   let activation;
   try {
     activation = parseActivation(description, section);
