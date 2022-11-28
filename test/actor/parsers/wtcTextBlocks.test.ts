@@ -41,6 +41,11 @@ describe('nameParse', () => {
     const text: string[] = [];
     expect(() => parseNameWTC(text)).toThrow();
   });
+
+  it('should drop CR if that is lumped in with name', () => {
+    const text = ['  BUGBEAR CHANNELER CR 7 CONTROLLER (2,900 XP)'];
+    expect(parseNameWTC(text)).toEqual('Bugbear Channeler');
+  });
 });
 
 describe('Rating', () => {
@@ -610,9 +615,17 @@ describe('parseFeatures', () => {
     expect(villainActions).toBeDefined();
     expect(villainActions).toEqual({
       description:
-        'Queen Bargnot has three villain actions. She can take each action once during an encounter after an enemy creature’s turn. She can take these actions in any order but can only use one per round. <br><b>Action 1:</b>  What Are You Waiting For?! Each creature of Queen Bargnot’s choice within 60 feet of her that can hear her can move up to their speed or make a melee weapon attack (no action required). <br><b>Action 2:</b>  Focus Fire. Queen Bargnot chooses an enemy she can see with 60 feet of her. Queen Bargnot and each creature of her choice within 60 feet of her that can hear her can move up to their speed toward the target (no action required). <br><b>Action 3:</b>  Kill! Each creature of Queen Bargnot’s choice within 60 feet of her that can hear her can make a weapon attack with advantage (no action required). If the attack hits, it deals an extra 1d6 damage.',
+        'Legendary Actions: Queen Bargnot has three villain actions. She can take each action once during an encounter after an enemy creature’s turn. She can take these actions in any order but can only use one per round. <br><b>Action 1:</b>  What Are You Waiting For?! Each creature of Queen Bargnot’s choice within 60 feet of her that can hear her can move up to their speed or make a melee weapon attack (no action required). <br><b>Action 2:</b>  Focus Fire. Queen Bargnot chooses an enemy she can see with 60 feet of her. Queen Bargnot and each creature of her choice within 60 feet of her that can hear her can move up to their speed toward the target (no action required). <br><b>Action 3:</b>  Kill! Each creature of Queen Bargnot’s choice within 60 feet of her that can hear her can make a weapon attack with advantage (no action required). If the attack hits, it deals an extra 1d6 damage.',
       name: 'Villain Actions',
       section: 'legendary',
+    });
+    const getInHere = features.find((f) => f.name === 'Get In Here');
+    expect(getInHere).toBeDefined();
+    expect(getInHere).toEqual({
+      description:
+        'Bonus Actions: Queen Bargnot shouts for aid and 1d4 goblin minions appear in unoccupied spaces within 60 feet of her.',
+      name: 'Get In Here',
+      section: 'bonus',
     });
   });
 });
@@ -876,7 +889,7 @@ describe('Parse Text', () => {
     const text =
       'Kip, the "Warlord"\nMedium Humanoid (kobold)\nArmor Class 18 (breastplate, haste potion)\nHit Points 49 (9d8+9)\nSpeed 60 feet while hasted; 30 feet otherwise\nSTR DEX CON INT WIS CHA\n7(-2) 15(+2) 16(+3) 8(-1) 7(-2) 12(+1)\nSenses darkvision 60 ft., passive Perception 8\nLanguages Draconic\nChallenge 1 (200 XP)\nHasted. The "warlord" has advantage on Dexterity saving\nthrows and his speed is doubled. His AC is increased by\n2.\nEnlarged. The "warlord\'s" size is increased to medium\nand his attacks deal an extra 1d4 damage.\nBorrowed Power. The warlord has consumed a potion of\ngrowth and a potion of haste. At the end of each of his\nturns, roll a d6. A result of 1 indicates that the effect of\none of the potions has expired.\nPack Tactics. The kobold has advantage on an attack roll\nagainst a creature if at least one of the kobold\'s allies is\nwithin 5 feet of the creature and the ally isn\'t\nincapacitated.\nSunlight Sensitivity. While in sunlight, the kobold has\ndisadvantage on attack rolls, as well as on Wisdom\n(Perception) checks that rely on sight.\nActions\nMultiattack. The "warlord" makes two scimitar of speed\nattacks.\nScimitar of Speed. Melee Weapon Attack: +6 to hit, reach\n5 ft., one target. Hit: 8 (1d6+4) slashing damage, plus 2\n(1d4) slashing damage while enlarged.';
     const actor = textToActor(text);
-    expect(actor.name).toBe('Kip, the "Warlord"');
+    expect(actor.name).toBe('Kip, The "Warlord"');
     expect(actor.abilities.str).toStrictEqual({ value: 7, mod: -2, savingThrow: 0 });
     expect(actor.abilities.dex).toStrictEqual({ value: 15, mod: 2, savingThrow: 0 });
     expect(actor.abilities.con).toStrictEqual({ value: 16, mod: 3, savingThrow: 0 });
@@ -970,7 +983,7 @@ describe('getAllFeatures', () => {
           name: 'Legendary Actions',
           section: 'legendary',
           description:
-            "The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
+            "Legendary Actions: The dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.",
         }),
       ]),
     );
@@ -993,7 +1006,7 @@ describe('getAllFeatures', () => {
     const commander = features.find((f) => f.name === 'Cowardly Commander');
     expect(commander).toEqual({
       description:
-        'When a creature the cursespitter can see hits them with an attack, the cursespitter chooses a willing ally within 5 feet of them. The attack hits the ally instead',
+        'Reactions: When a creature the cursespitter can see hits them with an attack, the cursespitter chooses a willing ally within 5 feet of them. The attack hits the ally instead',
       name: 'Cowardly Commander',
       section: 'reaction',
     });
@@ -1106,7 +1119,7 @@ describe('parseItemsWTC', () => {
           type: 'reaction',
         },
         description:
-          'When a creature the cursespitter can see hits them with an attack, the cursespitter chooses a willing ally within 5 feet of them. The attack hits the ally instead',
+          'Reactions: When a creature the cursespitter can see hits them with an attack, the cursespitter chooses a willing ally within 5 feet of them. The attack hits the ally instead',
         name: 'Cowardly Commander',
         type: 'feat',
       }),
