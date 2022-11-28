@@ -29,6 +29,7 @@ import {
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
+import { parseItem } from '../../../src/module/item/parsers';
 
 describe('nameParse', () => {
   it('should parse a name', () => {
@@ -589,6 +590,17 @@ describe('parseFeatures', () => {
       },
     ]);
   });
+
+  it('should parse goblin sniper features', () => {
+    const actorText =
+      'Goblin Sniper\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (leather armor)\nHit Points 13 (3d6 + 3)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 16 (+3) 12 (+1) 10 (+0) 12 (+1) 8 (−1)\nSkills Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The sniper doesn’t provoke opportunity attacks when they\nmove out of an enemy’s reach.\nSniper. If the sniper misses with a ranged weapon attack while they\nare hidden, they remain hidden. Additionally, if the sniper hits a\ntarget with a ranged weapon attack while they have advantage on\nthe attack roll, the attack deals an extra 1d6 damage.\nACTIONS\nDagger. Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or\nranged 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nSneak. The sniper takes the Hide action.';
+    const features = parseFeaturesWTC(actorText.split('\n'));
+    const sniper = features.find((f) => f.name === 'Sniper');
+    expect(sniper).toBeDefined();
+    expect(sniper?.description).toEqual(
+      'If the sniper misses with a ranged weapon attack while they are hidden, they remain hidden. Additionally, if the sniper hits a target with a ranged weapon attack while they have advantage on the attack roll, the attack deals an extra 1d6 damage.',
+    );
+  });
 });
 
 describe('extractAbilities', () => {
@@ -1005,6 +1017,13 @@ describe('MCDM monsters', () => {
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Boss');
   });
+
+  it('should parse a goblin sniper', () => {
+    const actorText =
+      'Goblin Sniper\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (leather armor)\nHit Points 13 (3d6 + 3)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 16 (+3) 12 (+1) 10 (+0) 12 (+1) 8 (−1)\nSkills Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The sniper doesn’t provoke opportunity attacks when they\nmove out of an enemy’s reach.\nSniper. If the sniper misses with a ranged weapon attack while they\nare hidden, they remain hidden. Additionally, if the sniper hits a\ntarget with a ranged weapon attack while they have advantage on\nthe attack roll, the attack deals an extra 1d6 damage.\nACTIONS\nDagger. Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or\nranged 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nSneak. The sniper takes the Hide action.';
+    const actor = textToActor(actorText);
+    expect(actor.name).toEqual('Goblin Sniper');
+  });
 });
 
 describe('parseItemsWTC', () => {
@@ -1033,6 +1052,27 @@ describe('parseItemsWTC', () => {
         units: 'ft',
         value: 5,
       },
+      type: 'weapon',
+    });
+  });
+
+  it('should parse sniper item', () => {
+    expect(
+      parseItem({
+        name: 'Sniper',
+        description:
+          'If the sniper misses with a ranged weapon attack while they are hidden, they remain hidden. Additionally, if the sniper hits a target with a ranged weapon attack while they have advantage on the attack roll, the attack deals an extra 1d6 damage.',
+      }),
+    ).toEqual({
+      activation: {
+        cost: 1,
+        type: 'action',
+      },
+      attackBonus: 0,
+      description:
+        'If the sniper misses with a ranged weapon attack while they are hidden, they remain hidden. Additionally, if the sniper hits a target with a ranged weapon attack while they have advantage on the attack roll, the attack deals an extra 1d6 damage.',
+      formula: '',
+      name: 'Sniper',
       type: 'weapon',
     });
   });
