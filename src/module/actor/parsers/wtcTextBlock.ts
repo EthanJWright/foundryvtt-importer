@@ -27,7 +27,15 @@ import {
 } from '../interfaces';
 import { parseGenericFormula } from './generic';
 
-const FEATURE_SECTIONS = ['ACTIONS', 'FEATURES', 'REACTIONS', 'LEGENDARY ACTIONS', 'BONUS ACTIONS', 'VILLAIN ACTIONS'];
+const FEATURE_SECTIONS = [
+  'ACTIONS',
+  'FEATURES',
+  'REACTIONS',
+  'LEGENDARY ACTIONS',
+  'BONUS ACTIONS',
+  'VILLAIN ACTIONS',
+  'UTILITY SPELLS',
+];
 
 export const ParseActorWTC: ImportActorParser = {
   parseName: [parseNameWTC],
@@ -76,7 +84,10 @@ export function parseHealthWTC(lines: string[]) {
 }
 
 export function parseNameWTC(lines: string[]): Name {
-  return lines[0].trim();
+  let name = lines[0].trim();
+  name = name.toLowerCase().split(' cr ')[0];
+  name = name.trim().split(' ').map(pascal).join(' ');
+  return name;
 }
 
 export function parseACWTC(lines: string[]): ArmorClass {
@@ -365,10 +376,11 @@ export function parseStandardCSV(lines: string[], name: string): Group {
   };
 }
 
-export function getFeatureName(line: string): string | undefined {
+function getFeatureWithEnding(line: string, ending: string) {
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
-  const re = /\b[A-Z]{1}[a-z]{1,}\b\./g;
+  const regString = `\\b[A-Z]{1}[a-z]{1,}\\b\\${ending}`;
+  const re = new RegExp(regString, 'g');
   // Remove parens and content inside, and leading space
   // Poison Recharge (5-6). Some text -> Poison Recharge. Some text
   const parenRegex = / \(([^)]+)\)/;
@@ -386,29 +398,44 @@ export function getFeatureName(line: string): string | undefined {
   return undefined;
 }
 
+export function getFeatureName(line: string): string | undefined {
+  return getFeatureWithEnding(line, '.') ?? getFeatureWithEnding(line, '!');
+}
+
 interface Section {
   name: string;
   description?: string;
   features: Feature[];
 }
 
+const WTC_TO_FOUNDRY_SECTION_MAP: Record<string, SectionLabel> = {
+  ACTIONS: 'action',
+  UTILITY: 'action',
+  REACTIONS: 'reaction',
+  'BONUS ACTIONS': 'bonus',
+  'LEGENDARY ACTIONS': 'legendary',
+  'VILLAIN ACTIONS': 'legendary',
+};
+
+function fromFoundrySection(section?: SectionLabel): string | undefined {
+  if (!section) {
+    return;
+  }
+  let foundKey: string | undefined;
+  Object.entries(WTC_TO_FOUNDRY_SECTION_MAP).forEach(([key, value]) => {
+    if (value === section && foundKey === undefined) {
+      foundKey = key;
+    }
+  });
+  return foundKey;
+}
+
 function toSection(line: string): SectionLabel | undefined {
   const name = line.toUpperCase();
-  if (name === 'ACTIONS') {
-    return 'action';
+  if (name in WTC_TO_FOUNDRY_SECTION_MAP) {
+    return WTC_TO_FOUNDRY_SECTION_MAP[name];
   }
-  if (name === 'REACTIONS') {
-    return 'reaction';
-  }
-  if (name === 'LEGENDARY ACTIONS') {
-    return 'legendary';
-  }
-  if (name === 'BONUS ACTIONS') {
-    return 'bonus';
-  }
-  if (name === 'VILLAIN ACTIONS') {
-    return 'legendary';
-  }
+
   return;
 }
 
@@ -661,6 +688,22 @@ export function parseFeaturesWTC(lines: string[]): Features {
     feature.description = mcdmClean(feature.description);
     return feature;
   });
+
+  compiledFeatures = compiledFeatures.filter((feature) => feature.description !== ''); // remove empty features
+  compiledFeatures = compiledFeatures.filter(
+    (feature) => !FEATURE_SECTIONS.includes(feature.description.toUpperCase()),
+  );
+
+  // add section to last part of description in case foundry doesn't keep it
+  const interestingSections = ['bonus', 'legendary', 'reaction'];
+  compiledFeatures = compiledFeatures.map((feature) => {
+    const fromFoundry = fromFoundrySection(feature.section);
+    if (feature.section && interestingSections.includes(feature.section) && fromFoundry) {
+      feature.description = `${pascal(fromFoundry)}: ${feature.description}`;
+    }
+    return feature;
+  });
+
   return compiledFeatures.filter((feature) => {
     return !FEATURE_SECTIONS.includes(feature.description) || feature.description === feature.name;
   });
