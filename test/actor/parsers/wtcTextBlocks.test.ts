@@ -733,6 +733,19 @@ describe('getFeatureNames', () => {
     const name = getFeatureName(actorText);
     expect(name).toEqual('Poison Breath (Recharge 5–6)');
   });
+
+  it('should treat Vine Eruption (3/Day; 4th-Level Spell). as a name', () => {
+    const actorText =
+      'Vine Eruption (3/Day; 4th-Level Spell). The treant magically summons a vine eruption, as the spell of the same name.';
+    const name = getFeatureName(actorText);
+    expect(name).toEqual('Vine Eruption (3/Day; 4th-Level Spell)');
+  });
+  it('should treat Swarm of Bees Trap. as a name', () => {
+    const actorText =
+      'Swarm of Bees Trap. When a creature enters the area of the trap, the trap springs into action. The trap is a DC 15 Dexterity saving throw, taking 4 (1d8) piercing damage on a failed save, or half as much damage on a successful one.';
+    const name = getFeatureName(actorText);
+    expect(name).toEqual('Swarm of Bees Trap');
+  });
 });
 
 describe('findFirstActionIndex', () => {

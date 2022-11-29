@@ -376,7 +376,12 @@ export function parseStandardCSV(lines: string[], name: string): Group {
   };
 }
 
+const isMCDMVillainAction = (name: string) => {
+  return name.includes('Action 1:') || name.includes('Action 2:') || name.includes('Action 3:');
+};
+
 function getFeatureWithEnding(line: string, ending: string) {
+  const wordsRequiredForName = 4;
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
   const regString = `\\b[A-Z]{1}[a-z]{1,}\\b\\${ending}`;
@@ -384,14 +389,27 @@ function getFeatureWithEnding(line: string, ending: string) {
   // Remove parens and content inside, and leading space
   // Poison Recharge (5-6). Some text -> Poison Recharge. Some text
   const parenRegex = / \(([^)]+)\)/;
+
   const lineWithoutParens = line.replace(parenRegex, '');
-  const matches = lineWithoutParens.replace(')', '').match(re);
+
+  const reduceOutWords = (acc: string, word: string) => {
+    acc = acc.replace(` ${word} `, ' ');
+    return acc;
+  };
+  const conjunctions = ['of', 'the', 'and'];
+
+  const cleanedForName = conjunctions.reduce(reduceOutWords, lineWithoutParens);
+
+  const matches = cleanedForName.replace(')', '').match(re);
   if (matches) {
-    const name = line.split('.')[0];
+    const name = line.split(ending)[0];
     // If our regex didn't grab a match at the beginning of the line, return
-    if (name.replace(parenRegex, '').trim().split(' ').length > 3) {
+    const nameWithoutConjunctions = conjunctions.reduce(reduceOutWords, name);
+    if (nameWithoutConjunctions.replace(parenRegex, '').trim().split(' ').length > wordsRequiredForName) {
       return;
     }
+
+    if (isMCDMVillainAction(name)) return;
     return name;
   }
 
@@ -480,6 +498,7 @@ function featureStringsToFeatures(line: string, sectionName?: SectionLabel) {
   let cleanLine = line.replace(name, '').trim();
   if (cleanLine.startsWith('.')) cleanLine = cleanLine.substring(1);
   if (cleanLine.startsWith(' ')) cleanLine = cleanLine.substring(1);
+  cleanLine.replace('-\n', '');
   const feature: Feature = {
     name,
     description: cleanLine,
