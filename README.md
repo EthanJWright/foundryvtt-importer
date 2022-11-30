@@ -71,6 +71,8 @@ text, or use a pdf tool (like zathura) that allows me to copy blocks of text.
 Paste the block of text into the clipboard utility, and a best effort monster
 will be generated matching the text.
 
+Import MCDM Action Oriented monsters, such as found [here](https://files.mcdmproductions.com/FleeMortals/FleeMortalsPreview.pdf)
+
 ### Items (5e only)
 
 Import items copied from text blocks from PDFs. Will best effort parse
