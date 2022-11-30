@@ -394,17 +394,20 @@ function getFeatureWithEnding(line: string, ending: string) {
 
   const reduceOutWords = (acc: string, word: string) => {
     acc = acc.replace(` ${word} `, ' ');
+    acc = acc.replace(`${word}`, '');
     return acc;
   };
-  const conjunctions = ['of', 'the', 'and'];
+  // Remove any characters that don't factor into our name regex
+  // don't pull out the denominator we are attempting to split on
+  let ignoredSubstrings = ['of', 'the', 'and', ',', '!', '.'];
+  ignoredSubstrings = ignoredSubstrings.filter((substr) => substr !== ending);
+  const cleanedForName = ignoredSubstrings.reduce(reduceOutWords, lineWithoutParens).replace(')', '');
 
-  const cleanedForName = conjunctions.reduce(reduceOutWords, lineWithoutParens);
-
-  const matches = cleanedForName.replace(')', '').match(re);
+  const matches = cleanedForName.match(re);
   if (matches) {
     const name = line.split(ending)[0];
     // If our regex didn't grab a match at the beginning of the line, return
-    const nameWithoutConjunctions = conjunctions.reduce(reduceOutWords, name);
+    const nameWithoutConjunctions = ignoredSubstrings.reduce(reduceOutWords, name);
     if (nameWithoutConjunctions.replace(parenRegex, '').trim().split(' ').length > wordsRequiredForName) {
       return;
     }
@@ -458,21 +461,26 @@ function toSection(line: string): SectionLabel | undefined {
 }
 
 function reduceToFeatures(acc: string[], curr: string, sections: string[]): string[] {
-  if (sections.includes(curr.toUpperCase())) {
-    acc.push(curr.toUpperCase());
+  const line = curr.trim();
+
+  if (line.trim() === '') return acc;
+
+  if (sections.includes(line.toUpperCase())) {
+    acc.push(line.toUpperCase());
     return acc;
   }
-  const names = getFeatureName(curr);
+
+  const names = getFeatureName(line);
   if (names || acc.length === 0) {
-    acc.push(curr.trim());
+    acc.push(line.trim());
   } else {
     // the next line after 'legendary resistance' is a description of the
     // resistance, so the section header gets lost
     // need to check if the previous line was a section header, and if so
     // create a new entry including the previous header
     const lastEntry = acc[acc.length - 1];
-    if (sections.includes(lastEntry.toUpperCase()) && curr) {
-      const stitchedFeature = `${pascal(lastEntry)}. ${curr.trim()}`;
+    if (sections.includes(lastEntry.toUpperCase()) && line) {
+      const stitchedFeature = `${pascal(lastEntry)}. ${line.trim()}`;
       acc.push(stitchedFeature);
       return acc;
     }
@@ -483,7 +491,7 @@ function reduceToFeatures(acc: string[], curr: string, sections: string[]): stri
     if (acc[acc.length - 1].endsWith('-')) {
       acc[acc.length - 1] = acc[acc.length - 1].slice(0, -1);
     }
-    acc[acc.length - 1] = acc[acc.length - 1].trim() + bindWith + curr.trim();
+    acc[acc.length - 1] = acc[acc.length - 1].trim() + bindWith + line.trim();
   }
   acc[acc.length - 1] = acc[acc.length - 1].trim();
   return acc;
