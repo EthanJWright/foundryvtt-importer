@@ -457,8 +457,8 @@ function toSection(line: string): SectionLabel | undefined {
   return;
 }
 
-function reduceToFeatures(acc: string[], curr: string) {
-  if (FEATURE_SECTIONS.includes(curr.toUpperCase())) {
+function reduceToFeatures(acc: string[], curr: string, sections: string[]): string[] {
+  if (sections.includes(curr.toUpperCase())) {
     acc.push(curr.toUpperCase());
     return acc;
   }
@@ -471,7 +471,7 @@ function reduceToFeatures(acc: string[], curr: string) {
     // need to check if the previous line was a section header, and if so
     // create a new entry including the previous header
     const lastEntry = acc[acc.length - 1];
-    if (FEATURE_SECTIONS.includes(lastEntry.toUpperCase()) && curr) {
+    if (sections.includes(lastEntry.toUpperCase()) && curr) {
       const stitchedFeature = `${pascal(lastEntry)}. ${curr.trim()}`;
       acc.push(stitchedFeature);
       return acc;
@@ -696,11 +696,27 @@ const mcdmClean = (description: string) => {
   return description;
 };
 
+const getMCDMChangingLine = (lines: string[]): string | undefined => {
+  return lines.find((line) => line.includes('CHANGING THE'));
+};
+
 export function parseFeaturesWTC(lines: string[]): Features {
-  const firstFeatureLine = lines.findIndex((line) => getFeatureName(line) !== undefined);
+  const changingLine = getMCDMChangingLine(lines)?.trim();
+  let formattedLines = lines;
+
+  // add a section for 'changing the monster' if the section exists
+  if (changingLine) {
+    formattedLines = lines.map((line) => line.replace(changingLine, `${pascal(changingLine)}.`));
+  }
+
+  const firstFeatureLine = formattedLines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
-  const featureLines = lines.slice(firstFeatureLine);
-  const featureStrings: string[] = featureLines.reduce(reduceToFeatures, []);
+  const featureLines = formattedLines.slice(firstFeatureLine);
+  const featureStrings: string[] = featureLines.reduce(
+    (acc: string[], curr: string) => reduceToFeatures(acc, curr, FEATURE_SECTIONS),
+    [],
+  );
+
   const withSections = featureStrings.reduce(addSectionReduction, []);
   let compiledFeatures = withSections.map((entry) => featureStringsToFeatures(entry.feature, entry.section));
   compiledFeatures = compiledFeatures.filter((feature) => {
