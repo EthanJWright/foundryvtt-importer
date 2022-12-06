@@ -35,6 +35,8 @@ const FEATURE_SECTIONS = [
   'BONUS ACTIONS',
   'VILLAIN ACTIONS',
   'UTILITY SPELLS',
+  'EQUIPMENT',
+  'SPELLS',
 ];
 
 export const ParseActorWTC: ImportActorParser = {
@@ -150,7 +152,6 @@ function containsAbility(line: string) {
   const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   return (
     abilities.findIndex((ability) => {
-      console.log(`Line: ${line} | ${ability}`);
       return line.trim().toUpperCase() === ability;
     }) !== -1
   );
@@ -180,7 +181,6 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
 }
 
 function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[]): Abilities {
-  console.log(`Zipping: ${abilityKeys} | ${abilities} | ${modifiers}`);
   return abilityKeys.reduce(
     (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
     {},
@@ -232,13 +232,11 @@ function parseMod(line: string) {
 export function findAbilityBounds(input: string[]): { lastLine: number; firstLine: number } {
   const lines = new Array(...input);
   const firstLine = lines.findIndex((line) => {
-    console.log(`Looking at: ${line}`);
     return line.trim().toLowerCase() === 'str';
   });
   if (firstLine === undefined) {
     throw new Error('Could not find first line');
   }
-  console.log(`First line: ${firstLine}`);
   const remainingLines = lines.slice(firstLine, lines.length);
   let lastLine =
     remainingLines.findIndex((line) => {
