@@ -57,6 +57,7 @@ export const ParseActorWTC: ImportActorParser = {
     parseMultiLineAbilitiesWTC,
     parseVerticalKeyValueAbilitiesWTC,
     parseVerticalNameValModFormatWTC,
+    parseGPTBlockAbilities,
   ],
   parseSpeed: [parseSpeedWTC],
   parseSkills: [parseSkillsWTC],
@@ -149,6 +150,7 @@ function containsAbility(line: string) {
   const abilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   return (
     abilities.findIndex((ability) => {
+      console.log(`Line: ${line} | ${ability}`);
       return line.trim().toUpperCase() === ability;
     }) !== -1
   );
@@ -178,6 +180,7 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
 }
 
 function zipStats(abilityKeys: string[], abilities: number[], modifiers: string[]): Abilities {
+  console.log(`Zipping: ${abilityKeys} | ${abilities} | ${modifiers}`);
   return abilityKeys.reduce(
     (obj, k, i) => ({ ...obj, [k.toLowerCase()]: parseAbilityScore(abilities[i], modifiers[i]) }),
     {},
@@ -229,11 +232,13 @@ function parseMod(line: string) {
 export function findAbilityBounds(input: string[]): { lastLine: number; firstLine: number } {
   const lines = new Array(...input);
   const firstLine = lines.findIndex((line) => {
+    console.log(`Looking at: ${line}`);
     return line.trim().toLowerCase() === 'str';
   });
   if (firstLine === undefined) {
     throw new Error('Could not find first line');
   }
+  console.log(`First line: ${firstLine}`);
   const remainingLines = lines.slice(firstLine, lines.length);
   let lastLine =
     remainingLines.findIndex((line) => {
@@ -296,6 +301,48 @@ export function parseVerticalNameValModFormatWTC(input: string[]): Abilities {
     throw new Error('Could not parse abilities with parseVerticalNameValModFormatWTC');
   }
   return parsed;
+}
+
+const findAbilityValueBounds = (input: string[]): number => {
+  // find the firstLine lastLine bounds for an ability string
+  // the abilities are all on one line
+  // like the below example:
+  // STR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 14 (+2) WIS 10 (+0) CHA 14 (+2)
+  const indexWithAbility = input.findIndex((line) => line.toLowerCase().includes('str'));
+  const lineWithAbility = input[indexWithAbility];
+  if (!lineWithAbility) {
+    throw new Error('Could not find line with ability');
+  }
+
+  const lineContainsTwoAbilities = (line: string) => {
+    return line.toLowerCase().includes('str') && line.toLowerCase().includes('dex');
+  };
+
+  if (!lineContainsTwoAbilities(lineWithAbility)) {
+    throw new Error('Line does not contain two abilities');
+  }
+  return indexWithAbility;
+};
+
+export function parseGPTBlockAbilities(input: string[]): Abilities {
+  const indexOfAbility = findAbilityValueBounds(input);
+  const abilityLine = input[indexOfAbility];
+  // abilityLine:
+  // STR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 14 (+2) WIS 10 (+0) CHA 14 (+2)
+  const abilities = abilityLine.split(' ').reduce((acc: Record<string, unknown>, cur: string, index: number) => {
+    if (index % 3 === 0) {
+      const ability = cur.toLowerCase().trim();
+      const value = Number(abilityLine.split(' ')[index + 1]);
+      const mod = Number(abilityLine.split(' ')[index + 2].replace('(', '').replace(')', ''));
+      acc[`${ability}`] = { value, mod, savingThrow: 0 };
+    }
+    return acc;
+  }, {});
+
+  if (!isAbilities(abilities)) {
+    throw new Error('Could not parse abilities with parseGPTBlockAbilities');
+  }
+  return abilities;
 }
 
 export function parseSpeedWTC(lines: string[]) {

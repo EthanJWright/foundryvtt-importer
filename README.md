@@ -52,6 +52,7 @@ Import tables from:
 - Import text files (new lines are table entries)
 - Import CSV files (first column treated as roll hits)
 - Import from JSON (a few different structures to suite needs, easy to generate from scripts)
+- Generate NPCs with ChatGPT and import them into foundry!
 
 Reddit.
 
@@ -72,6 +73,10 @@ Paste the block of text into the clipboard utility, and a best effort monster
 will be generated matching the text.
 
 Import MCDM Action Oriented monsters, such as found [here](https://files.mcdmproductions.com/FleeMortals/FleeMortalsPreview.pdf)
+
+Build a [Universal NPC Roleplay Template](https://thealexandrian.net/wordpress/37916/roleplaying-games/universal-npc-roleplaying-template) using [Chat GPT](https://openai.com/blog/chatgpt/) and auto import the stat block.
+(see example in Actor section)
+
 
 ### Items (5e only)
 
@@ -348,6 +353,22 @@ ft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing
 damage.
 Rapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.
 Hit: 8 (1d8 + 4) piercing damage.
+```
+
+### Generate an NPC block with GPT
+
+Build a [Universal NPC Roleplay Template](https://thealexandrian.net/wordpress/37916/roleplaying-games/universal-npc-roleplaying-template) using [Chat GPT](https://openai.com/blog/chatgpt/) and auto import the stat block.
+Just start your NPC template with the following:
+
+
+```txt
+Provide an NPC description with the sections - (appearance, quote, roleplaying tips, background, key info, copyable dnd 5e stat block) for a
+```
+
+As an example:
+
+```txt
+Provide an NPC description with the sections - (appearance, quote, roleplaying tips, background, key info, copyable dnd 5e stat block) for a male scholarly tiefling who is a coward and a wizard, named Theral
 ```
 
 ## Journals
