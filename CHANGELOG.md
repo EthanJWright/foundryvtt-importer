@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.35](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.34...v0.2.35) (2022-11-30)
+
+
+### Bug Fixes
+
+* **actor:** processing names with ! that end with . ([#76](https://github.com/EthanJWright/foundryvtt-importer/issues/76)) ([5d0b554](https://github.com/EthanJWright/foundryvtt-importer/commit/5d0b55449603e79c74215e5243b0931f5e8ce5e3))
+
 ### [0.2.34](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.33...v0.2.34) (2022-11-30)
 
 

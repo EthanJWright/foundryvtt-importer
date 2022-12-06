@@ -735,6 +735,7 @@ describe('getFeatureNames', () => {
     const name = getFeatureName(line);
     expect(name).toEqual('Suave Defense');
   });
+
   it('should get Poison Breath (Recharge 5-6) as a name', () => {
     const actorText =
       'Poison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.';
@@ -748,11 +749,19 @@ describe('getFeatureNames', () => {
     const name = getFeatureName(actorText);
     expect(name).toEqual('Vine Eruption (3/Day; 4th-Level Spell)');
   });
+
   it('should treat Swarm of Bees Trap. as a name', () => {
     const actorText =
       'Swarm of Bees Trap. When a creature enters the area of the trap, the trap springs into action. The trap is a DC 15 Dexterity saving throw, taking 4 (1d8) piercing damage on a failed save, or half as much damage on a successful one.';
     const name = getFeatureName(actorText);
     expect(name).toEqual('Swarm of Bees Trap');
+  });
+
+  it('should turn Rise, My Minions! (1/Day) into a name', () => {
+    const actorText =
+      'Rise, My Minions! (1/Day). The lich magically summons 1d4+1 zombies or skeletons, as the spell of the same name.';
+    const name = getFeatureName(actorText);
+    expect(name).toEqual('Rise, My Minions! (1/Day)');
   });
 });
 
@@ -1044,7 +1053,6 @@ describe('getChallenge', () => {
 
 describe('MCDM monsters', () => {
   it('should parse an mcdm monster', () => {
-    // TODO: this works so far but maybe make CR optional
     const actorText =
       'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy��������s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
     const actor = textToActor(actorText);
@@ -1071,6 +1079,17 @@ describe('MCDM monsters', () => {
       'Goblin Sniper\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (leather armor)\nHit Points 13 (3d6 + 3)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 16 (+3) 12 (+1) 10 (+0) 12 (+1) 8 (−1)\nSkills Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The sniper doesn’t provoke opportunity attacks when they\nmove out of an enemy’s reach.\nSniper. If the sniper misses with a ranged weapon attack while they\nare hidden, they remain hidden. Additionally, if the sniper hits a\ntarget with a ranged weapon attack while they have advantage on\nthe attack roll, the attack deals an extra 1d6 damage.\nACTIONS\nDagger. Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or\nranged 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nSneak. The sniper takes the Hide action.';
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Sniper');
+  });
+
+  it('should parse a human guard without adding ACTIONS to the end of minions', () => {
+    const actorText =
+      '\fHUMAN GUARD                       CR 1/8 MINION (5 XP)             \nMedium Humanoid (Human), Any Alignment                               \n\nArmor Class 16 (chain shirt, shield)                                 \nHit Points 5                                                         \nSpeed 30 ft.                                                         \n   STR        DEX        CON        INT        WIS        CHA        \n  12 (+1)    12 (+1)    12 (+1)    10 (+0)    10 (+0)    10 (+0)     \n\nSkills Perception +2                                                 \nSenses passive Perception 12                                         \nLanguages Common                                                     \nProficiency Bonus +2                                                 \nExploit Weakness. When the guard makes or joins an attack            \nthat’s made with advantage, the attack deals an extra 1 damage       \nper guard who made or joined the attack.\nMinion. If the guard takes damage from an attack or as the result    \nof a failed saving throw, their hit points are reduced to 0. If the  \nguard takes damage from another effect, they die if the damage       \nequals or exceeds their hit point maximum, otherwise they take\nno damage.                                                           \n                                                                     \nOverwhelm. If a Medium or smaller enemy starts their turn            \nwithin 5 feet of three or more guards who can see them, until\nthe start of the enemy’s next turn, the enemy’s speed is reduced     \nby 5 feet for each guard within 5 feet of them. If this reduces the  \nenemy’s walking speed to 0, they are restrained until the start of   \ntheir next turn.                                                     \n                                                                     \nACTIONS                                                              \nSpear (Group Attack). Melee or Ranged Weapon Attack: +3 to\nhit, reach 5 ft. or range 20/60 ft., one target. Hit: 1 piercing     \ndamage.                                                              \n';
+    const actor = textToActor(actorText);
+    expect(actor.name).toEqual('Human Guard');
+    const overwhelm = actor.items.find((item) => item.name === 'Overwhelm');
+    expect(overwhelm).toBeDefined();
+    expect(overwhelm?.description).toBeDefined();
+    expect(overwhelm?.description).not.toContain('ACTIONS');
   });
 });
 
