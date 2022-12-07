@@ -1201,4 +1201,27 @@ describe('open AI stat blocks', () => {
       cha: { value: 14, mod: 2, savingThrow: 0 },
     });
   });
+
+  it('should parse spells and equipment from an NPC', () => {
+    const actorText =
+      'Theral\n\nMedium humanoid (tiefling), neutral\n\nArmor Class 12\nHit Points 6\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 14 (+2) CON 10 (+0) INT 16 (+3) WIS 12 (+1) CHA 13 (+1)\n\nSaving Throws: Int +4, Wis +1\nSkills: Arcana +4, History +4, Stealth +2\n\nSenses: darkvision 60 ft., passive Perception 11\nLanguages: Common, Infernal\n\nEquipment: staff, spellbook, potion of healing, arcane focus\n\nSpells:\nCantrips (at will): detect magic, mage hand, message, minor illusion, ray of frost\n\nActions:\nQuarterstaff. Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 1d6 - 1 bludgeoning damage.\n';
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.name).toEqual('Theral');
+    const spells = actor.items.filter((item) => item.name === 'Spells');
+    expect(spells).toHaveLength(1);
+
+    const equipment = actor.items.filter((item) => item.name === 'Equipment');
+    expect(equipment).toHaveLength(1);
+  });
+
+  it('should treat abilities that are poorly formatted with a - and : as abilities', () => {
+    const actorText =
+      'Goblin Potion Vendor\n\nSmall humanoid (goblin), neutral\n\nArmor Class 12\nHit Points 6 (2d6)\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 14 (+2) CON 10 (+0) INT 12 (+1) WIS 10 (+0) CHA 8 (-1)\n\nSkills: Arcana +3, Deception +1, Perception +2\nSenses: darkvision 60 ft., passive Perception 12\nLanguages: Common, Goblin\n\nActions:\n- Scimitar: Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.\n- Dart: Ranged Weapon Attack: +4 to hit, range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.\n';
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.name).toEqual('Goblin Potion Vendor');
+    const scimitar = actor.items.find((item) => item.name === 'Scimitar');
+    expect(scimitar).toBeDefined();
+  });
 });

@@ -425,7 +425,15 @@ const isMCDMVillainAction = (name: string) => {
   return name.includes('Action 1:') || name.includes('Action 2:') || name.includes('Action 3:');
 };
 
-function getFeatureWithEnding(line: string, ending: string) {
+const gptClean = (line: string): string => {
+  if (line.trim().startsWith('- ')) {
+    return line.trim().replace('- ', '');
+  }
+  return line.trim();
+};
+
+function getFeatureWithEnding(input: string, ending: string) {
+  const line = gptClean(input);
   const wordsRequiredForName = 4;
   // match 1 or 2 words in a row that start with a capital letters and ending
   // in a period
@@ -464,7 +472,13 @@ function getFeatureWithEnding(line: string, ending: string) {
   return undefined;
 }
 
+const isGPTName = (line: string): boolean => {
+  return line.trim().startsWith('-');
+};
 export function getFeatureName(line: string): string | undefined {
+  if (isGPTName(line)) {
+    return getFeatureWithEnding(line, ':');
+  }
   return getFeatureWithEnding(line, '.') ?? getFeatureWithEnding(line, '!');
 }
 
@@ -753,6 +767,25 @@ const getMCDMChangingLine = (lines: string[]): string | undefined => {
   return lines.find((line) => line.includes('CHANGING THE'));
 };
 
+const getFeatureMatching = (lines: string[], pattern: string): Features => {
+  const name = pattern.replace(':', '');
+  const gptFeatures: Features = [];
+  const spellsIndex = lines.findIndex((line) => line.includes(pattern));
+  if (spellsIndex === -1) return [];
+  const spells = lines[spellsIndex + 1];
+  gptFeatures.push({
+    name,
+    description: spells,
+    section: 'action',
+  });
+
+  return gptFeatures;
+};
+
+const getGPTFeatures = (lines: string[]): Features => {
+  return [...getFeatureMatching(lines, 'Spells:'), ...getFeatureMatching(lines, 'Equipment:')];
+};
+
 export function parseFeaturesWTC(lines: string[]): Features {
   const changingLine = getMCDMChangingLine(lines)?.trim();
   let formattedLines = lines;
@@ -792,9 +825,12 @@ export function parseFeaturesWTC(lines: string[]): Features {
     return feature;
   });
 
-  return compiledFeatures.filter((feature) => {
+  compiledFeatures = compiledFeatures.filter((feature) => {
     return !FEATURE_SECTIONS.includes(feature.description) || feature.description === feature.name;
   });
+
+  const gptFeatures = getGPTFeatures(lines);
+  return [...compiledFeatures, ...gptFeatures];
 }
 
 export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItems {
