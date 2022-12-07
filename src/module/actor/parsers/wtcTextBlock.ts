@@ -35,8 +35,6 @@ const FEATURE_SECTIONS = [
   'BONUS ACTIONS',
   'VILLAIN ACTIONS',
   'UTILITY SPELLS',
-  'EQUIPMENT',
-  'SPELLS',
 ];
 
 export const ParseActorWTC: ImportActorParser = {
