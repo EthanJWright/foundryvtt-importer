@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.36](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.35...v0.2.36) (2022-12-07)
+
+
+### Features
+
+* **actor:** chatgpt stat support ([#77](https://github.com/EthanJWright/foundryvtt-importer/issues/77)) ([e7ead4a](https://github.com/EthanJWright/foundryvtt-importer/commit/e7ead4a5b184fdd89bce19a1d90b0ec48cf679c3))
+
 ### [0.2.35](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.34...v0.2.35) (2022-11-30)
 
 
