@@ -781,7 +781,11 @@ const getFeatureMatching = (lines: string[], pattern: string): Features => {
 };
 
 const getGPTFeatures = (lines: string[]): Features => {
-  return [...getFeatureMatching(lines, 'Spells:'), ...getFeatureMatching(lines, 'Equipment:')];
+  return [
+    ...getFeatureMatching(lines, 'Spells:'),
+    ...getFeatureMatching(lines, 'Equipment:'),
+    ...getFeatureMatching(lines, 'Spellcasting:'),
+  ];
 };
 
 export function parseFeaturesWTC(lines: string[]): Features {
