@@ -52,6 +52,7 @@ Import tables from:
 - Import text files (new lines are table entries)
 - Import CSV files (first column treated as roll hits)
 - Import from JSON (a few different structures to suite needs, easy to generate from scripts)
+- Generate NPCs with ChatGPT and import them into foundry!
 
 Reddit.
 
@@ -72,6 +73,10 @@ Paste the block of text into the clipboard utility, and a best effort monster
 will be generated matching the text.
 
 Import MCDM Action Oriented monsters, such as found [here](https://files.mcdmproductions.com/FleeMortals/FleeMortalsPreview.pdf)
+
+Build a [Universal NPC Roleplay Template](https://thealexandrian.net/wordpress/37916/roleplaying-games/universal-npc-roleplaying-template) using [Chat GPT](https://openai.com/blog/chatgpt/) and auto import the stat block.
+(see example in Actor section)
+
 
 ### Items (5e only)
 
@@ -349,6 +354,49 @@ damage.
 Rapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.
 Hit: 8 (1d8 + 4) piercing damage.
 ```
+
+### Generate an NPC block with GPT
+
+Build a [Universal NPC Roleplay Template](https://thealexandrian.net/wordpress/37916/roleplaying-games/universal-npc-roleplaying-template) using [Chat GPT](https://openai.com/blog/chatgpt/) and auto import the stat block.
+Just start your NPC template with the following:
+
+
+```txt
+Provide an NPC description with the sections - (appearance, quote, roleplaying tips, background, key info, copyable dnd 5e stat block) for a
+```
+
+As an example:
+
+```txt
+Provide an NPC description with the sections - (appearance, quote, roleplaying tips, background, key info, copyable dnd 5e stat block) for a male scholarly tiefling who is a coward and a wizard, named Theral
+```
+
+Towards the bottom of your output, you should get something like this:
+```txt
+Theral, Male Tiefling Wizard
+
+Medium humanoid (tiefling), lawful neutral
+
+Armor Class 12
+Hit Points 9 (2d6 + 2)
+Speed 30 ft.
+
+STR 8 (-1) DEX 14 (+2) CON 12 (+1) INT 16 (+3) WIS 10 (+0) CHA 8 (-1)
+
+Skills: Arcana +5, History +5, Insight +2, Perception +2
+Senses: darkvision 60 ft., passive Perception 12
+Languages: Common, Infernal
+
+Spellcasting: Theral is a 1st-level wizard. His spellcasting ability is Intelligence (spell save DC 13, +5 to hit with spell attacks). He has the following spells prepared:
+- Cantrips (at will): fire bolt, light, mage hand
+- 1st level (2 slots): magic missile, shield
+
+Actions:
+- Claw: Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) slashing damage.
+```
+
+You can copy and paste the above to create a matching NPC in Foundry.
+
 
 ## Journals
 
