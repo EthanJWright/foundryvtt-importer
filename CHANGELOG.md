@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.37](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.36...v0.2.37) (2022-12-09)
+
+
+### Bug Fixes
+
+* **actor:** health parsing for gpt ([#79](https://github.com/EthanJWright/foundryvtt-importer/issues/79)) ([d79f6a0](https://github.com/EthanJWright/foundryvtt-importer/commit/d79f6a025c9a6ec2a7d65d5116f624cd699404a5))
+
 ### [0.2.36](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.35...v0.2.36) (2022-12-07)
 
 
