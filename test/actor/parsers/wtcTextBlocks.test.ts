@@ -1224,4 +1224,12 @@ describe('open AI stat blocks', () => {
     const scimitar = actor.items.find((item) => item.name === 'Scimitar');
     expect(scimitar).toBeDefined();
   });
+
+  it('should parse actor with different health format', () => {
+    const actorText =
+      'Theral\nMale Tiefling Wizard (Coward)\n\nArmor Class: 12 (15 with mage armor)\nHit Points: 8 (1d6 + 2)\nSpeed: 30 ft.\n\nSTR 8 (-1) DEX 14 (+2) CON 12 (+1) INT 16 (+3) WIS 10 (+0) CHA 8 (-1)\n\nSaving Throws: Intelligence +5, Wisdom +2\nSkills: Arcana +5, History +5, Perception +2\n\nSenses: Darkvision 60 ft., passive Perception 12\nLanguages: Common, Infernal\n\nSpellcasting: Theral is a 1st-level wizard. His spellcasting ability is Intelligence (spell save DC 13, +5 to hit with spell attacks). Theral has the following spells prepared:\n\nCantrips (at will): fire bolt, light, prestidigitation\n1st level (2 slots): mage armor, magic missile, shield\n\nActions:\nDagger. Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.';
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.name).toEqual('Theral');
+  });
 });
