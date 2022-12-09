@@ -71,7 +71,11 @@ const pascal = (s: string) =>
 
 export function parseHealthWTC(lines: string[]) {
   const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
-  const { min, max, str, value } = parseGenericFormula(healthLine, /Hit Points (.*)/);
+  let parsed = parseGenericFormula(healthLine, /Hit Points (.*)/);
+  // above case is for pattern matching Hit Points 8 (1d6 + 2)
+  // Match pattern Hit Points: Hit Points: 8 (1d6 + 2)
+  if (!parsed?.value) parsed = parseGenericFormula(healthLine, /Hit Points: (.*)/);
+  const { min, max, str, value } = parsed;
   const health = {
     min,
     max,
