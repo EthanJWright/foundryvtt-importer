@@ -58,12 +58,20 @@ export function trySingleActorParse(parser: ImportActorParser, lines: string[]):
         },
       },
     ),
-    type: tryParser<ActorType>(parser.parseType, lines, (value) => {
-      if (typeof value !== 'string') {
-        throw new Error(`Could not parse type: ${value}`);
-      }
-      return value;
-    }),
+    type: tryParser<ActorType>(
+      parser.parseType,
+      lines,
+      (value) => {
+        if (typeof value !== 'string') {
+          throw new Error(`Could not parse type: ${value}`);
+        }
+        return value;
+      },
+      {
+        isOptional: true,
+        defaultValue: '',
+      },
+    ),
     alignment: tryParser<Alignment>(
       parser.parseAlignment,
       lines,
@@ -92,18 +100,34 @@ export function trySingleActorParse(parser: ImportActorParser, lines: string[]):
         defaultValue: '',
       },
     ),
-    languages: tryParser<Languages>(parser.parseLanguages, lines, (languages) => {
-      if (!Array.isArray(languages)) {
-        throw new Error(`Could not parse languages: ${languages}`);
-      }
-      return languages as Languages;
-    }),
-    size: tryParser<Size>(parser.parseSize, lines, (size) => {
-      if (typeof size !== 'string') {
-        throw new Error(`Could not parse size: ${size}`);
-      }
-      return size as Size;
-    }),
+    languages: tryParser<Languages>(
+      parser.parseLanguages,
+      lines,
+      (languages) => {
+        if (!Array.isArray(languages)) {
+          throw new Error(`Could not parse languages: ${languages}`);
+        }
+        return languages as Languages;
+      },
+      {
+        isOptional: true,
+        defaultValue: [],
+      },
+    ),
+    size: tryParser<Size>(
+      parser.parseSize,
+      lines,
+      (size) => {
+        if (typeof size !== 'string') {
+          throw new Error(`Could not parse size: ${size}`);
+        }
+        return size as Size;
+      },
+      {
+        isOptional: true,
+        defaultValue: 'Medium',
+      },
+    ),
     health: tryParser(parser.parseHealth, lines, (health) => {
       if (!(health as Health).value) {
         throw new Error(`Could not parse health: ${health}`);
