@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.38](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.37...v0.2.38) (2023-02-01)
+
+
+### Bug Fixes
+
+* **actor:** iss-81 allow AC and Health to have diff casing ([#82](https://github.com/EthanJWright/foundryvtt-importer/issues/82)) ([924b024](https://github.com/EthanJWright/foundryvtt-importer/commit/924b024999297903820d6159e767e59de665c219))
+
 ### [0.2.37](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.36...v0.2.37) (2022-12-09)
 
 
