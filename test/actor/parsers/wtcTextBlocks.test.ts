@@ -171,7 +171,7 @@ describe('parseAC', () => {
     const ac = parseACWTC(['Armor Class 18 (natural armor, Imposing Majesty)']);
     expect(ac).toStrictEqual({
       value: 18,
-      type: 'natural armor, Imposing Majesty',
+      type: 'natural armor, imposing majesty',
     });
   });
   it('should throw an error when not passed a valid ac string', () => {
@@ -1231,5 +1231,13 @@ describe('open AI stat blocks', () => {
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.name).toEqual('Theral');
+  });
+
+  it('should parse actor with failing HP set', () => {
+    const actorText =
+      'Korsoth Vastikan\nMedium aberration, chaotic\nARMOR CLASS 16 (studded leather)\nHIT POINTS 78 (12d8 + 24)\nSPEED 40 ft.\nSTR DEX CON INT WIS CHA\n13\n(+1)\n18\n(+4)\n14\n(+2)\n11\n(+0)\n13\n(+1)\n12\n(+1)\nSAVING THROWS Dex +7, Wis +4\nSKILLS Acrobatics +7, Deception +4, Investigation +3, Perception +4, Stealth +7, Survival +4\nDAMAGE RESISTANCES psychic\nCONDITION IMMUNITIES charmed, petrified\nSENSES darkvision 60 ft., passive Perception 14\nLANGUAGES Deep Speech, Primordial\nCHALLENGE 6 (2,300 XP)\nEverchanging Changers. The Court of All Flesh\nare beings of pure chaos. Because their minds\nare pure disorder, they cannot be driven mad or\ncharmed and any attempts to magically compel\ntheir behavior fails.\nFormless Shape. Vastikan is immune to any spell\nor effect that would alter his form.\nFormkiller. If Vastikan hits a target with three\narrows in one round, the target must make\na DC 12 Constitution saving throw or lose its\nnative form. Roll on the Reincarnation table to\ndetermine the target’s new form. The target\nreverts to its original form after 1 hour.1 A target\nthat succeeds on its saving throw becomes\nimmune to Formkiller for 24 hours.\nActions\nMultiattack. Vastikan makes four\nlongbow attacks.\nLongbow. Ranged Weapon Attack: +7 to hit,\nrange 150/600 ft., one target. Hit: 8 (1d8 + 4)\npiercing damage.\nShortsword. Melee Weapon Attack: +7 to\nhit, reach 5 ft., one target. Hit: 8 (1d8 + 4)\npiercing damage.';
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.name).toEqual('Korsoth Vastikan');
   });
 });

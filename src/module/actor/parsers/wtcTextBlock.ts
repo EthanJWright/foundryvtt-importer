@@ -70,7 +70,9 @@ const pascal = (s: string) =>
   });
 
 export function parseHealthWTC(lines: string[]) {
-  const healthLine = lines.find((line) => line.includes('Hit Points')) || '(1d6 + 1)';
+  let healthLine = lines.find((line) => line.toUpperCase().includes('HIT POINTS'));
+  if (!healthLine) throw new Error('Could not find health line');
+  healthLine = pascal(healthLine);
   let parsed = parseGenericFormula(healthLine, /Hit Points (.*)/);
   // above case is for pattern matching Hit Points 8 (1d6 + 2)
   // Match pattern Hit Points: Hit Points: 8 (1d6 + 2)
@@ -96,7 +98,9 @@ export function parseNameWTC(lines: string[]): Name {
 }
 
 export function parseACWTC(lines: string[]): ArmorClass {
-  const acString = lines.find((line) => line.includes('Armor Class'));
+  let acString = lines.find((line) => line.toUpperCase().includes('ARMOR CLASS'));
+  if (!acString) throw new Error('Could not find AC line');
+  acString = pascal(acString);
   if (!acString || typeof acString !== 'string') {
     throw new Error('Could not find AC line');
   }
@@ -118,7 +122,7 @@ export function parseACWTC(lines: string[]): ArmorClass {
   }
   return {
     value: Number(acNumber[0]),
-    type: ac,
+    type: ac.toLowerCase(),
   };
 }
 
