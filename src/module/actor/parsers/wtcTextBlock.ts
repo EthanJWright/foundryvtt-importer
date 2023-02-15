@@ -126,8 +126,9 @@ export function parseACWTC(lines: string[]): ArmorClass {
   };
 }
 
-function parseAbilityScore(score: number, mod: string): Ability {
+function parseAbilityScore(score: number, mod?: string): Ability {
   let modNumber = 0;
+  if (!mod) return { value: score, mod: modNumber, savingThrow: 0 };
   if (mod.includes('-') || mod.includes('–')) {
     // extract number from the string
     const modNumberString = mod.match(/\d+/) || '0';
@@ -172,15 +173,12 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
   }
   const abilityValues = abilityValuesWithSpaces.filter((item) => item.length > 0);
   const abilities: number[] = [];
-  const modifiers: string[] = [];
+  const modifiers: string[] = Array(6).fill('0');
   abilityValues.forEach((value) => {
     if (value.includes('(')) {
-      modifiers.push(value.replace('(', '').replace(')', '').trim());
+      modifiers[abilities.length - 1] = value.replace('(', '').replace(')', '').trim();
     } else {
       abilities.push(parseInt(value));
-    }
-    while (abilities.length > modifiers.length + 1) {
-      modifiers.push('(+0)');
     }
   });
   return { abilities, modifiers };
