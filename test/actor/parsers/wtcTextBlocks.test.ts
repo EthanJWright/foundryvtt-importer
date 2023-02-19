@@ -27,6 +27,7 @@ import {
   parseVerticalNameValModFormatWTC,
   parseItemsWTC,
   parseGPTBlockAbilities,
+  parseInlineAbilityValueModWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
@@ -422,6 +423,29 @@ describe('parseGPTBlockAbilities', () => {
           savingThrow: 0,
           value: 14,
         },
+      }),
+    );
+  });
+
+  it('should parse a GPT block for Giggles the Jerbeen Clown', () => {
+    const actorText =
+      'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
+    const abilities = parseGPTBlockAbilities(actorText.split('\n'));
+    expect(abilities).toEqual(
+      expect.objectContaining({
+        str: { mod: -1, savingThrow: 0, value: 8 },
+      }),
+    );
+  });
+});
+
+describe('parseInlineAbilityValueModWTC', () => {
+  it('should parse an inline ability value and mod', () => {
+    const abilityLine = 'STR 18 (+4) DEX 13 (+1) CON 16 (+3) INT 10 (+0) WIS 10 (+0) CHA 10 (+0)';
+    const abilities = parseInlineAbilityValueModWTC([abilityLine]);
+    expect(abilities).toEqual(
+      expect.objectContaining({
+        str: { value: 18, mod: 4, savingThrow: 0 },
       }),
     );
   });
@@ -1097,6 +1121,7 @@ describe('MCDM monsters', () => {
       'Goblin Sniper\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (leather armor)\nHit Points 13 (3d6 + 3)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 16 (+3) 12 (+1) 10 (+0) 12 (+1) 8 (−1)\nSkills Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The sniper doesn’t provoke opportunity attacks when they\nmove out of an enemy’s reach.\nSniper. If the sniper misses with a ranged weapon attack while they\nare hidden, they remain hidden. Additionally, if the sniper hits a\ntarget with a ranged weapon attack while they have advantage on\nthe attack roll, the attack deals an extra 1d6 damage.\nACTIONS\nDagger. Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or\nranged 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nSneak. The sniper takes the Hide action.';
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Sniper');
+    expect(actor.abilities.str.value).toEqual(8);
   });
 
   it('should parse a human guard without adding ACTIONS to the end of minions', () => {
@@ -1233,11 +1258,27 @@ describe('open AI stat blocks', () => {
     expect(actor.name).toEqual('Theral');
   });
 
-  it('should parse actor with failing HP set', () => {
+  it('should parse a block with a strangely formatted ability line', () => {
     const actorText =
-      'Korsoth Vastikan\nMedium aberration, chaotic\nARMOR CLASS 16 (studded leather)\nHIT POINTS 78 (12d8 + 24)\nSPEED 40 ft.\nSTR DEX CON INT WIS CHA\n13\n(+1)\n18\n(+4)\n14\n(+2)\n11\n(+0)\n13\n(+1)\n12\n(+1)\nSAVING THROWS Dex +7, Wis +4\nSKILLS Acrobatics +7, Deception +4, Investigation +3, Perception +4, Stealth +7, Survival +4\nDAMAGE RESISTANCES psychic\nCONDITION IMMUNITIES charmed, petrified\nSENSES darkvision 60 ft., passive Perception 14\nLANGUAGES Deep Speech, Primordial\nCHALLENGE 6 (2,300 XP)\nEverchanging Changers. The Court of All Flesh\nare beings of pure chaos. Because their minds\nare pure disorder, they cannot be driven mad or\ncharmed and any attempts to magically compel\ntheir behavior fails.\nFormless Shape. Vastikan is immune to any spell\nor effect that would alter his form.\nFormkiller. If Vastikan hits a target with three\narrows in one round, the target must make\na DC 12 Constitution saving throw or lose its\nnative form. Roll on the Reincarnation table to\ndetermine the target’s new form. The target\nreverts to its original form after 1 hour.1 A target\nthat succeeds on its saving throw becomes\nimmune to Formkiller for 24 hours.\nActions\nMultiattack. Vastikan makes four\nlongbow attacks.\nLongbow. Ranged Weapon Attack: +7 to hit,\nrange 150/600 ft., one target. Hit: 8 (1d8 + 4)\npiercing damage.\nShortsword. Melee Weapon Attack: +7 to\nhit, reach 5 ft., one target. Hit: 8 (1d8 + 4)\npiercing damage.';
+      'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
-    expect(actor.name).toEqual('Korsoth Vastikan');
+    expect(actor.abilities.str.value).toEqual(8);
+  });
+
+  it('should parse a chat gpt action oriented helmed horror', () => {
+    const actorText =
+      "Helmed Horror (Action-Oriented)\n\nMedium construct, neutral\n\nArmor Class: 20 (plate, shield)\n\nHit Points: 60 (8d8 + 24)\n\nSpeed: 30 ft., fly 30 ft.\n\nSTR 18 (+4) DEX 13 (+1) CON 16 (+3) INT 10 (+0) WIS 10 (+0) CHA 10 (+0)\n\nSkills: Perception +4\n\nDamage Resistances: bludgeoning, piercing, and slashing from nonmagical attacks that aren't adamantine\n\nDamage Immunities: force, necrotic, poison\n\nCondition Immunities: blinded, charmed, deafened, frightened, paralyzed, petrified, poisoned, stunned\n\nSenses: blindsight 60 ft. (blind beyond this radius), passive Perception 14\n\nLanguages: understands the languages of its creator but can't speak\n\nChallenge: 4 (1100 XP)\n\nMagic Resistance. The helmed horror has advantage on saving throws against spells and other magical effects.\n\nSpell Immunity. The helmed horror is immune to three spells chosen by its creator. Typical immunities include fireball, heat metal, and lightning bolt.\nActions\n\nMultiattack. The helmed horror makes two longsword attacks.\n\nLongsword. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands.\nReactions\n\nDefensive Parry (1/round). When the helmed horror is hit by a melee attack, it can use its reaction to add 2 to its AC against that attack.\n\nForceful Push (1/round). When the helmed horror hits a creature with a melee attack, it can use its reaction to attempt to push the creature back. The target must make a DC 14 Strength saving throw or be pushed back 10 feet and knocked prone.";
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.abilities.str.value).toEqual(18);
+  });
+
+  it('should parse a block with a strangley formatted ability line', () => {
+    const actorText =
+      'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.abilities.str.value).toEqual(8);
   });
 });

@@ -20,7 +20,20 @@ export interface Abilities {
 // For this type guard, we are okay with an any
 // eslint-disable-next-line
 export function isAbilities(obj: any): obj is Abilities {
-  return 'str' in obj && 'dex' in obj && 'con' in obj && 'int' in obj && 'wis' in obj && 'cha' in obj;
+  // make sure str.value, dex.value, etc. are all numbers (not NaN)
+  const hasKeys = 'str' in obj && 'dex' in obj && 'con' in obj && 'int' in obj && 'wis' in obj && 'cha' in obj;
+  if (!hasKeys) return false;
+  if (
+    isNaN(obj.str.value) ||
+    isNaN(obj.dex.value) ||
+    isNaN(obj.con.value) ||
+    isNaN(obj.int.value) ||
+    isNaN(obj.wis.value) ||
+    isNaN(obj.cha.value)
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export interface Skill {

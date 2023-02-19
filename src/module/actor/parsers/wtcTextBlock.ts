@@ -58,6 +58,7 @@ export const ParseActorWTC: ImportActorParser = {
     parseVerticalKeyValueAbilitiesWTC,
     parseVerticalNameValModFormatWTC,
     parseGPTBlockAbilities,
+    parseInlineAbilityValueModWTC,
   ],
   parseSpeed: [parseSpeedWTC],
   parseSkills: [parseSkillsWTC],
@@ -126,8 +127,9 @@ export function parseACWTC(lines: string[]): ArmorClass {
   };
 }
 
-function parseAbilityScore(score: number, mod: string): Ability {
+function parseAbilityScore(score: number, mod?: string): Ability {
   let modNumber = 0;
+  if (!mod) return { value: score, mod: modNumber, savingThrow: 0 };
   if (mod.includes('-') || mod.includes('–')) {
     // extract number from the string
     const modNumberString = mod.match(/\d+/) || '0';
@@ -172,15 +174,12 @@ function extractAbilityValues(valueLine: string): { abilities: number[]; modifie
   }
   const abilityValues = abilityValuesWithSpaces.filter((item) => item.length > 0);
   const abilities: number[] = [];
-  const modifiers: string[] = [];
+  const modifiers: string[] = Array(6).fill('0');
   abilityValues.forEach((value) => {
     if (value.includes('(')) {
-      modifiers.push(value.replace('(', '').replace(')', '').trim());
+      modifiers[abilities.length - 1] = value.replace('(', '').replace(')', '').trim();
     } else {
       abilities.push(parseInt(value));
-    }
-    while (abilities.length > modifiers.length + 1) {
-      modifiers.push('(+0)');
     }
   });
   return { abilities, modifiers };
@@ -295,6 +294,34 @@ export function parseVerticalKeyValueAbilitiesWTC(input: string[]): Abilities {
 }
 
 const ABILITIES_WTC = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+const isAbilityKey = (key: string) => ABILITIES_WTC.includes(key.toLowerCase().trim());
+
+// parse ability score of following format
+// STR 18 (+4) DEX 13 (+1) CON 16 (+3) INT 10 (+0) WIS 10 (+0) CHA 10 (+0)
+export function parseInlineAbilityValueModWTC(input: string[]): Abilities {
+  const abilityLine = input.find((line) => line.indexOf('STR') !== -1 && line.indexOf('DEX') !== -1);
+  if (!abilityLine) {
+    throw new Error('Could not find ability line');
+  }
+
+  const line = abilityLine.toUpperCase();
+  if (line.indexOf('STR') === -1 || line.indexOf('DEX') === -1) {
+    throw new Error('Could not parse abilities with parseInlineAbilityValueModWTC');
+  }
+
+  const abilities = ABILITIES_WTC;
+  const valuesAndMods = line.split(' ').filter((value) => !isAbilityKey(value));
+  // use the existing parser, just format it correctly
+  const abilityArray = [abilities.join(' ').toUpperCase(), valuesAndMods.join(' ')];
+  const builtAbilities = parseAbilitiesWTC(abilityArray);
+
+  if (!isAbilities(builtAbilities)) {
+    throw new Error('Could not parse abilities with parseInlineAbilityValueModWTC');
+  }
+
+  return builtAbilities;
+}
+
 export function parseVerticalNameValModFormatWTC(input: string[]): Abilities {
   const { firstLine, lastLine } = findAbilityBounds(input);
   const lines = input.slice(firstLine, lastLine);
