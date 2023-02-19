@@ -1273,7 +1273,7 @@ describe('open AI stat blocks', () => {
     expect(actor).toBeDefined();
     expect(actor.abilities.str.value).toEqual(18);
   });
-    
+
   it('should parse a block with a strangley formatted ability line', () => {
     const actorText =
       'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
