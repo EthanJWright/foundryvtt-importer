@@ -27,6 +27,7 @@ import {
   parseVerticalNameValModFormatWTC,
   parseItemsWTC,
   parseGPTBlockAbilities,
+  parseInlineAbilityValueModWTC,
 } from '../../../src/module/actor/parsers/wtcTextBlock';
 import { textToActor } from '../../../src/module/actor/parsers';
 import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
@@ -433,6 +434,18 @@ describe('parseGPTBlockAbilities', () => {
     expect(abilities).toEqual(
       expect.objectContaining({
         str: { mod: -1, savingThrow: 0, value: 8 },
+      }),
+    );
+  });
+});
+
+describe('parseInlineAbilityValueModWTC', () => {
+  it('should parse an inline ability value and mod', () => {
+    const abilityLine = 'STR 18 (+4) DEX 13 (+1) CON 16 (+3) INT 10 (+0) WIS 10 (+0) CHA 10 (+0)';
+    const abilities = parseInlineAbilityValueModWTC([abilityLine]);
+    expect(abilities).toEqual(
+      expect.objectContaining({
+        str: { value: 18, mod: 4, savingThrow: 0 },
       }),
     );
   });
@@ -1245,11 +1258,19 @@ describe('open AI stat blocks', () => {
     expect(actor.name).toEqual('Theral');
   });
 
-  it('should parse a block with a strangley formatted ability line', () => {
+  it('should parse a block with a strangely formatted ability line', () => {
     const actorText =
       'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.abilities.str.value).toEqual(8);
+  });
+
+  it('should parse a chat gpt action oriented helmed horror', () => {
+    const actorText =
+      "Helmed Horror (Action-Oriented)\n\nMedium construct, neutral\n\nArmor Class: 20 (plate, shield)\n\nHit Points: 60 (8d8 + 24)\n\nSpeed: 30 ft., fly 30 ft.\n\nSTR 18 (+4) DEX 13 (+1) CON 16 (+3) INT 10 (+0) WIS 10 (+0) CHA 10 (+0)\n\nSkills: Perception +4\n\nDamage Resistances: bludgeoning, piercing, and slashing from nonmagical attacks that aren't adamantine\n\nDamage Immunities: force, necrotic, poison\n\nCondition Immunities: blinded, charmed, deafened, frightened, paralyzed, petrified, poisoned, stunned\n\nSenses: blindsight 60 ft. (blind beyond this radius), passive Perception 14\n\nLanguages: understands the languages of its creator but can't speak\n\nChallenge: 4 (1100 XP)\n\nMagic Resistance. The helmed horror has advantage on saving throws against spells and other magical effects.\n\nSpell Immunity. The helmed horror is immune to three spells chosen by its creator. Typical immunities include fireball, heat metal, and lightning bolt.\nActions\n\nMultiattack. The helmed horror makes two longsword attacks.\n\nLongsword. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands.\nReactions\n\nDefensive Parry (1/round). When the helmed horror is hit by a melee attack, it can use its reaction to add 2 to its AC against that attack.\n\nForceful Push (1/round). When the helmed horror hits a creature with a melee attack, it can use its reaction to attempt to push the creature back. The target must make a DC 14 Strength saving throw or be pushed back 10 feet and knocked prone.";
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.abilities.str.value).toEqual(18);
   });
 });
