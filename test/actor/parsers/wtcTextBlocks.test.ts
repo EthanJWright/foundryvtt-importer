@@ -181,6 +181,13 @@ describe('parseAC', () => {
       parseACWTC(invalid);
     }).toThrow();
   });
+  it('should parse an ac string a abbreviated type', () => {
+    const ac = parseACWTC(['AC: 18 (natural armor, Imposing Majesty)']);
+    expect(ac).toStrictEqual({
+      value: 18,
+      type: 'natural armor, imposing majesty',
+    });
+  });
 });
 
 describe('parseDamageImmunities', () => {
