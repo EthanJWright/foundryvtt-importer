@@ -55,6 +55,7 @@ export function trySingleActorParse(parser: ImportActorParser, lines: string[]):
         isOptional: true,
         defaultValue: {
           xp: 0,
+          cr: 0,
         },
       },
     ),
