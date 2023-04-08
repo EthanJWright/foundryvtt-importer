@@ -100,7 +100,10 @@ export function parseNameWTC(lines: string[]): Name {
 
 export function parseACWTC(lines: string[]): ArmorClass {
   let acString = lines.find((line) => line.toUpperCase().includes('ARMOR CLASS'));
-  if (!acString) throw new Error('Could not find AC line');
+  if (!acString) {
+    acString = lines.find((line) => line.trim().toUpperCase().startsWith('AC'));
+    if (!acString) throw new Error('Could not find AC line');
+  }
   acString = pascal(acString);
   if (!acString || typeof acString !== 'string') {
     throw new Error('Could not find AC line');

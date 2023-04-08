@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.41](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.40...v0.2.41) (2023-04-07)
+
+
+### Features
+
+* **actor:** treat ac as armor class when parsing  ([#89](https://github.com/EthanJWright/foundryvtt-importer/issues/89)) ([04b8d21](https://github.com/EthanJWright/foundryvtt-importer/commit/04b8d21024d4e3eeb762a15c6572442affc0f312))
+
 ### [0.2.40](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.39...v0.2.40) (2023-02-19)
 
 
