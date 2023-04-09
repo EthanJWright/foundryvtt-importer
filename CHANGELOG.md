@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.42](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.41...v0.2.42) (2023-04-09)
+
+
+### Bug Fixes
+
+* **actor:** several parsing assumptions ([#91](https://github.com/EthanJWright/foundryvtt-importer/issues/91)) ([b75d543](https://github.com/EthanJWright/foundryvtt-importer/commit/b75d543e57b276fdb18ba7fe5f965209dff27ffd))
+
 ### [0.2.41](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.40...v0.2.41) (2023-04-07)
 
 
