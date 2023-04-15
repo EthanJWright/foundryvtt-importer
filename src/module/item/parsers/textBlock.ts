@@ -37,28 +37,44 @@ export function parseSpellSphere(description: string) {
 
 export function parseRange(description: string): Range {
   if (/reach/i.test(description)) {
-    const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
-    const value = parseInt(stringValue);
-    return { value, units: 'ft' };
+    try {
+      const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
+      const value = parseInt(stringValue);
+      if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
+      return { value, units: 'ft' };
+    } catch (e) {
+      console.log(`Error parsing range from ${description}`);
+    }
   }
   if (/range/i.test(description)) {
-    const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
-    const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
-    if (value === NaN) throw new Error(`Unable to parse range from ${description}`);
-    return { value, long, units: 'ft' };
+    try {
+      const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
+      const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
+      if (isNaN(value)) {
+        throw new Error(`Unable to parse range from ${description}`);
+      }
+      return { value, long, units: 'ft' };
+    } catch (e) {
+      console.log(`Error parsing range from ${description}`);
+    }
   }
   if (/cone/i.test(description)) {
-    const value = parseSpellCone(description);
-    return { units: 'self', value };
+    try {
+      const value = parseSpellCone(description);
+      if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
+      return { units: 'self', value };
+    } catch (e) {
+      console.log(`Error parsing range from ${description}`);
+    }
   }
-  if (/within/.test(description)) {
+  if (/within/i.test(description)) {
     const rangeStr = description
       .split(/within/i)[1]
       .trim()
       .split('ft')[0]
       .trim();
     const value = parseInt(rangeStr);
-    if (value === NaN) throw new Error(`Unable to parse range from ${description}`);
+    if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
     return { value, units: 'ft' };
   }
   throw new Error(`Unable to parse range: ${description}`);
