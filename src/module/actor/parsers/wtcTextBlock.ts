@@ -74,10 +74,10 @@ export function parseHealthWTC(lines: string[]) {
   let healthLine = lines.find((line) => line.toUpperCase().includes('HIT POINTS'));
   if (!healthLine) throw new Error('Could not find health line');
   healthLine = pascal(healthLine);
-  let parsed = parseGenericFormula(healthLine, /Hit Points (.*)/);
+  let parsed = parseGenericFormula(healthLine.toLowerCase(), /hit points (.*)/);
   // above case is for pattern matching Hit Points 8 (1d6 + 2)
   // Match pattern Hit Points: Hit Points: 8 (1d6 + 2)
-  if (!parsed?.value) parsed = parseGenericFormula(healthLine, /Hit Points: (.*)/);
+  if (!parsed?.value) parsed = parseGenericFormula(healthLine.toLowerCase(), /hit points: (.*)/);
   const { min, max, str, value } = parsed;
   const health = {
     min,
@@ -214,6 +214,7 @@ export function parseAbilitiesWTC(inputList: string[]): Abilities {
   const valueLine = inputList[abilityIndex + 1];
   const { abilities, modifiers } = extractAbilityValues(valueLine);
   const finalAbilities = zipStats(abilityKeys, abilities, modifiers);
+  console.log(`Final abilities: ${JSON.stringify(finalAbilities)}`);
   if (!isAbilities(finalAbilities)) {
     throw new Error('Could not parse abilities from parseAbilitiesWTC');
   }
@@ -692,7 +693,7 @@ export function parseRatingWTC(lines: string[]): Rating {
     const [num, denom] = ratingString.split('/');
     cr = Number(num) / Number(denom);
   } else {
-    cr = Number(ratingString);
+    if (Number(ratingString)) cr = Number(ratingString);
   }
   // get the number in the parentheses
   const xp = Number(challengeLine.split('(')[1].split(')')[0].replace('xp', '').replace('XP', '').replace(',', ''));
