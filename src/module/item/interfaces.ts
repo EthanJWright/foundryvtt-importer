@@ -85,6 +85,7 @@ export interface FeatType {
   description: string;
   activation?: Activation;
   damage?: Damage;
+  uses?: Uses;
   range?: Range;
   ability?: ShortAbility;
   save?: Save;
@@ -102,6 +103,11 @@ export interface GenericType {
   range?: Range;
   ability?: ShortAbility;
   save?: Save;
+  uses?: Uses;
 }
+
+export const featTypeGuard = (item: ImportItem): item is FeatType => {
+  return item.type === 'feat';
+};
 
 export type ImportItem = WeaponType | SpellType | FeatType | GenericType;

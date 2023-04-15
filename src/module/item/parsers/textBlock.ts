@@ -282,7 +282,7 @@ function parseRecharge(name: string): Recharge {
   };
 }
 
-function parseUses(name: string, description: string): Uses {
+function parseUses(name: string, description: string): Uses | undefined {
   function parseDay(from: string): Uses {
     const perDay = parseInt(from.split('/')[0].split('(')[1]);
     return {
@@ -298,7 +298,7 @@ function parseUses(name: string, description: string): Uses {
   if (/\/day/i.test(description)) {
     return parseDay(description);
   }
-  throw new Error(`Unable to parse uses from ${name}`);
+  return undefined;
 }
 
 function parseTarget(description: string): Target {
@@ -394,11 +394,18 @@ export function parseFeat({ name, description, section }: ItemParserInput): Feat
   } catch (_) {
     // activation can be undefined
   }
+  let uses;
+  try {
+    uses = parseUses(name, description);
+  } catch (_) {
+    // uses can be undefined
+  }
   return {
     name,
     type: 'feat',
     description,
     activation,
+    uses,
     attackBonus: 0,
     formula: '',
   };
@@ -414,6 +421,7 @@ export function parsedToWeapon(name: string, inputDescription: string, inputAbil
       description: {
         value: description,
       },
+      uses: parseUses(name, description),
       activation,
       damage,
       actionType,
