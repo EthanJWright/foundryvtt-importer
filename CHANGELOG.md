@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.43](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.42...v0.2.43) (2023-04-15)
+
+
+### Bug Fixes
+
+* **item:** range parsing now cascades ([#94](https://github.com/EthanJWright/foundryvtt-importer/issues/94)) ([270bd7c](https://github.com/EthanJWright/foundryvtt-importer/commit/270bd7c59679b27a23cf3854d63ebbccb4a941c5))
+
 ### [0.2.42](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.41...v0.2.42) (2023-04-09)
 
 
