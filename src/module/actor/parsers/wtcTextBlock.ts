@@ -214,7 +214,6 @@ export function parseAbilitiesWTC(inputList: string[]): Abilities {
   const valueLine = inputList[abilityIndex + 1];
   const { abilities, modifiers } = extractAbilityValues(valueLine);
   const finalAbilities = zipStats(abilityKeys, abilities, modifiers);
-  console.log(`Final abilities: ${JSON.stringify(finalAbilities)}`);
   if (!isAbilities(finalAbilities)) {
     throw new Error('Could not parse abilities from parseAbilitiesWTC');
   }
