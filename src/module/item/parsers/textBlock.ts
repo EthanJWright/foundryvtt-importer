@@ -40,10 +40,10 @@ export function parseRange(description: string): Range {
     try {
       const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
       const value = parseInt(stringValue);
-      if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
+      if (isNaN(value)) throw new Error(`Unable to parse range matching reach:  ${description}`);
       return { value, units: 'ft' };
     } catch (e) {
-      console.log(`Error parsing range from ${description}`);
+      console.log(`Error [${e}] parsing range.`);
     }
   }
   if (/range/i.test(description)) {
@@ -51,33 +51,43 @@ export function parseRange(description: string): Range {
       const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
       const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
       if (isNaN(value)) {
-        throw new Error(`Unable to parse range from ${description}`);
+        const rangeRegex = /range (\d+) ft./;
+        const rangeMatch = description.match(rangeRegex);
+        if (rangeMatch) {
+          const rangeValue = parseInt(rangeMatch[1]);
+          if (isNaN(rangeValue)) throw new Error(`Unable to parse range matching range:  ${description}`);
+          return { value: rangeValue, units: 'ft' };
+        }
       }
       return { value, long, units: 'ft' };
     } catch (e) {
-      console.log(`Error parsing range from ${description}`);
+      console.log(`Error [${e}] parsing range.`);
     }
   }
   if (/cone/i.test(description)) {
     try {
       const value = parseSpellCone(description);
-      if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
+      if (isNaN(value)) throw new Error(`Unable to parse range matching cone for ${description}`);
       return { units: 'self', value };
     } catch (e) {
-      console.log(`Error parsing range from ${description}`);
+      console.log(`Error [${e}] parsing range.`);
     }
   }
   if (/within/i.test(description)) {
-    const rangeStr = description
-      .split(/within/i)[1]
-      .trim()
-      .split('ft')[0]
-      .trim();
-    const value = parseInt(rangeStr);
-    if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
-    return { value, units: 'ft' };
+    try {
+      const rangeStr = description
+        .split(/within/i)[1]
+        .trim()
+        .split('ft')[0]
+        .trim();
+      const value = parseInt(rangeStr);
+      if (isNaN(value)) throw new Error(`Unable to parse range matching within ${description}`);
+      return { value, units: 'ft' };
+    } catch (e) {
+      console.log(`Error [${e}] parsing range.`);
+    }
   }
-  throw new Error(`Unable to parse range: ${description}`);
+  throw new Error(`Unable to parse range, no matching patterns for: ${description}`);
 }
 
 export function parseDamageType(from: string): string {
@@ -189,10 +199,11 @@ export function isWeaponType(input: string): boolean {
 
 // the logic for parsing type is different if it is sourced from a monster
 export function parseTypeFromActorFeature(input: string): ItemType {
-  if (/beginning at/i.test(input)) return 'feat';
-  if (/spell attack/i.test(input)) return 'spell';
-  if (/starting at/i.test(input)) return 'feat';
   if (isWeaponType(input)) return 'weapon';
+  if (/weapon attack:/i.test(input)) return 'weapon';
+  if (/spell attack/i.test(input)) return 'spell';
+  if (/beginning at/i.test(input)) return 'feat';
+  if (/starting at/i.test(input)) return 'feat';
   return 'feat';
 }
 
@@ -239,6 +250,7 @@ export function parseWeapon({ name, description, ability, section }: ItemParserI
   if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
   const damage: Damage = { parts: buildDamageParts(description) };
   const actionType = parseActionType(description);
+
   if (actionType !== 'rwak' && actionType !== 'mwak') throw new Error(`${name} is not a weapon`);
 
   return {
@@ -327,7 +339,7 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
   try {
     damage = { parts: buildDamageParts(description) };
   } catch (_) {
-    // spell doesnt require damage
+    // spell doesn't require damage
   }
   let actionType: 'save' | undefined;
   try {
@@ -369,9 +381,10 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
     // target can be undefined
   }
 
+  const range = parseRange(description);
   return {
     name,
-    type: 'feat',
+    type: itemType,
     hasSpellData: true,
     ability,
     uses,
@@ -381,7 +394,7 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
     activation: parseActivation(description, section),
     damage,
     actionType,
-    range: parseRange(description),
+    range,
     attackBonus: 0,
     target,
   };

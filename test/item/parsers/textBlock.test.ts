@@ -1,4 +1,9 @@
-import { parseSpell, parseTypeFromActorFeature, parseWeapon } from '../../../src/module/item/parsers/textBlock';
+import {
+  parseRange,
+  parseSpell,
+  parseTypeFromActorFeature,
+  parseWeapon,
+} from '../../../src/module/item/parsers/textBlock';
 import { parseItem } from '../../../src/module/item/parsers/available';
 import { ItemParserInput } from '../../../src/module/item/typeGuardParserRunners';
 describe('parseWeapon', () => {
@@ -132,9 +137,16 @@ describe('parseSpell', () => {
       name: 'Toxic Touch',
       description,
       section: 'action',
+      ability: 'con',
     };
     const spell = parseSpell(toxicSpell);
     expect(spell).toEqual({
+      ability: 'con',
+      actionType: undefined,
+      recharge: undefined,
+      save: undefined,
+      target: undefined,
+      uses: undefined,
       activation: {
         cost: 1,
         type: 'action',
@@ -151,7 +163,7 @@ describe('parseSpell', () => {
         units: 'ft',
         value: 5,
       },
-      type: 'feat',
+      type: 'spell',
     });
   });
 });
@@ -221,5 +233,17 @@ describe('parseTypeFromActorFeature', () => {
     const itemText =
       "When the bugbear hits with a melee weapon attack, the attack deals one extra die of the weapon's damage to the target (included below).";
     expect(parseTypeFromActorFeature(itemText)).toEqual('feat');
+  });
+});
+
+describe('parseRange', () => {
+  it('should parse a ranged weapon attack range', () => {
+    const description =
+      'Ranged Weapon Attack: +7 to hit, range 30 ft., two targets. Hit: 10(1d10+5) bludgeoning damage and 6 (1d6+3) acid damage.';
+    const parsed = parseRange(description);
+    expect(parsed).toEqual({
+      units: 'ft',
+      value: 30,
+    });
   });
 });
