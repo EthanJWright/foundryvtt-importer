@@ -4,13 +4,11 @@ import {
   ItemType,
   Damage,
   ShortAbility,
-  WeaponType,
-  SpellType,
   Save,
   Uses,
   Target,
-  FeatType,
   Recharge,
+  UniversalItemType,
 } from '../interfaces';
 
 import { Range } from '../interfaces';
@@ -35,38 +33,31 @@ export function parseSpellSphere(description: string) {
   return parseMeasurement(description, 'radius');
 }
 
-export function parseRange(description: string): Range {
+export function parseRange(description: string): Range | undefined {
   if (/reach/i.test(description)) {
-    try {
-      const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
-      const value = parseInt(stringValue);
-      if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
-      return { value, units: 'ft' };
-    } catch (e) {
-      console.log(`Error parsing range from ${description}`);
-    }
+    const stringValue = description.split(/reach/)[1].trim().split(' ')[0];
+    const value = parseInt(stringValue);
+    if (!isNaN(value)) return { value, units: 'ft' };
   }
   if (/range/i.test(description)) {
-    try {
-      const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
-      const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
-      if (isNaN(value)) {
-        throw new Error(`Unable to parse range from ${description}`);
+    const rangeStr = description.split(/range/i)[1].trim().split(' ')[0];
+    const [value, long] = rangeStr.split('/').map((str) => parseInt(str));
+    if (isNaN(value)) {
+      const rangeRegex = /range (\d+) ft./;
+      const rangeMatch = description.match(rangeRegex);
+      if (rangeMatch) {
+        const rangeValue = parseInt(rangeMatch[1]);
+        if (!isNaN(rangeValue)) return { value: rangeValue, units: 'ft' };
       }
-      return { value, long, units: 'ft' };
-    } catch (e) {
-      console.log(`Error parsing range from ${description}`);
     }
+    if (!isNaN(value)) return { value, long, units: 'ft' };
   }
+
   if (/cone/i.test(description)) {
-    try {
-      const value = parseSpellCone(description);
-      if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
-      return { units: 'self', value };
-    } catch (e) {
-      console.log(`Error parsing range from ${description}`);
-    }
+    const value = parseSpellCone(description);
+    if (!isNaN(value)) return { value, units: 'self' };
   }
+
   if (/within/i.test(description)) {
     const rangeStr = description
       .split(/within/i)[1]
@@ -74,10 +65,10 @@ export function parseRange(description: string): Range {
       .split('ft')[0]
       .trim();
     const value = parseInt(rangeStr);
-    if (isNaN(value)) throw new Error(`Unable to parse range from ${description}`);
-    return { value, units: 'ft' };
+    if (!isNaN(value)) {
+      return { value, units: 'ft' };
+    }
   }
-  throw new Error(`Unable to parse range: ${description}`);
 }
 
 export function parseDamageType(from: string): string {
@@ -189,10 +180,11 @@ export function isWeaponType(input: string): boolean {
 
 // the logic for parsing type is different if it is sourced from a monster
 export function parseTypeFromActorFeature(input: string): ItemType {
-  if (/beginning at/i.test(input)) return 'feat';
-  if (/spell attack/i.test(input)) return 'spell';
-  if (/starting at/i.test(input)) return 'feat';
   if (isWeaponType(input)) return 'weapon';
+  if (/weapon attack:/i.test(input)) return 'weapon';
+  if (/spell attack/i.test(input)) return 'spell';
+  if (/beginning at/i.test(input)) return 'feat';
+  if (/starting at/i.test(input)) return 'feat';
   return 'feat';
 }
 
@@ -202,6 +194,14 @@ export function parseActionType(description: string): ActionType {
   if (/spell save/i.test(description)) return 'save';
   if (/saving throw/i.test(description)) return 'save';
   throw new Error(`Could not parse action type from ${description}`);
+}
+
+export function parsePossibleActionType(description: string): ActionType | undefined {
+  if (/Melee Weapon Attack/.test(description)) return 'mwak';
+  if (/Ranged Weapon Attack/.test(description)) return 'rwak';
+  if (/spell save/i.test(description)) return 'save';
+  if (/saving throw/i.test(description)) return 'save';
+  return;
 }
 
 function abilityToLongShort(ability: string) {
@@ -232,27 +232,6 @@ export function actionTypeExtraData(actionType: string | undefined, { descriptio
   }
 
   return building;
-}
-
-export function parseWeapon({ name, description, ability, section }: ItemParserInput): WeaponType {
-  const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
-  const damage: Damage = { parts: buildDamageParts(description) };
-  const actionType = parseActionType(description);
-  if (actionType !== 'rwak' && actionType !== 'mwak') throw new Error(`${name} is not a weapon`);
-
-  return {
-    name,
-    type: itemType,
-    description,
-    activation: parseActivation(description, section),
-    damage,
-    actionType,
-    range: parseRange(description),
-    ability: ability || 'str',
-    attackBonus: 0,
-    ...actionTypeExtraData(actionType, { name, description }),
-  };
 }
 
 /**
@@ -320,25 +299,20 @@ function parseTarget(description: string): Target {
   throw new Error(`Unable to parse target from ${description}`);
 }
 
-export function parseSpell({ name, description, ability, section }: ItemParserInput): SpellType {
+export function parseToItem({ name, description, ability, section }: ItemParserInput): UniversalItemType {
   const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'spell' && itemType !== 'feat') throw new Error(`${name} is not a spell`);
   let damage: undefined | Damage = undefined;
   try {
     damage = { parts: buildDamageParts(description) };
   } catch (_) {
-    // spell doesnt require damage
+    // spell doesn't require damage
   }
-  let actionType: 'save' | undefined;
-  try {
-    if (parseActionType(description) === 'save') actionType = 'save';
-  } catch (_) {
-    // action type can be undefined
-  }
+  const actionType = parsePossibleActionType(description);
+
   let save: Save | undefined = undefined;
   if (actionType === 'save') {
-    const dc = description.split('DC')[1].trim().split(' ')[0].trim();
-    const uncleanAbility = description.split(dc)[1].trim().split(' ')[0].trim();
+    const dc = description?.split('DC')[1]?.trim()?.split(' ')[0]?.trim() ?? '';
+    const uncleanAbility = description?.split(dc)[1]?.trim()?.split(' ')[0]?.trim() ?? '';
     const [short] = abilityToLongShort(uncleanAbility);
     ability = short as ShortAbility;
     save = {
@@ -369,10 +343,15 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
     // target can be undefined
   }
 
+  let range;
+  try {
+    range = parseRange(description);
+  } catch (_) {
+    // range can be undefined
+  }
   return {
     name,
-    type: 'feat',
-    hasSpellData: true,
+    type: itemType,
     ability,
     uses,
     save,
@@ -381,31 +360,14 @@ export function parseSpell({ name, description, ability, section }: ItemParserIn
     activation: parseActivation(description, section),
     damage,
     actionType,
-    range: parseRange(description),
+    range,
     attackBonus: 0,
     target,
   };
 }
 
-export function parseFeat({ name, description, section }: ItemParserInput): FeatType {
-  let activation;
-  try {
-    activation = parseActivation(description, section);
-  } catch (_) {
-    // activation can be undefined
-  }
-  return {
-    name,
-    type: 'feat',
-    description,
-    activation,
-    attackBonus: 0,
-    formula: '',
-  };
-}
-
 export function parsedToWeapon(name: string, inputDescription: string, inputAbility?: string): FifthItem {
-  const parsedWeapon = parseWeapon({ name, description: inputDescription, ability: inputAbility as ShortAbility });
+  const parsedWeapon = parseToItem({ name, description: inputDescription, ability: inputAbility as ShortAbility });
   const { type, description, activation, damage, actionType, range, ability, attackBonus } = parsedWeapon;
   return {
     name,
