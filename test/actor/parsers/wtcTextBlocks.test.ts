@@ -32,6 +32,28 @@ import {
 import { textToActor } from '../../../src/module/actor/parsers';
 import { parseGenericFormula } from '../../../src/module/actor/parsers/generic';
 import { parseItem } from '../../../src/module/item/parsers';
+import { BIG_BARA } from '../__fixtures__/bigBara';
+import { ADULT_GREEN_DRAGON } from '../__fixtures__/greenDragon';
+import { HALFLING_MAGE_CHEF } from '../__fixtures__/halflingMageChef';
+import { GIGGLES_THE_CLOWN } from '../__fixtures__/gigglesTheClown';
+import { SWASHBUCKLER } from '../__fixtures__/swashbuckler';
+import { GOBLIN_SNIPER } from '../__fixtures__/goblinSniper';
+import { QUEEN_BARGNOT } from '../__fixtures__/queenBargnot';
+import { GOBLIN } from '../__fixtures__/goblin';
+import { SPYTHRONAR_SAC } from '../__fixtures__/spythronarSac';
+import { NIMBLEWRIGHT } from '../__fixtures__/niblewright';
+import { ZATHURA_SWASHBUCKLER } from '../__fixtures__/zathuraSwashbuckler';
+import { KIP_THE_WARLORD } from '../__fixtures__/kipTheWarlord';
+import { MULTI_LINE_SWASHBUCKLER } from '../__fixtures__/multiLineSwashbuckler';
+import { GOBLIN_BOSS } from '../__fixtures__/goblinBoss';
+import { GOBLIN_CUTPURSE } from '../__fixtures__/goblinCutpurse';
+import { GOBLIN_SPINECLEAVER } from '../__fixtures__/goblinSpinecleaver';
+import { HUMAN_GUARD } from '../__fixtures__/humanGuard';
+import { ONCE_ELIAS_CRUELTY_OF_THE_ANCIENT } from '../__fixtures__/onceEliasCrueltyOfTheAncient';
+import { CHEVRA_GLIST } from '../__fixtures__/chevraGlist';
+import { THERAL } from '../__fixtures__/theral';
+import { GOBLIN_POTION_VENDOR } from '../__fixtures__/goblinPotionVendor';
+import { HELMED_HORROR } from '../__fixtures__/helmedHorror';
 
 describe('nameParse', () => {
   it('should parse a name', () => {
@@ -116,8 +138,7 @@ describe('parseLanguages', () => {
 
 describe('findStatBounds', () => {
   it('should find bounds of statblock', () => {
-    const actorText =
-      'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
+    const actorText = BIG_BARA;
     const lines = actorText.split('\n');
     const { firstLine, lastLine } = findAbilityBounds(lines);
     expect(lines[firstLine]).toBe('STR');
@@ -411,8 +432,7 @@ describe('parseVerticalNameValModFormatWTC', () => {
     });
   });
   it('should parse stats from a green dragon dnd beyond block', () => {
-    const actorText =
-      "Adult Green Dragon\nHuge dragon , lawful evil\nArmor Class 19 (natural armor)\nHit Points 207 (18d12 + 90)\nSpeed 40 ft., fly 80 ft., swim 40 ft.\nSTR\n23\n(+6)\nDEX\n12\n(+1)\nCON\n21\n(+5)\nINT\n18\n(+4)\nWIS\n15\n(+2)\nCHA\n17\n(+3)\nSaving Throws DEX +6, CON +10, WIS +7, CHA +8\nSkills Stealth +6, Insight +7, Perception +12, Deception +8, Persuasion +8\nDamage Immunities Poison\nCondition Immunities Poisoned\nSenses Blindsight 60 ft., Darkvision 120 ft.\nLanguages Common, Draconic\nChallenge 15 (13000 XP)\nProficiency Bonus +5\nAmphibious. The dragon can breathe air and water.\nLegendary Resistance (3/Day). If the dragon fails a saving throw, it can choose to succeed instead.\nActions\nMultiattack. The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws.\nBite. Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 7 (2d6) poison damage.\nClaw. Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage.\nTail. Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage.\nFrightful Presence. Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours.\nPoison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.\nLegendary Actions\nThe dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.\nDetect. The dragon makes a Wisdom (Perception) check.\nTail Attack. The dragon makes a tail attack.\nWing Attack (Costs 2 Actions). The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.";
+    const actorText = ADULT_GREEN_DRAGON;
     const abilities = parseVerticalNameValModFormatWTC(actorText.split('\n'));
     expect(abilities.cha.value).toBe(17);
   });
@@ -420,8 +440,7 @@ describe('parseVerticalNameValModFormatWTC', () => {
 
 describe('parseGPTBlockAbilities', () => {
   it('should parse a GPT generated stat block', () => {
-    const actorText =
-      "Halfling Mage Chef\n\nSmall humanoid (halfling), neutral\n\nArmor Class 11 (14 with mage armor)\nHit Points 9 (2d6 + 2)\nSpeed 25 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 14 (+2) WIS 10 (+0) CHA 14 (+2)\n\nSkills: Cooking +4, Deception +4, Persuasion +4, Stealth +3\n\nSenses: passive Perception 10\n\nLanguages: Common, Halfling\n\nChallenge: 1/8 (25 XP)\n\nMagic Resistance. The halfling has advantage on saving throws against spells and other magical effects.\n\nMage Armor. The halfling can cast mage armor on himself at will, without expending a spell slot or material components.\n\nActions\n\nDagger. Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.\n\nCooking. The halfling can use his action to prepare a delicious meal that provides a variety of benefits to those who eat it. The meal can restore hit points, cure certain ailments, or grant temporary bonuses to ability scores, depending on the ingredients and the halfling's level of expertise.\n\n";
+    const actorText = HALFLING_MAGE_CHEF;
     const abilities = parseGPTBlockAbilities(actorText.split('\n'));
     expect(abilities).toEqual(
       expect.objectContaining({
@@ -435,8 +454,7 @@ describe('parseGPTBlockAbilities', () => {
   });
 
   it('should parse a GPT block for Giggles the Jerbeen Clown', () => {
-    const actorText =
-      'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
+    const actorText = GIGGLES_THE_CLOWN;
     const abilities = parseGPTBlockAbilities(actorText.split('\n'));
     expect(abilities).toEqual(
       expect.objectContaining({
@@ -610,8 +628,7 @@ describe('parseFeatures', () => {
   });
 
   it('should parse two features', () => {
-    const actorText =
-      'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = SWASHBUCKLER;
     const featureSplit = actorText.split('\n');
     const features = parseFeaturesWTC(featureSplit);
     expect(features).toEqual([
@@ -646,8 +663,7 @@ describe('parseFeatures', () => {
   });
 
   it('should parse goblin sniper features', () => {
-    const actorText =
-      'Goblin Sniper\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (leather armor)\nHit Points 13 (3d6 + 3)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 16 (+3) 12 (+1) 10 (+0) 12 (+1) 8 (−1)\nSkills Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The sniper doesn’t provoke opportunity attacks when they\nmove out of an enemy’s reach.\nSniper. If the sniper misses with a ranged weapon attack while they\nare hidden, they remain hidden. Additionally, if the sniper hits a\ntarget with a ranged weapon attack while they have advantage on\nthe attack roll, the attack deals an extra 1d6 damage.\nACTIONS\nDagger. Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or\nranged 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nSneak. The sniper takes the Hide action.';
+    const actorText = GOBLIN_SNIPER;
     const features = parseFeaturesWTC(actorText.split('\n'));
     const sniper = features.find((f) => f.name === 'Sniper');
     expect(sniper).toBeDefined();
@@ -657,8 +673,7 @@ describe('parseFeatures', () => {
   });
 
   it('should clean an mcdm villain actions feature', () => {
-    const actorText =
-      'Queen Bargnot\nSmall Humanoid (Goblin), Neutral Evil\nArmor Class 17 (studded leather armor, shield)\nHit Points 54 (12d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 3 Leader\n700 XP\nSTR DEX CON INT WIS CHA\n10 (+0) 17 (+3) 13 (+1) 14 (+2) 12 (+1) 13 (+1)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +3, Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. Queen Bargnot doesn’t provoke opportunity attacks when\nshe moves out of an enemy’s reach.\nTake My Pain (3/Day). When Queen Bargnot fails a saving throw\nagainst a spell or effect, she can choose a willing creature within\n30 feet of her. Queen Bargnot succeeds on the saving throw, the\ncreature is targeted with the same spell or effect as if they were in\nher space, and they automatically fail their saving throw.\nACTIONS\nMultiattack. Queen Bargnot makes three attacks with her\nShortsword or two attacks with her Shortbow.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nGet In Here. Queen Bargnot shouts for aid and 1d4 goblin\nminions appear in unoccupied spaces within 60 feet of her.\nREACTIONS\nNo Dying! When a willing creature Queen Bargnot can see\nwithin 30 feet of her is reduced to 0 hit points, she can choose to\nhave them reduced to 1 hit point instead.\nVILLAIN ACTIONS\nQueen Bargnot has three villain actions. She can take each\naction once during an encounter after an enemy creature’s turn.\nShe can take these actions in any order but can only use one\nper round.\nAction 1: What Are You Waiting For?! Each creature of\nQueen Bargnot’s choice within 60 feet of her that can hear\nher can move up to their speed or make a melee weapon\nattack (no action required).\nAction 2: Focus Fire. Queen Bargnot chooses an enemy she can\nsee with 60 feet of her. Queen Bargnot and each creature of\nher choice within 60 feet of her that can hear her can move\nup to their speed toward the target (no action required).\nAction 3: Kill! Each creature of Queen Bargnot’s choice within\n60 feet of her that can hear her can make a weapon attack\nwith advantage (no action required). If the attack hits, it deals\nan extra 1d6 damage.';
+    const actorText = QUEEN_BARGNOT;
     const features = parseFeaturesWTC(actorText.split('\n'));
     const villainActions = features.find((f) => f.name === 'Villain Actions');
     expect(villainActions).toBeDefined();
@@ -689,8 +704,7 @@ describe('parseFeatures', () => {
 
 describe('extractAbilities', () => {
   it('should extract abilities from a valid string', () => {
-    const actorText =
-      'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = SWASHBUCKLER;
     const abilities = parseAbilitiesWTC(actorText.split('\n'));
     expect(abilities).toEqual({
       str: {
@@ -727,15 +741,13 @@ describe('extractAbilities', () => {
   });
 
   it('Should parse a Goblin', () => {
-    const actorText =
-      'Goblin\nMedium humanoid (goblin), chaotic evil\nArmor Class 13 (natural armor)\nHit Points 52 (8d8 + 16)\nSpeed 40 ft.\nSTR DEX CON INT WIS CHA\n16 (+3) 12 (+1) 15 (+2) 6 (–2) 13 (+1) 7 (–2)\nSkills Athletics +5\nSenses darkvision 60 ft.';
+    const actorText = GOBLIN;
     const abilities = parseAbilitiesWTC(actorText.split('\n'));
     expect(abilities.str.value).toBe(16);
   });
 
   it('should get key array and value array', () => {
-    const actorText =
-      'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
+    const actorText = BIG_BARA;
     const lines = actorText.split('\n');
     const { keys, values } = getVerticalKeyValueAbilities(lines);
     expect(keys).toEqual(['str', 'dex', 'con', 'int', 'wis', 'cha']);
@@ -743,16 +755,14 @@ describe('extractAbilities', () => {
   });
 
   it('should parse big bara abilities', () => {
-    const actorText =
-      'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
+    const actorText = BIG_BARA;
     const abilities = parseVerticalKeyValueAbilitiesWTC(actorText.split('\n'));
     expect(abilities.str.value).toBe(14);
     expect(abilities.str.mod).toBe(2);
   });
 
   it('should parse abilities of a spythronar sac', () => {
-    const actorText =
-      'Spythronar Sac\nTiny aberration, unaligned\nArmor Class 5\nHit Points 1 (1d4 – 1)\nSpeed 0 ft.\nSTR DEX CON INT WIS CHA\n1 (–5) 1 (–5) 8 (–1) 1 (–5) 3 (–4) 1 (–5)\nCondition Immunities blinded, charmed, deafened,\nexhaustion, frightened, paralyzed, petrified, poisoned,\nprone, restrained, unconscious\nSenses tremorsense 10 ft. (blind beyond this radius),\npassive Perception 6\nLanguages —\nChallenge 0 (10 XP) Proficiency Bonus +2\nFalse Appearance. The spythronar sac appears to be\na tangled ball of string, twigs, and dirt. Someone who\ncan see the sac can identify it with a successful DC 15\nIntelligence (Arcana or Nature) check.\nFragile. A creature who enters the spythronar sac’s\nspace must succeed on a DC 10 Dexterity saving throw,\nor the sac is destroyed.\nLightning Release. When the spythronar sac is\ndestroyed, it releases lightning in a 10-foot radius. A\ncreature who destroyed the sac by entering its space\nreceives no saving throw. Other creatures in that area\nmust succeed on a DC 10 Dexterity saving throw or\ntake 4 (1d8) lightning damage. Each spythronar swarm\nand web in this area instead gains advantage on its\nnext attack roll.\nShocking Birth. When a spythronar sac takes lightning\ndamage from a source other than another spythronar,\nit hatches, transforming into a spythronar swarm with\nhalf the normal hit points. This swarm rolls initiative and\nenters the combat.';
+    const actorText = SPYTHRONAR_SAC;
     const abilities = parseAbilitiesWTC(actorText.split('\n'));
     expect(abilities).toStrictEqual({
       str: { value: 1, mod: -5, savingThrow: 0 },
@@ -767,8 +777,7 @@ describe('extractAbilities', () => {
 
 describe('Parse Skills', () => {
   it('should parse a valid skill string', () => {
-    const actorText =
-      'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = SWASHBUCKLER;
     const skills = parseSkillsWTC(actorText.split('\n'));
     expect(skills).toEqual([
       { name: 'acrobatics', bonus: 8 },
@@ -816,8 +825,7 @@ describe('getFeatureNames', () => {
 
 describe('findFirstActionIndex', () => {
   it('should return the first action index', () => {
-    const actorText =
-      'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = SWASHBUCKLER;
     const featureSplit = actorText.split('\n\n');
     const index = findFirstSectionIndex(featureSplit, 'actions');
     expect(featureSplit[index]).toContain('Multiattack');
@@ -835,8 +843,7 @@ describe('parseStandardCSV', () => {
 
 describe('getSenses', () => {
   it('should parse darkvision from a bara', () => {
-    const actorText =
-      'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
+    const actorText = BIG_BARA;
     const lines = actorText.split('\n');
     const senses = parseSensesWTC(lines);
     expect(senses.darkvision).toEqual(60);
@@ -845,8 +852,7 @@ describe('getSenses', () => {
 
 describe('Parse Text', () => {
   it('should parse the text into an actor', () => {
-    const actorText =
-      'Swashbuckler\nMedium humanoid (any race), any non-lawful alignment\n\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft.\n\n   STR        DEX         CON        INT        WIS         CHA\n  12 (+1)    18 (+4)     12 (+1)    14 (+2)    11 (+0)     15 (+2)\n\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\n\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\n\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmod.\n\nActions\n\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = SWASHBUCKLER;
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Swashbuckler');
     expect(actor.biography).toBe('Medium humanoid (any race), any non-lawful alignment');
@@ -864,8 +870,7 @@ describe('Parse Text', () => {
   });
 
   it('should parse a nimblewright into an actor', () => {
-    const actorText =
-      'Nimblewright                                                   \n     Medium construct, unaligned                                      \n\n     Armor Class 18 (natural armor)                                   \n     Hit Points 45 (6d8 + 18)                                         \n     Speed 60 ft.                                                     \n\n        STR        DEX        CON          INT       WIS        CHA   \n       12 (+1)    18 (+4)    17 (+3)      8 (-1)    10 (+0)     6 (-2)\n\n     Saving Throws Dex +6                                             \n     Skills Acrobatics +8, Perception +2                              \n     Damage Resistances bludgeoning, piercing and slashing from       \n     nonmagical effects\n     Condition Immunities exhaustion, frightened, petrified, poisoned \n     Senses darkvision 60 ft., passive Perception 12                  \n     Languages understands one language known to its creator but      \n     can’t speak\n     Challenge 4 (1,100 XP)                                           \n                                                                      \n     Magic Resistance. The nimblewright has advantage on saving       \n     throws against spells and other magical effects.\n                                                                      \n     Magic Weapons. The nimblewright’s weapon attacks are             \n     magical.\n                                                                      \n     Repairable. As long as it has at least 1 hit point remaining, the\n     nimblewright regains 1 hit point when a mending spell is cast    \n     on it.\n                                                                      \n     Sure Footed. The nimblewright has advantage on Strength and      \n     Dexterity saving throws made against effects that would knock\n     it prone.                                                        \n                                                                      \n     Actions                                                          \n                                                                      \n     Multiattack. The nimblewright makes three attacks: two with      \n     its rapier and one with its dagger..                             \n     Rapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. \n     Hit: 8 (1d8 + 4) piercing damage.                                \n                                                                      \n     Dagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5ft. or\n                                                                      \n     range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing damage.\n                                                                      \n     Reactions\n     Parry. The nimblewright adds 2 to its AC against one melee\n     attack that would hit it. To do so, the nimblewright must see\n     the attacker and be wielding a melee weapon.';
+    const actorText = NIMBLEWRIGHT;
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Nimblewright');
     expect(actor.type).toBe('construct');
@@ -884,8 +889,7 @@ describe('Parse Text', () => {
   });
 
   it('should parse swashbuckler when copied with zathura', () => {
-    const actorText =
-      'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = ZATHURA_SWASHBUCKLER;
 
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Swashbuckler');
@@ -909,8 +913,7 @@ describe('Parse Text', () => {
   });
 
   it('should parse big bara', () => {
-    const actorText =
-      'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
+    const actorText = BIG_BARA;
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Big Bara');
     expect(actor.alignment).toBe('Neutral Evil');
@@ -936,8 +939,7 @@ describe('Parse Text', () => {
 
   it('should parse sphythronar sac', () => {
     // test for issue https://github.com/EthanJWright/foundryvtt-importer/issues/25
-    const actorText =
-      'Spythronar Sac\nTiny aberration, unaligned\nArmor Class 5\nHit Points 1 (1d4 – 1)\nSpeed 0 ft.\nSTR DEX CON INT WIS CHA\n1 (–5) 1 (–5) 8 (–1) 1 (–5) 3 (–4) 1 (–5)\nCondition Immunities blinded, charmed, deafened,\nexhaustion, frightened, paralyzed, petrified, poisoned,\nprone, restrained, unconscious\nSenses tremorsense 10 ft. (blind beyond this radius),\npassive Perception 6\nLanguages —\nChallenge 0 (10 XP) Proficiency Bonus +2\nFalse Appearance. The spythronar sac appears to be\na tangled ball of string, twigs, and dirt. Someone who\ncan see the sac can identify it with a successful DC 15\nIntelligence (Arcana or Nature) check.\nFragile. A creature who enters the spythronar sac’s\nspace must succeed on a DC 10 Dexterity saving throw,\nor the sac is destroyed.\nLightning Release. When the spythronar sac is\ndestroyed, it releases lightning in a 10-foot radius. A\ncreature who destroyed the sac by entering its space\nreceives no saving throw. Other creatures in that area\nmust succeed on a DC 10 Dexterity saving throw or\ntake 4 (1d8) lightning damage. Each spythronar swarm\nand web in this area instead gains advantage on its\nnext attack roll.\nShocking Birth. When a spythronar sac takes lightning\ndamage from a source other than another spythronar,\nit hatches, transforming into a spythronar swarm with\nhalf the normal hit points. This swarm rolls initiative and\nenters the combat.';
+    const actorText = SPYTHRONAR_SAC;
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Spythronar Sac');
     expect(actor.senses.tremorsense).toEqual(10);
@@ -965,8 +967,7 @@ describe('Parse Text', () => {
     ]);
   });
   it('should parse a kip warlord', () => {
-    const text =
-      'Kip, the "Warlord"\nMedium Humanoid (kobold)\nArmor Class 18 (breastplate, haste potion)\nHit Points 49 (9d8+9)\nSpeed 60 feet while hasted; 30 feet otherwise\nSTR DEX CON INT WIS CHA\n7(-2) 15(+2) 16(+3) 8(-1) 7(-2) 12(+1)\nSenses darkvision 60 ft., passive Perception 8\nLanguages Draconic\nChallenge 1 (200 XP)\nHasted. The "warlord" has advantage on Dexterity saving\nthrows and his speed is doubled. His AC is increased by\n2.\nEnlarged. The "warlord\'s" size is increased to medium\nand his attacks deal an extra 1d4 damage.\nBorrowed Power. The warlord has consumed a potion of\ngrowth and a potion of haste. At the end of each of his\nturns, roll a d6. A result of 1 indicates that the effect of\none of the potions has expired.\nPack Tactics. The kobold has advantage on an attack roll\nagainst a creature if at least one of the kobold\'s allies is\nwithin 5 feet of the creature and the ally isn\'t\nincapacitated.\nSunlight Sensitivity. While in sunlight, the kobold has\ndisadvantage on attack rolls, as well as on Wisdom\n(Perception) checks that rely on sight.\nActions\nMultiattack. The "warlord" makes two scimitar of speed\nattacks.\nScimitar of Speed. Melee Weapon Attack: +6 to hit, reach\n5 ft., one target. Hit: 8 (1d6+4) slashing damage, plus 2\n(1d4) slashing damage while enlarged.';
+    const text = KIP_THE_WARLORD;
     const actor = textToActor(text);
     expect(actor.name).toBe('Kip, The "Warlord"');
     expect(actor.abilities.str).toStrictEqual({ value: 7, mod: -2, savingThrow: 0 });
@@ -980,8 +981,7 @@ describe('Parse Text', () => {
     expect(actor.languages).toEqual(['draconic']);
   });
   it('should parse a green dragon', () => {
-    const actorText =
-      "Adult Green Dragon\nHuge dragon , lawful evil\nArmor Class 19 (natural armor)\nHit Points 207 (18d12 + 90)\nSpeed 40 ft., fly 80 ft., swim 40 ft.\nSTR\n23\n(+6)\nDEX\n12\n(+1)\nCON\n21\n(+5)\nINT\n18\n(+4)\nWIS\n15\n(+2)\nCHA\n17\n(+3)\nSaving Throws DEX +6, CON +10, WIS +7, CHA +8\nSkills Stealth +6, Insight +7, Perception +12, Deception +8, Persuasion +8\nDamage Immunities Poison\nCondition Immunities Poisoned\nSenses Blindsight 60 ft., Darkvision 120 ft.\nLanguages Common, Draconic\nChallenge 15 (13000 XP)\nProficiency Bonus +5\nAmphibious. The dragon can breathe air and water.\nLegendary Resistance (3/Day). If the dragon fails a saving throw, it can choose to succeed instead.\nActions\nMultiattack. The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws.\nBite. Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 7 (2d6) poison damage.\nClaw. Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage.\nTail. Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage.\nFrightful Presence. Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours.\nPoison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.\nLegendary Actions\nThe dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.\nDetect. The dragon makes a Wisdom (Perception) check.\nTail Attack. The dragon makes a tail attack.\nWing Attack (Costs 2 Actions). The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.";
+    const actorText = ADULT_GREEN_DRAGON;
     const actor = textToActor(actorText);
     expect(actor.name).toBe('Adult Green Dragon');
     expect(actor.size).toBe('Huge');
@@ -990,8 +990,7 @@ describe('Parse Text', () => {
 
 describe('parseMultiLineStates', () => {
   it('should parse abilities originating from a multi line file', () => {
-    const actorText =
-      'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nMedium humanoid (any race), any alignment\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = MULTI_LINE_SWASHBUCKLER;
     const lines: string[] = actorText.split('\n');
     const abilities = parseMultiLineAbilitiesWTC(lines);
     expect(abilities).toEqual({
@@ -1031,22 +1030,19 @@ describe('parseMultiLineStates', () => {
 
 describe('getAllFeatures', () => {
   it('should get a swashbucklers features', () => {
-    const actorText =
-      'Swashbuckler\nArmor Class 17 (leather armor)\nHit Points 66 (12d8 + 12)\nSpeed 30 ft. Armor Class 12 (15 with mage armor)\nHit Points 78 (12d8 + 24)\nSpeed 30 ft.\nMedium humanoid (any race), any non-lawful alignment\nSTR\n12 (+1)\nDEX\n18 (+4)\nCON\n12 (+1)\nINT\n14 (+2)\nWIS\n11 (+0)\nCHA\n15 (+2)\nSkills Acrobatics +8, Athletics +5, Persuasion +6\nSenses passive Perception 10\nLanguages any one language (usually Common)\nChallenge 3 (700 XP)\nLightfooted. The swashbuckler can take the Dash or Disengage\naction as a bonus action on each of its turns.\nSuave Defense. While the swashbuckler is wearing light or no\narmor and wielding no shield, its AC includes its Charisma\nmodifier.\nActions\nMultiattack. The swashbuckler makes three attacks: one with\na dagger and two with its rapier.\nDagger. Melee or Ranged Weapon Attack: +6 to hit, reach 5\nft. or range 20/60 ft., one target. Hit: 6 (1d4 + 4) piercing\ndamage.\nRapier. Melee Weapon Attack: +6 to hit, reach 5 ft., one target.\nHit: 8 (1d8 + 4) piercing damage.';
+    const actorText = SWASHBUCKLER;
     const features = parseFeaturesWTC(actorText.split('\n'));
     expect(features.length).toEqual(5);
   });
 
   it('should get all features for an adventure league monster', () => {
-    const actorText =
-      'Big Bara\nMedium humanoid (warforged), neutral evil\nArmor Class 18 (natural armor, Imposing Majesty)\nHit Points 117 (18d8 + 36)\nSpeed 30 ft.\nSTR\n DEX\n CON\n INT\n WIS\n CHA\n14 (+2)\n 17 (+3)\n 15 (+2)\n 13 (+1)\n 16 (+3)\n 18 (+4)\nSaving Throws Con +6, Wis +7\nSkills Perception +7, Survival +7\nDamage Immunities poison\nCondition Immunities charmed, frightened, poisoned\nSenses darkvision 60 ft., passive Perception 17\nLanguages Common\nChallenge 9 (5,000 XP)\nImposing Majesty. Big Bara adds her Charisma bonus to her AC\n(included above).\nWarforged Resilience. Big Bara is immune to disease and magic\ncan’t put her to sleep.\nActions\nMultiattack. Big Bara makes two attacks, either with her\nshortsword or armbow.\nShortsword. Melee Weapon Attack: +7 to hit, reach 5 ft., one\ntarget. Hit: 6 (1d6 + 3) piercing damage plus 13 (3d8) poi-\nson damage.\nArmbow. Ranged Weapon Attack: +7 to hit, range 30/120 ft.,\none target. Hit: 10 (2d6 +3) piercing damage plus 13 (3d8) poi-\nson damage.\nPoisonous Cloud (2/Day). Poison gas fills a 20-foot-radius\nsphere centered on a point Big Bara can see within 50 feet of\nher. The gas spreads around corners and remains until the start\nof Big Bara’s next turn. Each creature that starts its turn in the\ngas must succeed on a DC 16 Constitution saving throw or be\npoisoned for 1 minute. A creature can repeat the saving throw\nat the end of each of its turns, ending the effect on itself on\na success.';
+    const actorText = BIG_BARA;
     const features = parseFeaturesWTC(actorText.split('\n'));
     expect(features).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'Poisonous Cloud (2/Day)' })]));
   });
 
   it('should get all features for a green dragon', () => {
-    const actorText =
-      "Adult Green Dragon\nHuge dragon , lawful evil\nArmor Class 19 (natural armor)\nHit Points 207 (18d12 + 90)\nSpeed 40 ft., fly 80 ft., swim 40 ft.\nSTR\n23\n(+6)\nDEX\n12\n(+1)\nCON\n21\n(+5)\nINT\n18\n(+4)\nWIS\n15\n(+2)\nCHA\n17\n(+3)\nSaving Throws DEX +6, CON +10, WIS +7, CHA +8\nSkills Stealth +6, Insight +7, Perception +12, Deception +8, Persuasion +8\nDamage Immunities Poison\nCondition Immunities Poisoned\nSenses Blindsight 60 ft., Darkvision 120 ft.\nLanguages Common, Draconic\nChallenge 15 (13000 XP)\nProficiency Bonus +5\nAmphibious. The dragon can breathe air and water.\nLegendary Resistance (3/Day). If the dragon fails a saving throw, it can choose to succeed instead.\nActions\nMultiattack. The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws.\nBite. Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 7 (2d6) poison damage.\nClaw. Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage.\nTail. Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage.\nFrightful Presence. Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dragon's Frightful Presence for the next 24 hours.\nPoison Breath (Recharge 5–6). The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.\nLegendary Actions\nThe dragon can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time and only at the end of another creature's turn. The dragon regains spent legendary actions at the start of its turn.\nDetect. The dragon makes a Wisdom (Perception) check.\nTail Attack. The dragon makes a tail attack.\nWing Attack (Costs 2 Actions). The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.";
+    const actorText = ADULT_GREEN_DRAGON;
     const features = parseFeaturesWTC(actorText.split('\n'));
     expect(features).toEqual(
       expect.arrayContaining([
@@ -1069,8 +1065,7 @@ describe('getAllFeatures', () => {
   });
 
   it('should get proper features for a goblin boss', () => {
-    const text =
-      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const text = GOBLIN_BOSS;
     const features = parseFeaturesWTC(text.split('\n'));
     expect(features).toEqual(
       expect.arrayContaining([expect.objectContaining({ name: 'Multiattack', section: 'action' })]),
@@ -1078,8 +1073,7 @@ describe('getAllFeatures', () => {
   });
 
   it('should parse a goblin cutpurse', () => {
-    const text =
-      'Goblin Cursespitter\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 15 (leather armor, shield)\nHit Points 27 (5d6 + 10)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 15 (+2)\nSaves Wis +2\nSkills Stealth +4\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The cursespitter doesn’t provoke opportunity attacks when\nthey move out of an enemy’s reach.\nACTIONS\nToxic Touch. Melee or Ranged Spell Attack: +4 to hit, reach 5 ft.\nor range 30 ft., one target. Hit: 7 (2d6) poison damage, and the\ntarget must succeed on a DC 12 Constitution saving throw or be\npoisoned for 1 minute (save ends at end of turn).\nBrittle Bone Hex. The cursespitter chooses one creature they\ncan see within 60 feet of them. The target’s bones are wracked\nwith pain until the end of their next turn. The first time the target\nwillingly moves or uses an action, bonus action, or reaction before\nthen, they must succeed on a DC 12 Constitution saving throw or\ntake 9 (2d8) necrotic damage.\nTo Me! The cursespitter chooses up to two willing creatures they\ncan see within 30 feet of them. Each creature is teleported to an\nunoccupied space within 5 feet of the cursespitter.\nDizzying Hex (2/Day). The cursespitter chooses one creature they\ncan see within 60 feet of them. The target must make a DC 12 Wis-\ndom saving throw. On a failed save, the target falls prone and can’t\nstand back up for 1 minute (save ends at end of turn).\nREACTIONS\nCowardly Commander. When a creature the cursespitter\ncan see hits them with an attack, the cursespitter chooses a will-\ning ally within 5 feet of them. The attack hits the ally instead';
+    const text = GOBLIN_CUTPURSE;
     const lines = text.split('\n');
     const features = parseFeaturesWTC(lines);
     const commander = features.find((f) => f.name === 'Cowardly Commander');
@@ -1102,8 +1096,7 @@ describe('getChallenge', () => {
 
 describe('MCDM monsters', () => {
   it('should parse an mcdm monster', () => {
-    const actorText =
-      'Goblin Spinecleaver\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (hide armor)\nHit Points 33 (6d6 + 12)\nSpeed 30 ft., climb 20 ft.\nCR 1 Brute\n200 XP\nSTR DEX CON INT WIS CHA\n16 (+3) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 8 (−1)\nSaves Con +4\nSkills Athletics +5\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The spinecleaver doesn’t provoke opportunity attacks\nwhen they move out of an enemy��������s reach.\nStrong Grip. The spinecleaver’s Small size doesn’t\nimpose disadvantage on attack rolls with heavy weapons.\nACTIONS\nGreataxe. Melee Weapon Attack: +5 to hit, reach 5 ft., one target.\nHit: 9 (1d12 + 3) slashing damage.\nHandaxe. Melee or Ranged Weapon Attack: +5 to hit, range\n20/60 ft., one target. Hit: 6 (1d6 + 3) slashing damage.\nREACTIONS\nTricksy Warrior. When a creature within 5 feet of the spinecleaver\nmisses them with an attack, the spinecleaver can make a melee\nattack against the creature with disadvantage';
+    const actorText = GOBLIN_SPINECLEAVER;
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Spinecleaver');
     expect(actor.size).toEqual('Small');
@@ -1117,23 +1110,20 @@ describe('MCDM monsters', () => {
   });
 
   it('should parse an MCDM goblin boss', () => {
-    const actorText =
-      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const actorText = GOBLIN_BOSS;
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Boss');
   });
 
   it('should parse a goblin sniper', () => {
-    const actorText =
-      'Goblin Sniper\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 14 (leather armor)\nHit Points 13 (3d6 + 3)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 16 (+3) 12 (+1) 10 (+0) 12 (+1) 8 (−1)\nSkills Perception +3, Stealth +5\nSenses darkvision 60 ft., passive Perception 13\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The sniper doesn’t provoke opportunity attacks when they\nmove out of an enemy’s reach.\nSniper. If the sniper misses with a ranged weapon attack while they\nare hidden, they remain hidden. Additionally, if the sniper hits a\ntarget with a ranged weapon attack while they have advantage on\nthe attack roll, the attack deals an extra 1d6 damage.\nACTIONS\nDagger. Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or\nranged 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nBONUS ACTIONS\nSneak. The sniper takes the Hide action.';
+    const actorText = GOBLIN_SNIPER;
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Goblin Sniper');
     expect(actor.abilities.str.value).toEqual(8);
   });
 
   it('should parse a human guard without adding ACTIONS to the end of minions', () => {
-    const actorText =
-      '\fHUMAN GUARD                       CR 1/8 MINION (5 XP)             \nMedium Humanoid (Human), Any Alignment                               \n\nArmor Class 16 (chain shirt, shield)                                 \nHit Points 5                                                         \nSpeed 30 ft.                                                         \n   STR        DEX        CON        INT        WIS        CHA        \n  12 (+1)    12 (+1)    12 (+1)    10 (+0)    10 (+0)    10 (+0)     \n\nSkills Perception +2                                                 \nSenses passive Perception 12                                         \nLanguages Common                                                     \nProficiency Bonus +2                                                 \nExploit Weakness. When the guard makes or joins an attack            \nthat’s made with advantage, the attack deals an extra 1 damage       \nper guard who made or joined the attack.\nMinion. If the guard takes damage from an attack or as the result    \nof a failed saving throw, their hit points are reduced to 0. If the  \nguard takes damage from another effect, they die if the damage       \nequals or exceeds their hit point maximum, otherwise they take\nno damage.                                                           \n                                                                     \nOverwhelm. If a Medium or smaller enemy starts their turn            \nwithin 5 feet of three or more guards who can see them, until\nthe start of the enemy’s next turn, the enemy’s speed is reduced     \nby 5 feet for each guard within 5 feet of them. If this reduces the  \nenemy’s walking speed to 0, they are restrained until the start of   \ntheir next turn.                                                     \n                                                                     \nACTIONS                                                              \nSpear (Group Attack). Melee or Ranged Weapon Attack: +3 to\nhit, reach 5 ft. or range 20/60 ft., one target. Hit: 1 piercing     \ndamage.                                                              \n';
+    const actorText = HUMAN_GUARD;
     const actor = textToActor(actorText);
     expect(actor.name).toEqual('Human Guard');
     const overwhelm = actor.items.find((item) => item.name === 'Overwhelm');
@@ -1145,8 +1135,7 @@ describe('MCDM monsters', () => {
 
 describe('parseItemsWTC', () => {
   it('should parse a goblins items', () => {
-    const text =
-      'Goblin Boss\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 17 (studded leather armor, shield)\nHit Points 36 (8d6 + 8)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n10 (+0) 16 (+3) 13 (+1) 12 (+1) 12 (+1) 10 (+0)\nSaves Dex +5, Wis +3\nSkills Insight +3, Intimidation +2, Stealth +5\nSenses darkvision 60 ft., passive Perception 11\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The boss doesn’t provoke opportunity attacks\nwhen they move out of an enemy’s reach.\nACTIONS\nMultiattack. The boss makes two Shortsword or Shortbow\nattacks. They can use Command in place of one attack.\nShortsword. Melee Weapon Attack: +5 to hit, reach 5 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nShortbow. Ranged Weapon Attack: +5 to hit, range 80/320 ft.,\none target. Hit: 6 (1d6 + 3) piercing damage.\nCommand. The boss chooses one ally they can see within 30 feet\nof them. If the target can hear the boss, the target can use their\nreaction to move up to their speed or make one weapon attack.\nBONUS ACTIONS\nGet Reckless (Recharge 6). Each willing ally within 30 feet of the\nboss that can hear them becomes reckless until the start of the\nboss’s next turn. While reckless, a creature has advantage on attack\nrolls, and attack rolls against the creature have advantage.\nREACTIONS\nCowardly Commander. When a creature the boss\ncan see hits them with an attack, the boss chooses\na willing ally within 5 feet of them. The attack\nhits the ally instead.';
+    const text = GOBLIN_BOSS;
     const lines = text.split('\n');
     const abilities = parseAbilitiesWTC(lines);
     const items = parseItemsWTC(lines, abilities);
@@ -1195,8 +1184,7 @@ describe('parseItemsWTC', () => {
   });
 
   it('should parse a goblin cutpurse', () => {
-    const text =
-      'Goblin Cursespitter\nSmall Humanoid (Goblin), Any Alignment\nArmor Class 15 (leather armor, shield)\nHit Points 27 (5d6 + 10)\nSpeed 30 ft., climb 20 ft.\nSTR DEX CON INT WIS CHA\n8 (−1) 14 (+2) 14 (+2) 10 (+0) 10 (+0) 15 (+2)\nSaves Wis +2\nSkills Stealth +4\nSenses darkvision 60 ft., passive Perception 10\nLanguages Common, Goblin\nProficiency Bonus +2\nCrafty. The cursespitter doesn’t provoke opportunity attacks when\nthey move out of an enemy’s reach.\nACTIONS\nToxic Touch. Melee or Ranged Spell Attack: +4 to hit, reach 5 ft.\nor range 30 ft., one target. Hit: 7 (2d6) poison damage, and the\ntarget must succeed on a DC 12 Constitution saving throw or be\npoisoned for 1 minute (save ends at end of turn).\nBrittle Bone Hex. The cursespitter chooses one creature they\ncan see within 60 feet of them. The target’s bones are wracked\nwith pain until the end of their next turn. The first time the target\nwillingly moves or uses an action, bonus action, or reaction before\nthen, they must succeed on a DC 12 Constitution saving throw or\ntake 9 (2d8) necrotic damage.\nTo Me! The cursespitter chooses up to two willing creatures they\ncan see within 30 feet of them. Each creature is teleported to an\nunoccupied space within 5 feet of the cursespitter.\nDizzying Hex (2/Day). The cursespitter chooses one creature they\ncan see within 60 feet of them. The target must make a DC 12 Wis-\ndom saving throw. On a failed save, the target falls prone and can’t\nstand back up for 1 minute (save ends at end of turn).\nREACTIONS\nCowardly Commander. When a creature the cursespitter\ncan see hits them with an attack, the cursespitter chooses a will-\ning ally within 5 feet of them. The attack hits the ally instead';
+    const text = GOBLIN_CUTPURSE;
     const lines = text.split('\n');
     const abilities = parseAbilitiesWTC(lines);
     const items = parseItemsWTC(lines, abilities);
@@ -1229,8 +1217,7 @@ describe('parseItemsWTC', () => {
 
 describe('open AI stat blocks', () => {
   it('should generate an actor for a stat block generated by open API', () => {
-    const actorText =
-      "Halfling Mage Chef\n\nSmall humanoid (halfling), neutral\n\nArmor Class 11 (14 with mage armor)\nHit Points 9 (2d6 + 2)\nSpeed 25 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 14 (+2) WIS 10 (+0) CHA 14 (+2)\n\nSkills: Cooking +4, Deception +4, Persuasion +4, Stealth +3\n\nSenses: passive Perception 10\n\nLanguages: Common, Halfling\n\nChallenge: 1/8 (25 XP)\n\nMagic Resistance. The halfling has advantage on saving throws against spells and other magical effects.\n\nMage Armor. The halfling can cast mage armor on himself at will, without expending a spell slot or material components.\n\nActions\n\nDagger. Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.\n\nCooking. The halfling can use his action to prepare a delicious meal that provides a variety of benefits to those who eat it. The meal can restore hit points, cure certain ailments, or grant temporary bonuses to ability scores, depending on the ingredients and the halfling's level of expertise.\n\n";
+    const actorText = HALFLING_MAGE_CHEF;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.name).toEqual('Halfling Mage Chef');
@@ -1245,8 +1232,7 @@ describe('open AI stat blocks', () => {
   });
 
   it('should parse spells and equipment from an NPC', () => {
-    const actorText =
-      'Theral\n\nMedium humanoid (tiefling), neutral\n\nArmor Class 12\nHit Points 6\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 14 (+2) CON 10 (+0) INT 16 (+3) WIS 12 (+1) CHA 13 (+1)\n\nSaving Throws: Int +4, Wis +1\nSkills: Arcana +4, History +4, Stealth +2\n\nSenses: darkvision 60 ft., passive Perception 11\nLanguages: Common, Infernal\n\nEquipment: staff, spellbook, potion of healing, arcane focus\n\nSpells:\nCantrips (at will): detect magic, mage hand, message, minor illusion, ray of frost\n\nActions:\nQuarterstaff. Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 1d6 - 1 bludgeoning damage.\n';
+    const actorText = THERAL;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.name).toEqual('Theral');
@@ -1258,8 +1244,7 @@ describe('open AI stat blocks', () => {
   });
 
   it('should treat abilities that are poorly formatted with a - and : as abilities', () => {
-    const actorText =
-      'Goblin Potion Vendor\n\nSmall humanoid (goblin), neutral\n\nArmor Class 12\nHit Points 6 (2d6)\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 14 (+2) CON 10 (+0) INT 12 (+1) WIS 10 (+0) CHA 8 (-1)\n\nSkills: Arcana +3, Deception +1, Perception +2\nSenses: darkvision 60 ft., passive Perception 12\nLanguages: Common, Goblin\n\nActions:\n- Scimitar: Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.\n- Dart: Ranged Weapon Attack: +4 to hit, range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.\n';
+    const actorText = GOBLIN_POTION_VENDOR;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.name).toEqual('Goblin Potion Vendor');
@@ -1268,32 +1253,28 @@ describe('open AI stat blocks', () => {
   });
 
   it('should parse actor with different health format', () => {
-    const actorText =
-      'Theral\nMale Tiefling Wizard (Coward)\n\nArmor Class: 12 (15 with mage armor)\nHit Points: 8 (1d6 + 2)\nSpeed: 30 ft.\n\nSTR 8 (-1) DEX 14 (+2) CON 12 (+1) INT 16 (+3) WIS 10 (+0) CHA 8 (-1)\n\nSaving Throws: Intelligence +5, Wisdom +2\nSkills: Arcana +5, History +5, Perception +2\n\nSenses: Darkvision 60 ft., passive Perception 12\nLanguages: Common, Infernal\n\nSpellcasting: Theral is a 1st-level wizard. His spellcasting ability is Intelligence (spell save DC 13, +5 to hit with spell attacks). Theral has the following spells prepared:\n\nCantrips (at will): fire bolt, light, prestidigitation\n1st level (2 slots): mage armor, magic missile, shield\n\nActions:\nDagger. Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.';
+    const actorText = THERAL;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.name).toEqual('Theral');
   });
 
   it('should parse a block with a strangely formatted ability line', () => {
-    const actorText =
-      'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
+    const actorText = GIGGLES_THE_CLOWN;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.abilities.str.value).toEqual(8);
   });
 
   it('should parse a chat gpt action oriented helmed horror', () => {
-    const actorText =
-      "Helmed Horror (Action-Oriented)\n\nMedium construct, neutral\n\nArmor Class: 20 (plate, shield)\n\nHit Points: 60 (8d8 + 24)\n\nSpeed: 30 ft., fly 30 ft.\n\nSTR 18 (+4) DEX 13 (+1) CON 16 (+3) INT 10 (+0) WIS 10 (+0) CHA 10 (+0)\n\nSkills: Perception +4\n\nDamage Resistances: bludgeoning, piercing, and slashing from nonmagical attacks that aren't adamantine\n\nDamage Immunities: force, necrotic, poison\n\nCondition Immunities: blinded, charmed, deafened, frightened, paralyzed, petrified, poisoned, stunned\n\nSenses: blindsight 60 ft. (blind beyond this radius), passive Perception 14\n\nLanguages: understands the languages of its creator but can't speak\n\nChallenge: 4 (1100 XP)\n\nMagic Resistance. The helmed horror has advantage on saving throws against spells and other magical effects.\n\nSpell Immunity. The helmed horror is immune to three spells chosen by its creator. Typical immunities include fireball, heat metal, and lightning bolt.\nActions\n\nMultiattack. The helmed horror makes two longsword attacks.\n\nLongsword. Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands.\nReactions\n\nDefensive Parry (1/round). When the helmed horror is hit by a melee attack, it can use its reaction to add 2 to its AC against that attack.\n\nForceful Push (1/round). When the helmed horror hits a creature with a melee attack, it can use its reaction to attempt to push the creature back. The target must make a DC 14 Strength saving throw or be pushed back 10 feet and knocked prone.";
+    const actorText = HELMED_HORROR;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.abilities.str.value).toEqual(18);
   });
 
   it('should parse a block with a strangley formatted ability line', () => {
-    const actorText =
-      'Giggles the Jerbeen Clown\n\nSmall humanoid (jerbeen), chaotic neutral\n\nArmor Class 10\n\nHit Points 5 (1d6 + 1)\n\nSpeed 30 ft.\n\nSTR 8 (-1) DEX 12 (+1) CON 12 (+1) INT 10 (+0) WIS 10 (+0) CHA 14 (+2)\n\nSkills Performance +4, Sleight of Hand +3\n\nSenses passive Perception 10\n\nLanguages any one language (typically Common)\n\nChallenge 1/8 (25 XP)\n\nComic Timing. Giggles has advantage on Charisma (Performance) checks made to entertain an audience.\n\nACTIONS\n\nSilly Squirt. Ranged Weapon Attack: +3 to hit, range 20/60 ft., one target. Hit: 2 (1d4) bludgeoning damage.\n\nJoke Book. Giggles can use an action to distract one creature within 30 ft. with a joke or silly trick. The creature must succeed on a Wisdom saving throw (DC 12) or have disadvantage on attack rolls and ability checks until the end of their next turn.';
+    const actorText = GIGGLES_THE_CLOWN;
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.abilities.str.value).toEqual(8);
