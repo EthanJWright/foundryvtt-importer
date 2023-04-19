@@ -1144,7 +1144,6 @@ describe('parseItemsWTC', () => {
     expect(sword).toBeDefined();
     expect(sword).toEqual({
       ability: 'dex',
-      hasSpellData: true,
       actionType: 'mwak',
       activation: {
         cost: 1,
@@ -1176,7 +1175,6 @@ describe('parseItemsWTC', () => {
       attackBonus: 0,
       description:
         'If the sniper misses with a ranged weapon attack while they are hidden, they remain hidden. Additionally, if the sniper hits a target with a ranged weapon attack while they have advantage on the attack roll, the attack deals an extra 1d6 damage.',
-      hasSpellData: true,
       name: 'Sniper',
       type: 'weapon',
     });

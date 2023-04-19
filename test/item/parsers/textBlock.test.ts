@@ -1,9 +1,4 @@
-import {
-  parseRange,
-  parseSpell,
-  parseTypeFromActorFeature,
-  parseWeapon,
-} from '../../../src/module/item/parsers/textBlock';
+import { parseRange, parseTypeFromActorFeature } from '../../../src/module/item/parsers/textBlock';
 import { parseItem } from '../../../src/module/item/parsers/available';
 import { ItemParserInput } from '../../../src/module/item/typeGuardParserRunners';
 describe('parseWeapon', () => {
@@ -11,7 +6,7 @@ describe('parseWeapon', () => {
     const name = 'Shortsword';
     const description =
       'Melee Weapon Attack: 7 to hit, reach 5 ft., one target. Hit: 6 (1d6  3) piercing damage plus 13 (3d8) poison damage.';
-    const item = parseWeapon({ name, description, ability: 'str' });
+    const item = parseItem({ name, description, ability: 'str' });
     expect(item).toEqual({
       ability: 'str',
       actionType: 'mwak',
@@ -36,23 +31,16 @@ describe('parseWeapon', () => {
       type: 'weapon',
     });
   });
-
-  it('should throw an error if not passed a weapon', () => {
-    const name = 'Shortsword';
-    const description = 'Some feat that isnt a weapon.';
-    expect(() => parseWeapon({ name, description, ability: 'str' })).toThrow();
-  });
 });
 
 describe('parseSpell', () => {
   it('should parse a poison cloud spell', () => {
     const text =
       'Poison gas fills a 20-foot-radius sphere centered on a point Big Bara can see within 50 feet of her. The gas spreads around corners and remains until the start of Big Bara’s next turn. Each creature that starts its turn in the gas must succeed on a DC 16 Constitution saving throw or be poisoned for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.';
-    const spell = parseSpell({ name: 'Poisonous Cloud (2/Day)', description: text, ability: 'wis' });
+    const spell = parseItem({ name: 'Poisonous Cloud (2/Day)', description: text, ability: 'wis' });
     expect(spell).toEqual({
       ability: 'con',
       actionType: 'save',
-      hasSpellData: true,
       activation: {
         cost: 1,
         type: 'action',
@@ -84,19 +72,14 @@ describe('parseSpell', () => {
       },
     });
   });
-  it('should throw an error if not passed a spell', () => {
-    const text = 'Some feat that isnt a spell.';
-    expect(() => parseSpell({ name: 'Not a spell', description: text, ability: 'wis' })).toThrow();
-  });
 
   it('should parse a breath weapon with recharge', () => {
     const itemText =
       'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.';
-    const parsed = parseSpell({ name: 'Poison Breath (Recharge 5-6)', description: itemText, ability: 'con' });
+    const parsed = parseItem({ name: 'Poison Breath (Recharge 5-6)', description: itemText, ability: 'con' });
     expect(parsed).toEqual({
       ability: 'con',
       actionType: 'save',
-      hasSpellData: true,
       activation: {
         cost: 1,
         type: 'action',
@@ -139,14 +122,15 @@ describe('parseSpell', () => {
       section: 'action',
       ability: 'con',
     };
-    const spell = parseSpell(toxicSpell);
+    const spell = parseItem(toxicSpell);
     expect(spell).toEqual({
       ability: 'con',
-      actionType: undefined,
-      recharge: undefined,
-      save: undefined,
-      target: undefined,
-      uses: undefined,
+      save: {
+        ability: 'con',
+        dc: 12,
+        scaling: 'spell',
+      },
+      actionType: 'save',
       activation: {
         cost: 1,
         type: 'action',
@@ -157,7 +141,6 @@ describe('parseSpell', () => {
       },
       description:
         'Melee or Ranged Spell Attack: +4 to hit, reach 5 ft. or range 30 ft., one target. Hit: 7 (2d6) poison damage, and the target must succeed on a DC 12 Constitution saving throw or be poisoned for 1 minute (save ends at end of turn).',
-      hasSpellData: true,
       name: 'Toxic Touch',
       range: {
         units: 'ft',
@@ -203,7 +186,6 @@ describe('tryParsers', () => {
       damage: { parts: [['16d6', 'poison']] },
       description:
         'The dragon exhales poisonous gas in a 60-foot cone. Each creature in that area must make a DC 18 Constitution saving throw, taking 56 (16d6) poison damage on a failed save, or half as much damage on a successful one.',
-      hasSpellData: true,
       name: 'Poison Breath (Recharge 5–6)',
       range: { units: 'self', value: 60 },
       recharge: { charged: true, value: 5 },

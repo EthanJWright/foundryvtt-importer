@@ -237,17 +237,9 @@ export interface FeatureCollection {
   reactions?: Feature[];
 }
 
-interface ActorData {
-  abilities: Abilities;
-}
-
 export function getMaxAbility(abilities: Abilities): FifthStat {
   if (abilities.str.mod > abilities.dex.mod) return 'str';
   return 'dex';
-}
-
-export function featureCollectionToItems(allFeatures: Feature[], { abilities }: ActorData): FifthItem[] {
-  return allFeatures.map(({ name, description }) => parsedToWeapon(name, description, getMaxAbility(abilities)));
 }
 
 function convertSize(size: Size) {

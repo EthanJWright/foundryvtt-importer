@@ -4,12 +4,9 @@ import {
   ItemType,
   Damage,
   ShortAbility,
-  WeaponType,
-  SpellType,
   Save,
   Uses,
   Target,
-  FeatType,
   Recharge,
   UniversalItemType,
 } from '../interfaces';
@@ -237,31 +234,6 @@ export function actionTypeExtraData(actionType: string | undefined, { descriptio
   return building;
 }
 
-export function parseWeapon({ name, description, ability, section }: ItemParserInput): WeaponType {
-  const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  if (itemType !== 'weapon') throw new Error(`${name} is not a weapon, it is a ${itemType}`);
-  const damage: Damage = { parts: buildDamageParts(description) };
-  const actionType = parseActionType(description);
-
-  if (actionType !== 'rwak' && actionType !== 'mwak') throw new Error(`${name} is not a weapon`);
-
-  const range = parseRange(description);
-  if (!range) throw new Error(`${name} is not a weapon`);
-
-  return {
-    name,
-    type: itemType,
-    description,
-    activation: parseActivation(description, section),
-    damage,
-    actionType,
-    range,
-    ability: ability || 'str',
-    attackBonus: 0,
-    ...actionTypeExtraData(actionType, { name, description }),
-  };
-}
-
 /**
  * @param name the name of the spell
  * @param description the description of the spell
@@ -380,7 +352,6 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
   return {
     name,
     type: itemType,
-    hasSpellData: true,
     ability,
     uses,
     save,
@@ -392,98 +363,11 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
     range,
     attackBonus: 0,
     target,
-  };
-}
-
-export function parseSpell({ name, description, ability, section }: ItemParserInput): SpellType {
-  const itemType: FifthItemType = parseTypeFromActorFeature(description);
-  console.log(`Parse spell ${name} | ${itemType}`);
-  if (itemType !== 'spell' && itemType !== 'feat') throw new Error(`${name} is not a spell`);
-  let damage: undefined | Damage = undefined;
-  try {
-    damage = { parts: buildDamageParts(description) };
-  } catch (_) {
-    // spell doesn't require damage
-  }
-  let actionType: 'save' | undefined;
-  try {
-    if (parseActionType(description) === 'save') actionType = 'save';
-  } catch (_) {
-    // action type can be undefined
-  }
-  let save: Save | undefined = undefined;
-  if (actionType === 'save') {
-    const dc = description.split('DC')[1].trim().split(' ')[0].trim();
-    const uncleanAbility = description.split(dc)[1].trim().split(' ')[0].trim();
-    const [short] = abilityToLongShort(uncleanAbility);
-    ability = short as ShortAbility;
-    save = {
-      ability: short,
-      dc: parseInt(dc),
-      scaling: 'spell',
-    };
-  }
-
-  let uses;
-  try {
-    uses = parseUses(name, description);
-  } catch (_) {
-    // uses can be undefined
-  }
-
-  let recharge;
-  try {
-    recharge = parseRecharge(name);
-  } catch (_) {
-    // recharge can be undefined
-  }
-
-  let target;
-  try {
-    target = parseTarget(description);
-  } catch (_) {
-    // target can be undefined
-  }
-
-  const range = parseRange(description);
-  if (range === undefined) throw new Error(`Unable to parse range from ${description}`);
-  return {
-    name,
-    type: itemType,
-    hasSpellData: true,
-    ability,
-    uses,
-    save,
-    recharge,
-    description,
-    activation: parseActivation(description, section),
-    damage,
-    actionType,
-    range,
-    attackBonus: 0,
-    target,
-  };
-}
-
-export function parseFeat({ name, description, section }: ItemParserInput): FeatType {
-  let activation;
-  try {
-    activation = parseActivation(description, section);
-  } catch (_) {
-    // activation can be undefined
-  }
-  return {
-    name,
-    type: 'feat',
-    description,
-    activation,
-    attackBonus: 0,
-    formula: '',
   };
 }
 
 export function parsedToWeapon(name: string, inputDescription: string, inputAbility?: string): FifthItem {
-  const parsedWeapon = parseWeapon({ name, description: inputDescription, ability: inputAbility as ShortAbility });
+  const parsedWeapon = parseToItem({ name, description: inputDescription, ability: inputAbility as ShortAbility });
   const { type, description, activation, damage, actionType, range, ability, attackBonus } = parsedWeapon;
   return {
     name,

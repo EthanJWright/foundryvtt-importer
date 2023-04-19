@@ -1,8 +1,6 @@
 import { SectionLabel } from '../../actor/interfaces';
 import { ImportItem, ShortAbility } from '../interfaces';
-import { tryItemParsers } from '../typeGuardParserRunners';
-import { parseFeat, parseSpell, parseToItem, parseWeapon } from './textBlock';
-export const itemParsers = [parseWeapon, parseSpell, parseFeat];
+import { parseToItem } from './textBlock';
 
 export const parseItem = ({
   name,
@@ -22,6 +20,4 @@ export const parseItem = ({
     console.log(`Error parsing item: ${name} - ${e}`);
     throw new Error(`Failed to parse item: ${name}`);
   }
-
-  // return tryItemParsers({ parsers: itemParsers, name, description, ability, section });
 };

@@ -45,18 +45,6 @@ export interface Save {
   scaling: 'spell';
 }
 
-export interface WeaponType {
-  name: string;
-  type: 'weapon';
-  description: string;
-  activation?: Activation;
-  damage: Damage;
-  range: Range;
-  ability: ShortAbility;
-  actionType: 'mwak' | 'rwak';
-  attackBonus: number;
-}
-
 export interface Recharge {
   value: number;
   charged: boolean;
@@ -79,46 +67,4 @@ export interface UniversalItemType {
   attackBonus?: number;
 }
 
-export interface SpellType {
-  name: string;
-  type: 'spell' | 'feat';
-  hasSpellData?: boolean;
-  description: string;
-  activation?: Activation;
-  damage?: Damage;
-  range: Range;
-  recharge?: Recharge;
-  ability?: ShortAbility;
-  save?: Save;
-  uses?: Uses;
-  target?: Target;
-  actionType?: 'save';
-  attackBonus?: number;
-}
-
-export interface FeatType {
-  name: string;
-  type: 'feat';
-  description: string;
-  activation?: Activation;
-  damage?: Damage;
-  range?: Range;
-  ability?: ShortAbility;
-  save?: Save;
-  attackBonus?: number;
-  formula?: string;
-}
-
-// These are currently unspecified
-export interface GenericType {
-  name: string;
-  type: 'equipment' | 'consumable' | 'tool' | 'loot' | 'class' | 'backpack';
-  description: string;
-  activation?: Activation;
-  damage?: Damage;
-  range?: Range;
-  ability?: ShortAbility;
-  save?: Save;
-}
-
-export type ImportItem = WeaponType | SpellType | FeatType | GenericType | UniversalItemType;
+export type ImportItem = UniversalItemType;
