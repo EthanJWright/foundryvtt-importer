@@ -62,6 +62,23 @@ export interface Recharge {
   charged: boolean;
 }
 
+export interface UniversalItemType {
+  name: string;
+  type: 'spell' | 'feat' | 'weapon' | 'equipment' | 'consumable' | 'tool' | 'loot' | 'class' | 'backpack';
+  hasSpellData?: boolean;
+  description: string;
+  activation?: Activation;
+  damage?: Damage;
+  range?: Range;
+  recharge?: Recharge;
+  ability?: ShortAbility;
+  save?: Save;
+  uses?: Uses;
+  target?: Target;
+  actionType?: ActionType;
+  attackBonus?: number;
+}
+
 export interface SpellType {
   name: string;
   type: 'spell' | 'feat';
@@ -104,4 +121,4 @@ export interface GenericType {
   save?: Save;
 }
 
-export type ImportItem = WeaponType | SpellType | FeatType | GenericType;
+export type ImportItem = WeaponType | SpellType | FeatType | GenericType | UniversalItemType;
