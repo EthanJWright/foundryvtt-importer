@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.45](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.44...v0.2.45) (2023-04-20)
+
+
+### Features
+
+* **actor:** add activation parsing from name ([#98](https://github.com/EthanJWright/foundryvtt-importer/issues/98)) ([84642e0](https://github.com/EthanJWright/foundryvtt-importer/commit/84642e05802e7d36c35bd9e012d71586e04658a5))
+
 ### [0.2.44](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.43...v0.2.44) (2023-04-19)
 
 
