@@ -54,7 +54,7 @@ import { CHEVRA_GLIST } from '../__fixtures__/chevraGlist';
 import { THERAL } from '../__fixtures__/theral';
 import { GOBLIN_POTION_VENDOR } from '../__fixtures__/goblinPotionVendor';
 import { HELMED_HORROR } from '../__fixtures__/helmedHorror';
-import { ImportItem } from '../../../src/module/item/interfaces';
+import { ARAKOCRA } from '../__fixtures__/arakocra';
 
 describe('nameParse', () => {
   it('should parse a name', () => {
@@ -1291,5 +1291,14 @@ describe('open AI stat blocks', () => {
     const actor = textToActor(actorText);
     expect(actor).toBeDefined();
     expect(actor.abilities.str.value).toEqual(18);
+  });
+
+  it('should parse arakocra with no spell issues', () => {
+    const actorText = ARAKOCRA;
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    const wings = actor.items.find((item) => item.name === 'Wings of Syranita(Costs 2 Actions)');
+    expect(wings).toBeDefined();
+    expect(wings?.activation?.cost).toEqual(2);
   });
 });
