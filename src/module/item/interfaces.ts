@@ -42,7 +42,7 @@ export interface Damage {
 export interface Save {
   ability: string;
   dc: number;
-  scaling: 'spell';
+  scaling: 'flat';
 }
 
 export interface Recharge {
