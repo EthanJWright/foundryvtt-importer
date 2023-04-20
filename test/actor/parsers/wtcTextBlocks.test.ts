@@ -55,6 +55,7 @@ import { THERAL } from '../__fixtures__/theral';
 import { GOBLIN_POTION_VENDOR } from '../__fixtures__/goblinPotionVendor';
 import { HELMED_HORROR } from '../__fixtures__/helmedHorror';
 import { ARAKOCRA } from '../__fixtures__/arakocra';
+import { SHIFTING_HULK } from '../__fixtures__/shiftingHulk';
 
 describe('nameParse', () => {
   it('should parse a name', () => {
@@ -1300,5 +1301,14 @@ describe('open AI stat blocks', () => {
     const wings = actor.items.find((item) => item.name === 'Wings of Syranita(Costs 2 Actions)');
     expect(wings).toBeDefined();
     expect(wings?.activation?.cost).toEqual(2);
+  });
+
+  it('should parse the proper DC for a spell from a shifting hulk', () => {
+    const actorText = SHIFTING_HULK;
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    const abberantWound = actor.items.find((item) => item.name === 'Aberrant Wound');
+    expect(abberantWound).toBeDefined();
+    expect(abberantWound?.save?.dc).toEqual(17);
   });
 });

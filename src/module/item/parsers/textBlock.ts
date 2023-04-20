@@ -322,7 +322,7 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
     save = {
       ability: short,
       dc: parseInt(dc),
-      scaling: 'spell',
+      scaling: 'flat',
     };
   }
 
