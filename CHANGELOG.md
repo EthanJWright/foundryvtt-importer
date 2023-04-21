@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.47](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.46...v0.2.47) (2023-04-21)
+
+
+### Bug Fixes
+
+* **actor:** quick patch for spell uses ([#102](https://github.com/EthanJWright/foundryvtt-importer/issues/102)) ([8936040](https://github.com/EthanJWright/foundryvtt-importer/commit/8936040e1ef804964353a955a0e8f45dc40a8523))
+
 ### [0.2.46](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.45...v0.2.46) (2023-04-21)
 
 
