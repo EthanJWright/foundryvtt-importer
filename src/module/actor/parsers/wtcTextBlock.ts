@@ -857,6 +857,12 @@ export function parseFeaturesWTC(lines: string[]): Features {
     formattedLines = lines.map((line) => line.replace(changingLine, `${pascal(changingLine)}.`));
   }
 
+  // Remove the spellcasting section
+  const [start, end] = getSpellcastingRange(formattedLines);
+  if (start !== -1 && end !== -1) {
+    formattedLines = formattedLines.slice(0, start).concat(formattedLines.slice(end));
+  }
+
   const firstFeatureLine = formattedLines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = formattedLines.slice(firstFeatureLine);
@@ -904,7 +910,9 @@ export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItem
 
 function getSpellcastingRange(lines: string[]): [number, number] {
   // Find the index of the "Spellcasting." line
-  const spellcastingIndex = lines.findIndex((line) => line.startsWith('Spellcasting'));
+  const spellcastingIndex = lines.findIndex(
+    (line) => line.startsWith('Spellcasting') || line.startsWith('Innate Spellcasting'),
+  );
 
   if (spellcastingIndex === -1) {
     return [-1, -1];

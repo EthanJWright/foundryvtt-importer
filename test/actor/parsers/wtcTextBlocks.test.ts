@@ -58,6 +58,7 @@ import { HELMED_HORROR } from '../__fixtures__/helmedHorror';
 import { ARAKOCRA } from '../__fixtures__/arakocra';
 import { SHIFTING_HULK } from '../__fixtures__/shiftingHulk';
 import { ABOLITH_OBSERVER as ABOLETH_OBSERVER } from '../__fixtures__/abolethObserver';
+import { AUGUST_ROOSTER } from '../__fixtures__/augustRooster';
 
 describe('nameParse', () => {
   it('should parse a name', () => {
@@ -1356,5 +1357,22 @@ describe('abnormal stat blocks', () => {
 
     const atWillSpells = actor.spells.filter((spell) => spell.uses?.atWill);
     expect(atWillSpells).toHaveLength(3);
+  });
+
+  it('should parse an august rooster', () => {
+    const actorText = AUGUST_ROOSTER;
+    const actor = textToActor(actorText);
+    expect(actor).toBeDefined();
+    expect(actor.spellcasting).toEqual('cha');
+    expect(actor.spells.length).toEqual(9);
+    const itemNames = actor.items.map((item) => item.name);
+    expect(itemNames).toEqual([
+      'Aura of Subservience',
+      'Dive Bomb',
+      'Jumper',
+      'Innate Spellcasting',
+      'Multiattack',
+      'Talon',
+    ]);
   });
 });
