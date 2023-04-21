@@ -1,6 +1,7 @@
-import { actorToFifth, buildAttackBonus, buildReach } from '../../src/module/actor/convert';
+import { actorToFifth, buildAttackBonus, buildReach, spellsToSpellSlots } from '../../src/module/actor/convert';
 import { swashbuckler } from '../mock.swashbuckler';
 import { spythronar } from '../mock.spythronarsac';
+import { ABOLETH_SPELLS_FROM_BLOCK, ABOLETH_SPELLS_FROM_COMPENDIUM } from './__fixtures__/abolethSpells';
 
 describe('Parsed Actor to 5th Structure', () => {
   it('should convert a swashbuckler', () => {
@@ -48,5 +49,14 @@ describe('buildReach', () => {
     if (!built) throw new Error('Missing reach');
     expect(built.value).toEqual(5);
     expect(built.units).toBe('ft');
+  });
+});
+
+describe('addSpellsToActor', () => {
+  it('should build the actors spell slots based on their spell list', () => {
+    const spells = ABOLETH_SPELLS_FROM_BLOCK;
+    const compendiumSpells = ABOLETH_SPELLS_FROM_COMPENDIUM;
+    const slots = spellsToSpellSlots(spells, compendiumSpells);
+    expect(slots.spell3.value).toEqual('3');
   });
 });

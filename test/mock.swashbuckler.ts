@@ -129,4 +129,6 @@ export const swashbuckler: ImportActor = {
       attackBonus: 0,
     },
   ],
+  spells: [],
+  spellcasting: '',
 };

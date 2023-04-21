@@ -28,7 +28,7 @@ export interface FifthItemData {
   };
   uses?: {
     value?: number;
-    max?: number;
+    max?: string;
     per?: string;
     recovery?: string;
   };
@@ -39,7 +39,7 @@ export interface FifthItemData {
   };
   ability?: string;
   actionType?: string;
-  attackBonus?: number;
+  attackBonus?: string;
   chatFlavor?: string;
   critical?: {
     threshold?: string;

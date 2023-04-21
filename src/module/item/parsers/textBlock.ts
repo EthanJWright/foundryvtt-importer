@@ -387,7 +387,7 @@ export function parsedToWeapon(name: string, inputDescription: string, inputAbil
       actionType,
       range,
       ability,
-      attackBonus,
+      attackBonus: attackBonus?.toString(),
     },
   };
 }

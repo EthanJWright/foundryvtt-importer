@@ -969,7 +969,6 @@ function extractSpells(lines: string[]): ImportSpells {
       .match(/(\d+\/day each|\d+\/day|\batwill\b)/i);
     if (matches === null) continue;
     const usesMatch = matches[0].replace('atwill', 'at will');
-    console.log(`Uses match: ${usesMatch}`);
 
     if (usesMatch) {
       const names = namesString.split(',').map((name) => name.trim());

@@ -231,3 +231,97 @@ export interface FifthEditionActor {
   };
   skills: FifthSkills;
 }
+
+export type SpellSlotKey =
+  | 'spell1'
+  | 'spell2'
+  | 'spell3'
+  | 'spell4'
+  | 'spell5'
+  | 'spell6'
+  | 'spell7'
+  | 'spell8'
+  | 'spell9'
+  | 'pact';
+
+interface SpellSlotValue {
+  value?: string | null;
+  override?: string | null;
+  max?: string | null;
+  level?: string | null;
+}
+
+export type SpellSlots = Record<SpellSlotKey, SpellSlotValue>;
+
+// type guard for SpellSlotKey
+export function isSpellSlotKey(key: string): key is SpellSlotKey {
+  return (
+    key === 'spell1' ||
+    key === 'spell2' ||
+    key === 'spell3' ||
+    key === 'spell4' ||
+    key === 'spell5' ||
+    key === 'spell6' ||
+    key === 'spell7' ||
+    key === 'spell8' ||
+    key === 'spell9' ||
+    key === 'pact'
+  );
+}
+
+export function getDefaultSpellSlots(): SpellSlots {
+  const defaultSpellSlots: SpellSlots = {
+    spell1: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell2: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell3: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell4: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell5: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell6: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell7: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell8: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    spell9: {
+      value: '0',
+      override: '0',
+      max: '0',
+    },
+    pact: {
+      value: '0',
+      override: '0',
+      max: '0',
+      level: '0',
+    },
+  };
+  return defaultSpellSlots;
+}

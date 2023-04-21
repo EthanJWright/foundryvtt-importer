@@ -3,12 +3,21 @@ import { FifthItem } from '../actor/templates/fifthedition';
 import { getItemFromPacksAsync, getItemImageFromPacksAsync } from './compendium/item';
 import { ImportItem } from './interfaces';
 
-export async function spellToFifth(spell: ImportSpell): Promise<FifthItem | undefined> {
+const spellUsesToUses = (uses: ImportSpell['uses']): FifthItem['data']['uses'] => {
+  const { value, max, per } = uses;
+  return {
+    value,
+    max: max?.toString(),
+    per: per?.toString(),
+  };
+};
+
+export async function spellToFifth(passedSpell: ImportSpell): Promise<FifthItem | undefined> {
+  const spell = { ...passedSpell };
   let item = await getItemFromPacksAsync(spell.name, 'spell');
   if (!item) return;
 
   if (spell.uses.atWill) {
-    spell.uses.atWill = undefined;
     item = {
       ...item,
       system: {
@@ -17,7 +26,7 @@ export async function spellToFifth(spell: ImportSpell): Promise<FifthItem | unde
           ...item?.system?.preparation,
           mode: 'innate',
         },
-        uses: spell.uses,
+        uses: spellUsesToUses(spell.uses),
       },
     };
   }
@@ -37,6 +46,8 @@ export async function spellToFifth(spell: ImportSpell): Promise<FifthItem | unde
 export async function itemToFifth(item: ImportItem): Promise<FifthItem> {
   const img = await getItemImageFromPacksAsync(item.name, item.type);
   const { name, save, uses, type, description, activation, damage, actionType, range, ability, attackBonus } = item;
+  const fifthUses = uses ? spellUsesToUses(uses) : undefined;
+
   return {
     name,
     type,
@@ -51,8 +62,8 @@ export async function itemToFifth(item: ImportItem): Promise<FifthItem> {
       range,
       ability,
       save,
-      uses,
-      attackBonus,
+      uses: fifthUses,
+      attackBonus: attackBonus?.toString(),
     },
   };
 }

@@ -1,11 +1,11 @@
 import { textToActor } from './parsers';
-import { actorToFifth, addSpellsToActor } from './convert';
+import { actorToFifth, spellsToSpellSlots } from './convert';
 import { UserData } from '../importForm';
 import { FifthItem } from './templates/fifthedition';
 import { itemToFifth, spellToFifth } from '../item/convert';
 
 async function txtRoute(stringData: string) {
-  let actor = textToActor(stringData);
+  const actor = textToActor(stringData);
   const { items } = actor;
   const preparedItems = await Promise.all(
     items.map((item) => {
@@ -31,8 +31,12 @@ async function txtRoute(stringData: string) {
     preparedItems.push(...reducedSpells);
   }
 
+  const spellSlots = spellsToSpellSlots(actor.spells, reducedSpells);
+
   const convertedActor = actorToFifth(actor);
-  actor = addSpellsToActor(actor, reducedSpells);
+  convertedActor.spells = spellSlots;
+
+  // call spellSlots here
   const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',
