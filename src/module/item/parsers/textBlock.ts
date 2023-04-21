@@ -264,7 +264,7 @@ function parseRecharge(name: string): Recharge {
   };
 }
 
-function parseUses(name: string, description: string): Uses | undefined {
+export function parseUses(name: string, description: string): Uses | undefined {
   function parseDay(from: string): Uses | undefined {
     const perDay = parseInt(from.split('/')[0].split('(')[1]);
     if (isNaN(perDay)) return;
@@ -281,7 +281,6 @@ function parseUses(name: string, description: string): Uses | undefined {
   if (/\/day/i.test(description)) {
     return parseDay(description);
   }
-  throw new Error(`Unable to parse uses from ${name}`);
 }
 
 function parseTarget(description: string): Target {
@@ -315,15 +314,18 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
 
   let save: Save | undefined = undefined;
   if (actionType === 'save') {
-    const dc = description?.split('DC')[1]?.trim()?.split(' ')[0]?.trim() ?? '';
-    const uncleanAbility = description?.split(dc)[1]?.trim()?.split(' ')[0]?.trim() ?? '';
+    const rawDC = description?.split('DC')[1]?.trim()?.split(' ')[0]?.trim() ?? '';
+    const uncleanAbility = description?.split(rawDC)[1]?.trim()?.split(' ')[0]?.trim() ?? '';
     const [short] = abilityToLongShort(uncleanAbility);
     ability = short as ShortAbility;
-    save = {
-      ability: short,
-      dc: parseInt(dc),
-      scaling: 'flat',
-    };
+    if (!rawDC) save = undefined;
+    else {
+      save = {
+        ability: short,
+        dc: parseInt(rawDC),
+        scaling: 'flat',
+      };
+    }
   }
 
   let uses;
@@ -385,7 +387,7 @@ export function parsedToWeapon(name: string, inputDescription: string, inputAbil
       actionType,
       range,
       ability,
-      attackBonus,
+      attackBonus: attackBonus?.toString(),
     },
   };
 }
