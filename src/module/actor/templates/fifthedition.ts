@@ -147,6 +147,7 @@ export type ActionType = 'mwak' | 'rwak' | 'save' | undefined;
 export interface FifthItem {
   name: string;
   type: FifthItemType;
+  img?: string;
   data: {
     description?: {
       value: string;

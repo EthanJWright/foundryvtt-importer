@@ -1,11 +1,14 @@
 import { FifthItem } from '../actor/templates/fifthedition';
+import { getItemImageFromPacksAsync } from './compendium/item';
 import { ImportItem } from './interfaces';
 
-export function itemToFifth(item: ImportItem): FifthItem {
+export async function itemToFifth(item: ImportItem): Promise<FifthItem> {
+  const img = await getItemImageFromPacksAsync(item.name, item.type);
   const { name, save, uses, type, description, activation, damage, actionType, range, ability, attackBonus } = item;
   return {
     name,
     type,
+    img,
     data: {
       description: {
         value: description,

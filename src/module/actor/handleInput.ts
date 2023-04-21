@@ -8,9 +8,11 @@ async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
   const { items } = actor;
   console.log(`Prepared Actor: ${JSON.stringify(actor, null, 2)}`);
-  const preparedItems = items.map((item) => {
-    return itemToFifth(item);
-  });
+  const preparedItems = await Promise.all(
+    items.map((item) => {
+      return itemToFifth(item);
+    }),
+  );
   const convertedActor = actorToFifth(actor);
   const foundryActor = await Actor.create({
     name: actor.name,
