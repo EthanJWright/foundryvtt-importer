@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.46](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.45...v0.2.46) (2023-04-21)
+
+
+### Features
+
+* **actor:** handle spell data and hydrate from compendiums ([#100](https://github.com/EthanJWright/foundryvtt-importer/issues/100)) ([184d1e5](https://github.com/EthanJWright/foundryvtt-importer/commit/184d1e5ca55a7223f90195174250dd79c8697d5c))
+
 ### [0.2.45](https://github.com/EthanJWright/foundryvtt-importer/compare/v0.2.44...v0.2.45) (2023-04-20)
 
 
