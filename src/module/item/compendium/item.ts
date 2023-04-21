@@ -1,5 +1,5 @@
-type Pack = CompendiumCollection<CompendiumCollection.Metadata>;
-type Packs = Pack[];
+import { FifthItem } from '../../actor/templates/fifthedition';
+import { CompendiumSpell, Packs, Pack } from './interfaces';
 
 let dndPacks: null | Packs = null;
 let otherPacks: null | Packs = null;
@@ -22,7 +22,7 @@ export const getItemImageFromPacksAsync = async (itemName: string, itemType: str
   return (item as any)?.img;
 };
 
-export const getItemFromPacksAsync = async (itemName: string, type: string) => {
+export const getItemFromPacksAsync = async (itemName: string, type: string): Promise<CompendiumSpell> => {
   let result = null;
 
   // Create pack arrays once to save time.
@@ -61,5 +61,5 @@ export const getItemFromPacksAsync = async (itemName: string, type: string) => {
     }
   }
 
-  return result;
+  return result as FifthItem;
 };

@@ -1301,6 +1301,8 @@ describe('open AI stat blocks', () => {
     const wings = actor.items.find((item) => item.name === 'Wings of Syranita(Costs 2 Actions)');
     expect(wings).toBeDefined();
     expect(wings?.activation?.cost).toEqual(2);
+    expect(actor.spells).toHaveLength(9);
+    expect(actor.spellcasting).toEqual('wis');
   });
 
   it('should parse the proper DC for a spell from a shifting hulk', () => {

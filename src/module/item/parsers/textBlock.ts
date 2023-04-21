@@ -264,7 +264,7 @@ function parseRecharge(name: string): Recharge {
   };
 }
 
-function parseUses(name: string, description: string): Uses | undefined {
+export function parseUses(name: string, description: string): Uses | undefined {
   function parseDay(from: string): Uses | undefined {
     const perDay = parseInt(from.split('/')[0].split('(')[1]);
     if (isNaN(perDay)) return;
@@ -281,7 +281,6 @@ function parseUses(name: string, description: string): Uses | undefined {
   if (/\/day/i.test(description)) {
     return parseDay(description);
   }
-  throw new Error(`Unable to parse uses from ${name}`);
 }
 
 function parseTarget(description: string): Target {

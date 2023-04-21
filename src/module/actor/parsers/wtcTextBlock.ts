@@ -16,6 +16,8 @@ import {
   Health,
   ImportActorParser,
   ImportItems,
+  ImportSpellcasting,
+  ImportSpells,
   isAbilities,
   Languages,
   Name,
@@ -63,6 +65,26 @@ export const ParseActorWTC: ImportActorParser = {
   parseSpeed: [parseSpeedWTC],
   parseSkills: [parseSkillsWTC],
   parseItems: [parseItemsWTC],
+  parseSpells: [parseSpellsWTC],
+  parseSpellcasting: [parseSpellcastingWTC],
+};
+
+const ABILITY_MAP: Record<string, string> = {
+  str: 'strength',
+  dex: 'dexterity',
+  con: 'constitution',
+  int: 'intelligence',
+  wis: 'wisdom',
+  cha: 'charisma',
+};
+
+const SHORT_ABILITY_MAP: Record<string, string> = {
+  strength: 'str',
+  dexterity: 'dex',
+  constitution: 'con',
+  intelligence: 'int',
+  wisdom: 'wis',
+  charisma: 'cha',
 };
 
 const pascal = (s: string) =>
@@ -878,6 +900,95 @@ export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItem
   return features.map(({ name, description, section }) => {
     return parseItem({ name, description, ability: getMaxAbility(abilities), section });
   });
+}
+
+function getSpellcastingRange(lines: string[]): [number, number] {
+  // Find the index of the "Spellcasting." line
+  const spellcastingIndex = lines.findIndex((line) => line.startsWith('Spellcasting.'));
+
+  if (spellcastingIndex === -1) {
+    return [-1, -1];
+  }
+
+  // Find the start and end indexes of the spellcasting block
+  const startIndex = spellcastingIndex + 1;
+  function isEndIndex(line: string) {
+    const startsWithFeature = FEATURE_SECTIONS.some((feature: string) => line.toUpperCase().startsWith(feature));
+    if (startsWithFeature) console.log(`Found feature: ${line}`);
+    return startsWithFeature;
+  }
+
+  // find isEndIndex after the spellcastingIndex, dont look at lines before the spellcastingIndex
+  const spliced = [...lines];
+  let endIndex = spliced.splice(spellcastingIndex).findIndex(isEndIndex);
+  endIndex = endIndex === -1 ? lines.length : endIndex + spellcastingIndex;
+
+  // If the end index is not found, set it to the end of the lines array
+  if (endIndex === -1) {
+    endIndex = lines.length;
+  }
+  return [startIndex, endIndex];
+}
+
+function extractSpells(lines: string[]): ImportSpells {
+  const spells: ImportSpells = [];
+
+  const [startIndex, endIndex] = getSpellcastingRange(lines);
+
+  // If the "Spellcasting." line is not found, return an empty array
+  if (startIndex === -1) {
+    return spells;
+  }
+
+  // Loop through the lines in the spellcasting block
+  for (let i = startIndex; i < endIndex; i++) {
+    const line = lines[i].trim();
+
+    // Ignore blank lines and lines that don't contain a spell name
+    if (line === '' || !line.includes(':')) {
+      continue;
+    }
+
+    // Extract the spell name and uses information
+    const [usesText, namesString] = line.split(':');
+    const usesMatch = usesText.match(/(\d+\/day each|\d+\/day|\bat will\b)/i);
+
+    if (usesMatch) {
+      const usesString = usesMatch[0].toLowerCase();
+      const names = namesString.split(',').map((name) => name.trim());
+      const atWill = usesString.includes('at will');
+      const valueMatch = usesString.match(/\d+/);
+
+      for (const name of names) {
+        spells.push({
+          name: name,
+          type: 'spell',
+          uses: {
+            per: usesString.replace(/\bat will\b/, 'day').replace(/\beach\b/, ''),
+            atWill: atWill,
+            value: valueMatch ? parseInt(valueMatch[0]) : undefined,
+          },
+        });
+      }
+    }
+  }
+
+  return spells;
+}
+
+export function parseSpellsWTC(lines: string[]): ImportSpells {
+  return extractSpells(lines);
+}
+
+export function parseSpellcastingWTC(lines: string[]): ImportSpellcasting | undefined {
+  const [startIndex, endIndex] = getSpellcastingRange(lines);
+  const oneLine = lines.slice(startIndex, endIndex).join(' ');
+  const longNameAbilities = Object.values(ABILITY_MAP);
+  // if a longName is case insensitive in the string, use it
+  const ability = longNameAbilities.find((longName) => oneLine.toLowerCase().includes(longName.toLowerCase()));
+  if (!ability) return;
+  // return the short name of the ability
+  return SHORT_ABILITY_MAP[ability];
 }
 
 export function parseSensesWTC(lines: string[]): Senses {

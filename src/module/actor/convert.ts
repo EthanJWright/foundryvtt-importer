@@ -345,6 +345,7 @@ export function actorToFifth({
   languages,
   alignment,
   type,
+  spellcasting,
 }: ImportActor) {
   return {
     abilities: convertAbilities(abilities),
@@ -369,5 +370,6 @@ export function actorToFifth({
       ...buildResistances(damageImmunities, conditionImmunities, damageResistances, damageVulnerabilities),
     },
     skills: convertSkills(skills, senses),
+    spellcasting,
   };
 }

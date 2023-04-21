@@ -1,3 +1,5 @@
+import { FifthItemData } from '../../item/compendium/interfaces';
+
 export interface FifthAbilities {
   str: {
     value: number;
@@ -148,7 +150,8 @@ export interface FifthItem {
   name: string;
   type: FifthItemType;
   img?: string;
-  data: {
+  data: FifthItemData;
+  /* {
     description?: {
       value: string;
       chat?: string;
@@ -192,7 +195,7 @@ export interface FifthItem {
       units?: string;
       type: 'creature' | 'point' | 'self' | 'touch' | 'none';
     };
-  };
+  }; */
 }
 
 export interface FifthEditionActor {

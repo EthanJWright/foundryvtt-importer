@@ -2,7 +2,7 @@ import { textToActor } from './parsers';
 import { actorToFifth } from './convert';
 import { UserData } from '../importForm';
 import { FifthItem } from './templates/fifthedition';
-import { itemToFifth } from '../item/convert';
+import { itemToFifth, spellToFifth } from '../item/convert';
 
 async function txtRoute(stringData: string) {
   const actor = textToActor(stringData);
@@ -13,6 +13,25 @@ async function txtRoute(stringData: string) {
       return itemToFifth(item);
     }),
   );
+
+  if (actor?.spells) {
+    const addedSpells: Array<FifthItem | undefined> = await Promise.all(
+      actor?.spells?.map((spell) => {
+        return spellToFifth(spell);
+      }),
+    );
+
+    const reducedSpells = addedSpells.reduce((acc: FifthItem[], cur: FifthItem | undefined) => {
+      if (cur) {
+        console.log(`Spell: ${JSON.stringify(cur, null, 2)}`);
+        acc.push(cur);
+      }
+      return acc;
+    }, []);
+
+    preparedItems.push(...reducedSpells);
+  }
+
   const convertedActor = actorToFifth(actor);
   const foundryActor = await Actor.create({
     name: actor.name,

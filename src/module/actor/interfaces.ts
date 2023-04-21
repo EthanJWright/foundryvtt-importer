@@ -129,6 +129,19 @@ export type Alignment = string;
 export type Biography = string;
 export type Speed = number;
 export type ImportItems = ImportItem[];
+export interface ImportSpell {
+  name: string;
+  uses: {
+    value?: number;
+    max?: number;
+    per?: string;
+    atWill?: boolean;
+  };
+  type: 'spell';
+}
+export type ImportSpells = ImportSpell[];
+
+export type ImportSpellcasting = string | undefined;
 
 export type ActorTypes =
   | Name
@@ -149,7 +162,9 @@ export type ActorTypes =
   | Rating
   | Speed
   | Health
-  | ImportItems;
+  | ImportItems
+  | ImportSpells
+  | ImportSpellcasting;
 
 export interface ImportActor {
   name: Name;
@@ -170,6 +185,8 @@ export interface ImportActor {
   speed: Speed;
   skills: Skill[];
   items: ImportItems;
+  spells: ImportSpells;
+  spellcasting: ImportSpellcasting;
 }
 
 export interface ImportActorParser {
@@ -191,6 +208,8 @@ export interface ImportActorParser {
   parseSpeed: ((lines: string[]) => Speed)[];
   parseSkills: ((lines: string[]) => Skill[])[];
   parseItems: ((lines: string[], abilities: Abilities) => ImportItems)[];
+  parseSpells: ((lines: string[]) => ImportSpells)[];
+  parseSpellcasting: ((lines: string[]) => ImportSpellcasting)[];
 }
 
 export interface Formula {
