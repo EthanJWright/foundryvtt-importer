@@ -1,19 +1,19 @@
 import { textToActor } from './parsers';
-import { actorToFifth } from './convert';
+import { actorToFifth, addSpellsToActor } from './convert';
 import { UserData } from '../importForm';
 import { FifthItem } from './templates/fifthedition';
 import { itemToFifth, spellToFifth } from '../item/convert';
 
 async function txtRoute(stringData: string) {
-  const actor = textToActor(stringData);
+  let actor = textToActor(stringData);
   const { items } = actor;
-  console.log(`Prepared Actor: ${JSON.stringify(actor, null, 2)}`);
   const preparedItems = await Promise.all(
     items.map((item) => {
       return itemToFifth(item);
     }),
   );
 
+  let reducedSpells: Array<FifthItem> = [];
   if (actor?.spells) {
     const addedSpells: Array<FifthItem | undefined> = await Promise.all(
       actor?.spells?.map((spell) => {
@@ -21,7 +21,7 @@ async function txtRoute(stringData: string) {
       }),
     );
 
-    const reducedSpells = addedSpells.reduce((acc: FifthItem[], cur: FifthItem | undefined) => {
+    reducedSpells = addedSpells.reduce((acc: FifthItem[], cur: FifthItem | undefined) => {
       if (cur) {
         acc.push(cur);
       }
@@ -32,11 +32,14 @@ async function txtRoute(stringData: string) {
   }
 
   const convertedActor = actorToFifth(actor);
+  actor = addSpellsToActor(actor, reducedSpells);
   const foundryActor = await Actor.create({
     name: actor.name,
     type: 'npc',
     data: convertedActor,
   });
+
+  if (!foundryActor) return;
 
   await Promise.all(
     preparedItems.map(async (item: FifthItem) => {

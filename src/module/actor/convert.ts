@@ -10,6 +10,7 @@ import {
   Skill,
   Size,
   DamageTypes,
+  ImportSpells,
 } from './interfaces';
 import {
   FifthAbilities,
@@ -372,4 +373,8 @@ export function actorToFifth({
     skills: convertSkills(skills, senses),
     spellcasting,
   };
+}
+
+export function addSpellsToActor(actor: ImportActor, spells: FifthItem[]) {
+  return actor;
 }
