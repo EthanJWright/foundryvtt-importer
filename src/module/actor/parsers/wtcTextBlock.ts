@@ -904,7 +904,7 @@ export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItem
 
 function getSpellcastingRange(lines: string[]): [number, number] {
   // Find the index of the "Spellcasting." line
-  const spellcastingIndex = lines.findIndex((line) => line.startsWith('Spellcasting.'));
+  const spellcastingIndex = lines.findIndex((line) => line.startsWith('Spellcasting'));
 
   if (spellcastingIndex === -1) {
     return [-1, -1];
@@ -914,7 +914,6 @@ function getSpellcastingRange(lines: string[]): [number, number] {
   const startIndex = spellcastingIndex + 1;
   function isEndIndex(line: string) {
     const startsWithFeature = FEATURE_SECTIONS.some((feature: string) => line.toUpperCase().startsWith(feature));
-    if (startsWithFeature) console.log(`Found feature: ${line}`);
     return startsWithFeature;
   }
 
@@ -931,7 +930,7 @@ function getSpellcastingRange(lines: string[]): [number, number] {
 }
 
 function extractSpells(lines: string[]): ImportSpells {
-  const spells: ImportSpells = [];
+  let spells: ImportSpells = [];
 
   const [startIndex, endIndex] = getSpellcastingRange(lines);
 
@@ -949,9 +948,27 @@ function extractSpells(lines: string[]): ImportSpells {
       continue;
     }
 
+    const checkLine = line.toLowerCase();
+    const hasSpellInfo =
+      checkLine.includes('at will') ||
+      checkLine.includes('each day') ||
+      checkLine.includes('each time') ||
+      checkLine.includes('day each');
+
+    if (!hasSpellInfo) {
+      continue;
+    }
+
     // Extract the spell name and uses information
-    const [usesText, namesString] = line.split(':');
-    const usesMatch = usesText.match(/(\d+\/day each|\d+\/day|\bat will\b)/i);
+    const [usesText, parsedNames] = line.split(':');
+    const split = parsedNames.split('and uses');
+    const namesString = split[0].trim();
+    const matches = usesText
+      .replace(/ /g, '')
+      .toLowerCase()
+      .match(/(\d+\/day each|\d+\/day|\batwill\b)/i);
+    if (matches === null) continue;
+    const usesMatch = matches[0].replace('atwill', 'at will');
 
     if (usesMatch) {
       const usesString = usesMatch[0].toLowerCase();
@@ -961,7 +978,7 @@ function extractSpells(lines: string[]): ImportSpells {
 
       for (const name of names) {
         spells.push({
-          name: name,
+          name: pascal(name),
           type: 'spell',
           uses: {
             per: usesString.replace(/\bat will\b/, 'day').replace(/\beach\b/, ''),
@@ -973,6 +990,7 @@ function extractSpells(lines: string[]): ImportSpells {
     }
   }
 
+  spells = spells.filter((spell) => spell.name !== '');
   return spells;
 }
 
