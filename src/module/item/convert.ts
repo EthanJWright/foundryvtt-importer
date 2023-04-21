@@ -4,12 +4,13 @@ import { getItemFromPacksAsync, getItemImageFromPacksAsync } from './compendium/
 import { ImportItem } from './interfaces';
 
 const spellUsesToUses = (uses: ImportSpell['uses']): FifthItem['data']['uses'] => {
-  const { value, max, per } = uses;
-  return {
+  const { value, per } = uses;
+  const newUses = {
     value,
-    max: max?.toString(),
-    per: per?.toString(),
+    max: value?.toString(),
+    per,
   };
+  return newUses;
 };
 
 export async function spellToFifth(passedSpell: ImportSpell): Promise<FifthItem | undefined> {
@@ -17,19 +18,21 @@ export async function spellToFifth(passedSpell: ImportSpell): Promise<FifthItem 
   let item = await getItemFromPacksAsync(spell.name, 'spell');
   if (!item) return;
 
+  let mode = undefined;
   if (spell.uses.atWill) {
-    item = {
-      ...item,
-      system: {
-        ...item.system,
-        preparation: {
-          ...item?.system?.preparation,
-          mode: 'innate',
-        },
-        uses: spellUsesToUses(spell.uses),
-      },
-    };
+    mode = 'innate';
   }
+  item = {
+    ...item,
+    system: {
+      ...item.system,
+      preparation: {
+        ...item?.system?.preparation,
+        mode,
+      },
+      uses: spellUsesToUses(spell.uses),
+    },
+  };
 
   const fifthItem = {
     name: item.name,
