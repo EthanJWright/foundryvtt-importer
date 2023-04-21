@@ -99,31 +99,34 @@ export function parseType(description: string): ItemType {
   return 'consumable';
 }
 
-export function parseActivation(description: string, section?: SectionLabel): Activation | undefined {
+export function parseActivation(name: string, description: string, section?: SectionLabel): Activation | undefined {
+  // cost parsed from something like Wings of Syranita (Costs 2 Actions)
+  const costString = name.match(/\(Costs (\d+) Actions\)/);
+  const cost = costString ? parseInt(costString[1]) : 1;
   if (section) {
     switch (section) {
       case 'action': {
         return {
           type: 'action',
-          cost: 1,
+          cost,
         };
       }
       case 'bonus': {
         return {
           type: 'bonus',
-          cost: 1,
+          cost,
         };
       }
       case 'reaction': {
         return {
           type: 'reaction',
-          cost: 1,
+          cost,
         };
       }
       case 'legendary': {
         return {
           type: 'legendary',
-          cost: 1,
+          cost,
         };
       }
     }
@@ -132,29 +135,29 @@ export function parseActivation(description: string, section?: SectionLabel): Ac
   if (/attack/i.test(description))
     return {
       type: 'action',
-      cost: 1,
+      cost,
     };
 
   if (description.includes('action'))
     return {
       type: 'action',
-      cost: 1,
+      cost,
     };
   if (description.includes('bonus action'))
     return {
       type: 'bonus',
-      cost: 1,
+      cost,
     };
 
   if (description.includes('spell save'))
     return {
       type: 'action',
-      cost: 1,
+      cost,
     };
   if (description.includes('saving throw'))
     return {
       type: 'action',
-      cost: 1,
+      cost,
     };
 }
 
@@ -261,9 +264,10 @@ function parseRecharge(name: string): Recharge {
   };
 }
 
-function parseUses(name: string, description: string): Uses {
-  function parseDay(from: string): Uses {
+function parseUses(name: string, description: string): Uses | undefined {
+  function parseDay(from: string): Uses | undefined {
     const perDay = parseInt(from.split('/')[0].split('(')[1]);
+    if (isNaN(perDay)) return;
     return {
       per: 'day',
       value: perDay,
@@ -318,7 +322,7 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
     save = {
       ability: short,
       dc: parseInt(dc),
-      scaling: 'spell',
+      scaling: 'flat',
     };
   }
 
@@ -357,7 +361,7 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
     save,
     recharge,
     description,
-    activation: parseActivation(description, section),
+    activation: parseActivation(name, description, section),
     damage,
     actionType,
     range,
