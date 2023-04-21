@@ -1245,6 +1245,15 @@ describe('parseSpellWTC', () => {
     const hypnoticPattern = spells.find((s) => s.name === 'Hypnotic Pattern');
     expect(hypnoticPattern).toBeDefined();
     expect(spells).toHaveLength(10);
+    expect(hypnoticPattern).toEqual({
+      name: 'Hypnotic Pattern',
+      type: 'spell',
+      uses: {
+        atWill: true,
+        per: 'day',
+        value: 1,
+      },
+    });
   });
 });
 

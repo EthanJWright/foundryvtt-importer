@@ -969,12 +969,22 @@ function extractSpells(lines: string[]): ImportSpells {
       .match(/(\d+\/day each|\d+\/day|\batwill\b)/i);
     if (matches === null) continue;
     const usesMatch = matches[0].replace('atwill', 'at will');
+    console.log(`Uses match: ${usesMatch}`);
 
     if (usesMatch) {
-      const usesString = usesMatch[0].toLowerCase();
       const names = namesString.split(',').map((name) => name.trim());
-      const atWill = usesString.includes('at will');
-      const valueMatch = usesString.match(/\d+/);
+
+      let atWill = false;
+      let per = 'day';
+      let value = 1;
+
+      if (usesMatch.includes('at will')) {
+        atWill = true;
+      } else {
+        const [valueString, perString] = usesMatch.split('/');
+        value = parseInt(valueString);
+        per = perString;
+      }
 
       for (const name of names) {
         // remove all parentheses and their contents in the name
@@ -983,9 +993,9 @@ function extractSpells(lines: string[]): ImportSpells {
           name: pascal(cleanedName),
           type: 'spell',
           uses: {
-            per: usesString.replace(/\bat will\b/, 'day').replace(/\beach\b/, ''),
-            atWill: atWill,
-            value: valueMatch ? parseInt(valueMatch[0]) : undefined,
+            per,
+            atWill,
+            value,
           },
         });
       }
