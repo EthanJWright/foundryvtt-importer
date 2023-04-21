@@ -1336,11 +1336,11 @@ describe('abnormal stat blocks', () => {
       'Hypnotic Pattern',
       'Invisibility',
       'Phantasmal Force',
-      'Hallucinatory Terrain(As An Action)',
+      'Hallucinatory Terrain',
       'Major Image',
       'Phantasmal Killer',
       'Project Image',
-      'Mirage Arcane(As An Action)',
+      'Mirage Arcane',
       'Psychic Scream',
       'Weird',
     ]);

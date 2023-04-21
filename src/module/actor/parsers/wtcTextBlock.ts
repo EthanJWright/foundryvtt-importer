@@ -977,8 +977,10 @@ function extractSpells(lines: string[]): ImportSpells {
       const valueMatch = usesString.match(/\d+/);
 
       for (const name of names) {
+        // remove all parentheses and their contents in the name
+        const cleanedName = name.replace(/\(.*?\)/g, '').trim();
         spells.push({
-          name: pascal(name),
+          name: pascal(cleanedName),
           type: 'spell',
           uses: {
             per: usesString.replace(/\bat will\b/, 'day').replace(/\beach\b/, ''),

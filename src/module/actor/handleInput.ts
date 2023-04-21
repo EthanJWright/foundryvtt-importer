@@ -23,7 +23,6 @@ async function txtRoute(stringData: string) {
 
     const reducedSpells = addedSpells.reduce((acc: FifthItem[], cur: FifthItem | undefined) => {
       if (cur) {
-        console.log(`Spell: ${JSON.stringify(cur, null, 2)}`);
         acc.push(cur);
       }
       return acc;

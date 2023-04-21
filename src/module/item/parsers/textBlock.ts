@@ -314,15 +314,18 @@ export function parseToItem({ name, description, ability, section }: ItemParserI
 
   let save: Save | undefined = undefined;
   if (actionType === 'save') {
-    const dc = description?.split('DC')[1]?.trim()?.split(' ')[0]?.trim() ?? '';
-    const uncleanAbility = description?.split(dc)[1]?.trim()?.split(' ')[0]?.trim() ?? '';
+    const rawDC = description?.split('DC')[1]?.trim()?.split(' ')[0]?.trim() ?? '';
+    const uncleanAbility = description?.split(rawDC)[1]?.trim()?.split(' ')[0]?.trim() ?? '';
     const [short] = abilityToLongShort(uncleanAbility);
     ability = short as ShortAbility;
-    save = {
-      ability: short,
-      dc: parseInt(dc),
-      scaling: 'flat',
-    };
+    if (!rawDC) save = undefined;
+    else {
+      save = {
+        ability: short,
+        dc: parseInt(rawDC),
+        scaling: 'flat',
+      };
+    }
   }
 
   let uses;
