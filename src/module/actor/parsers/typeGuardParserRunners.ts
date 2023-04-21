@@ -11,6 +11,8 @@ import {
   ImportActor,
   ImportActorParser,
   ImportItems,
+  ImportSpellcasting,
+  ImportSpells,
   Languages,
   Rating,
   Senses,
@@ -196,6 +198,8 @@ export function trySingleActorParse(parser: ImportActorParser, lines: string[]):
       },
     ),
     items: tryParseItems(parser.parseItems, lines, abilities),
+    spells: tryParseSpells(parser.parseSpells, lines),
+    spellcasting: tryParseSpellcasting(parser.parseSpellcasting, lines),
   };
 }
 
@@ -270,4 +274,22 @@ export function tryParseItems(parsers: ItemParser[], lines: string[], abilities:
     throw new Error(`Could not parse items: ${items}`);
   }
   return items as ImportItems;
+}
+
+export type SpellParser = (input: string[]) => ParserOutput;
+export function tryParseSpells(parsers: SpellParser[], lines: string[]): ImportSpells {
+  const spells = tryParsers(parsers, lines);
+  if (!Array.isArray(spells)) {
+    throw new Error(`Could not parse spells: ${spells}`);
+  }
+  return spells as ImportSpells;
+}
+
+export type SpellcastingParser = (input: string[]) => ParserOutput;
+export function tryParseSpellcasting(parsers: SpellcastingParser[], lines: string[]): ImportSpellcasting {
+  const spellcasting = tryParsers(parsers, lines);
+  if (typeof spellcasting !== 'string') {
+    return '';
+  }
+  return spellcasting as ImportSpellcasting;
 }

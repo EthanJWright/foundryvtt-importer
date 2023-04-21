@@ -57,7 +57,7 @@ describe('parseSpell', () => {
       save: {
         ability: 'con',
         dc: 16,
-        scaling: 'spell',
+        scaling: 'flat',
       },
       target: {
         type: 'sphere',
@@ -98,7 +98,7 @@ describe('parseSpell', () => {
       save: {
         ability: 'con',
         dc: 18,
-        scaling: 'spell',
+        scaling: 'flat',
       },
       target: {
         type: 'cone',
@@ -128,7 +128,7 @@ describe('parseSpell', () => {
       save: {
         ability: 'con',
         dc: 12,
-        scaling: 'spell',
+        scaling: 'flat',
       },
       actionType: 'save',
       activation: {
@@ -189,7 +189,7 @@ describe('tryParsers', () => {
       name: 'Poison Breath (Recharge 5–6)',
       range: { units: 'self', value: 60 },
       recharge: { charged: true, value: 5 },
-      save: { ability: 'con', dc: 18, scaling: 'spell' },
+      save: { ability: 'con', dc: 18, scaling: 'flat' },
       target: { type: 'cone', units: 'ft', value: 60 },
       type: 'feat',
       uses: undefined,

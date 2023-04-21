@@ -19,9 +19,11 @@ export type ItemType =
 export type ActionType = 'mwak' | 'rwak' | 'save';
 
 export interface Uses {
-  per: 'day' | 'hour' | 'minute' | 'round' | 'minute';
   value?: number;
   max?: number;
+  per?: string;
+  recovery?: string;
+  atWill?: boolean;
 }
 export interface Target {
   type: 'sphere' | 'cone' | 'line' | 'self' | 'touch' | 'none';

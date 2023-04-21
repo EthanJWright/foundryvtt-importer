@@ -16,6 +16,8 @@ import {
   Health,
   ImportActorParser,
   ImportItems,
+  ImportSpellcasting,
+  ImportSpells,
   isAbilities,
   Languages,
   Name,
@@ -63,6 +65,26 @@ export const ParseActorWTC: ImportActorParser = {
   parseSpeed: [parseSpeedWTC],
   parseSkills: [parseSkillsWTC],
   parseItems: [parseItemsWTC],
+  parseSpells: [parseSpellsWTC],
+  parseSpellcasting: [parseSpellcastingWTC],
+};
+
+const ABILITY_MAP: Record<string, string> = {
+  str: 'strength',
+  dex: 'dexterity',
+  con: 'constitution',
+  int: 'intelligence',
+  wis: 'wisdom',
+  cha: 'charisma',
+};
+
+const SHORT_ABILITY_MAP: Record<string, string> = {
+  strength: 'str',
+  dexterity: 'dex',
+  constitution: 'con',
+  intelligence: 'int',
+  wisdom: 'wis',
+  charisma: 'cha',
 };
 
 const pascal = (s: string) =>
@@ -835,6 +857,12 @@ export function parseFeaturesWTC(lines: string[]): Features {
     formattedLines = lines.map((line) => line.replace(changingLine, `${pascal(changingLine)}.`));
   }
 
+  // Remove the spellcasting section
+  const [start, end] = getSpellcastingRange(formattedLines);
+  if (start !== -1 && end !== -1) {
+    formattedLines = formattedLines.slice(0, start).concat(formattedLines.slice(end));
+  }
+
   const firstFeatureLine = formattedLines.findIndex((line) => getFeatureName(line) !== undefined);
   if (firstFeatureLine === -1) throw new Error('Could not find a valid feature');
   const featureLines = formattedLines.slice(firstFeatureLine);
@@ -878,6 +906,126 @@ export function parseItemsWTC(lines: string[], abilities: Abilities): ImportItem
   return features.map(({ name, description, section }) => {
     return parseItem({ name, description, ability: getMaxAbility(abilities), section });
   });
+}
+
+function getSpellcastingRange(lines: string[]): [number, number] {
+  // Find the index of the "Spellcasting." line
+  const spellcastingIndex = lines.findIndex(
+    (line) => line.startsWith('Spellcasting') || line.startsWith('Innate Spellcasting'),
+  );
+
+  if (spellcastingIndex === -1) {
+    return [-1, -1];
+  }
+
+  // Find the start and end indexes of the spellcasting block
+  const startIndex = spellcastingIndex + 1;
+  function isEndIndex(line: string) {
+    const startsWithFeature = FEATURE_SECTIONS.some((feature: string) => line.toUpperCase().startsWith(feature));
+    return startsWithFeature;
+  }
+
+  // find isEndIndex after the spellcastingIndex, dont look at lines before the spellcastingIndex
+  const spliced = [...lines];
+  let endIndex = spliced.splice(spellcastingIndex).findIndex(isEndIndex);
+  endIndex = endIndex === -1 ? lines.length : endIndex + spellcastingIndex;
+
+  // If the end index is not found, set it to the end of the lines array
+  if (endIndex === -1) {
+    endIndex = lines.length;
+  }
+  return [startIndex, endIndex];
+}
+
+function extractSpells(lines: string[]): ImportSpells {
+  let spells: ImportSpells = [];
+
+  const [startIndex, endIndex] = getSpellcastingRange(lines);
+
+  // If the "Spellcasting." line is not found, return an empty array
+  if (startIndex === -1) {
+    return spells;
+  }
+
+  // Loop through the lines in the spellcasting block
+  for (let i = startIndex; i < endIndex; i++) {
+    const line = lines[i].trim();
+
+    // Ignore blank lines and lines that don't contain a spell name
+    if (line === '' || !line.includes(':')) {
+      continue;
+    }
+
+    const checkLine = line.toLowerCase();
+    const hasSpellInfo =
+      checkLine.includes('at will') ||
+      checkLine.includes('each day') ||
+      checkLine.includes('each time') ||
+      checkLine.includes('day each');
+
+    if (!hasSpellInfo) {
+      continue;
+    }
+
+    // Extract the spell name and uses information
+    const [usesText, parsedNames] = line.split(':');
+    const split = parsedNames.split('and uses');
+    const namesString = split[0].trim();
+    const matches = usesText
+      .replace(/ /g, '')
+      .toLowerCase()
+      .match(/(\d+\/day each|\d+\/day|\batwill\b)/i);
+    if (matches === null) continue;
+    const usesMatch = matches[0].replace('atwill', 'at will');
+
+    if (usesMatch) {
+      const names = namesString.split(',').map((name) => name.trim());
+
+      let atWill = false;
+      let per = 'day';
+      let value = 1;
+
+      if (usesMatch.includes('at will')) {
+        atWill = true;
+      } else {
+        const [valueString, perString] = usesMatch.split('/');
+        value = parseInt(valueString);
+        per = perString;
+      }
+
+      for (const name of names) {
+        // remove all parentheses and their contents in the name
+        const cleanedName = name.replace(/\(.*?\)/g, '').trim();
+        spells.push({
+          name: pascal(cleanedName),
+          type: 'spell',
+          uses: {
+            per,
+            atWill,
+            value,
+          },
+        });
+      }
+    }
+  }
+
+  spells = spells.filter((spell) => spell.name !== '');
+  return spells;
+}
+
+export function parseSpellsWTC(lines: string[]): ImportSpells {
+  return extractSpells(lines);
+}
+
+export function parseSpellcastingWTC(lines: string[]): ImportSpellcasting | undefined {
+  const [startIndex, endIndex] = getSpellcastingRange(lines);
+  const oneLine = lines.slice(startIndex, endIndex).join(' ');
+  const longNameAbilities = Object.values(ABILITY_MAP);
+  // if a longName is case insensitive in the string, use it
+  const ability = longNameAbilities.find((longName) => oneLine.toLowerCase().includes(longName.toLowerCase()));
+  if (!ability) return;
+  // return the short name of the ability
+  return SHORT_ABILITY_MAP[ability];
 }
 
 export function parseSensesWTC(lines: string[]): Senses {

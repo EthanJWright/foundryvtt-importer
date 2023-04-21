@@ -10,6 +10,7 @@ import {
   Skill,
   Size,
   DamageTypes,
+  ImportSpells,
 } from './interfaces';
 import {
   FifthAbilities,
@@ -18,8 +19,10 @@ import {
   FifthSkill,
   FifthSkills,
   FifthStat,
+  getDefaultSpellSlots,
+  isSpellSlotKey,
+  SpellSlots,
 } from './templates/fifthedition';
-import { parsedToWeapon } from '../item/parsers/textBlock';
 
 export function convertAbilities({ str, dex, con, int, wis, cha }: Abilities): FifthAbilities {
   return {
@@ -345,6 +348,7 @@ export function actorToFifth({
   languages,
   alignment,
   type,
+  spellcasting,
 }: ImportActor) {
   return {
     abilities: convertAbilities(abilities),
@@ -369,5 +373,33 @@ export function actorToFifth({
       ...buildResistances(damageImmunities, conditionImmunities, damageResistances, damageVulnerabilities),
     },
     skills: convertSkills(skills, senses),
+    spellcasting,
+    spells: {},
   };
+}
+
+export function spellsToSpellSlots(spells: ImportSpells, fifthSpells: FifthItem[]): SpellSlots {
+  const defaultSlots: SpellSlots = getDefaultSpellSlots();
+
+  // remove atWill spells from the list as they dont count towards slots
+  const spellsToCount = spells.filter((s) => !s.uses?.atWill);
+
+  spellsToCount.forEach((spell) => {
+    const spellLevel = fifthSpells.find((s) => s.name === spell.name)?.data.level;
+    const spellSlotKey = `spell${spellLevel}`;
+    if (!spellLevel || !isSpellSlotKey(spellSlotKey) || !defaultSlots[spellSlotKey]) return;
+
+    // spells are 1/day each etc, so we need to sum the uses
+    const oldValue = defaultSlots[spellSlotKey].value ?? '0';
+    const newValue = spell.uses?.value?.toString() || '0';
+    const addedValue = Number(newValue) + Number(oldValue);
+    const value = addedValue.toString() || '0';
+    defaultSlots[spellSlotKey] = {
+      value,
+      max: value,
+      override: value,
+    };
+  });
+
+  return defaultSlots;
 }

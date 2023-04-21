@@ -100,4 +100,6 @@ export const spythronar: ImportActor = {
         'When a spythronar sac takes lightning damage from a source other than another spythronar, it hatches, transforming into a spythronar swarm with half the normal hit points. This swarm rolls initiative and enters the combat.',
     },
   ],
+  spells: [],
+  spellcasting: '',
 };
