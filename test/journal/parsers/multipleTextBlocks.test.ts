@@ -1,4 +1,8 @@
-import { isTitle, parseMultipleTextBlocks } from '../../../src/module/journal/parsers/multipleTextBlocks';
+import {
+  isTitle,
+  parseMultipleTextBlocks,
+  parseHTMLIntoMultiplePages,
+} from '../../../src/module/journal/parsers/multipleTextBlocks';
 
 describe('parseMultipleTextBlocks', () => {
   it('should parse a dnd beyond map layout', () => {
@@ -68,5 +72,23 @@ describe('isTitle', () => {
   });
   it('should consider [– N’arl Xibrindas] to be false', () => {
     expect(isTitle('– N’arl Xibrindas')).toBe(false);
+  });
+});
+
+describe('parseHTMLIntoMultiplePages', () => {
+  it('should parse test input', () => {
+    const input = `<h1>Page 1</h1>
+              <p>Content of page 1</p>
+              <h1>Page 2</h1>
+              <p>Content of page 2</p>
+              <h1>Page 3</h1>
+              <p>Content of page 3</p>`;
+
+    const output = parseHTMLIntoMultiplePages(input, { JOURNAL_ENTRY_PAGE_FORMATS: { HTML: 'html' } });
+    const content = output.pages.map((page) => page.text.content);
+    expect(content).toEqual(['<p>Content of page 1</p>', '<p>Content of page 2</p>', '<p>Content of page 3</p>']);
+
+    const titles = output.pages.map((page) => page.name);
+    expect(titles).toEqual(['Page 1', 'Page 2', 'Page 3']);
   });
 });
