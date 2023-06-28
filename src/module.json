@@ -3,7 +3,7 @@
   "name": "foundry-vtt-content-parser",
   "title": "Foundry VTT Content Parser",
   "description": "import foundry entities from external sources",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "author": "EthanJWright",
   "authors": [
     {
@@ -13,11 +13,11 @@
     }
   ],
   "minimumCoreVersion": "0.8.6",
-  "compatibleCoreVersion": "10",
+  "compatibleCoreVersion": "11",
   "compatibility": {
     "minimum": 8,
-    "verified": "10.285",
-    "maximum": "10"
+    "verified": "11",
+    "maximum": "11"
   },
   "scripts": [],
   "esmodules": ["module/foundryvtt-importer.js"],
@@ -33,7 +33,7 @@
   "socket": false,
   "url": "https://github.com/EthanJWright/foundryvtt-importer",
   "manifest": "https://github.com/EthanJWright/foundryvtt-importer/releases/latest/download/module.json",
-  "download": "https://github.com/EthanJWright/foundryvtt-importer/releases/download/v0.2.47/module.zip",
+  "download": "https://github.com/EthanJWright/foundryvtt-importer/releases/download/v0.2.48/module.zip",
   "license": "GPL3",
   "readme": "",
   "bugs": "",
