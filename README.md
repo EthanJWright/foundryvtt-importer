@@ -90,6 +90,8 @@ multiple journal entries.
 
 Paste HTML to get formatted journals, each h1 tag is treated as a new page.
 
+I'm playing around with using [Open AI](https://github.com/EthanJWright/ai_format) to parse PDFs (that I convert to text with pdftotext) into HTML.
+
 or
 
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
