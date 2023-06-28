@@ -5,6 +5,16 @@ export interface MultipleTextBlocks {
   entries: TextBlock[];
 }
 
+interface Page {
+  title: { show: true };
+  name: string;
+  type: 'text';
+  text: {
+    content: string;
+    format: any; // Replace 'any' with the appropriate type for format
+  };
+}
+
 export function isTitle(line: string) {
   const shortEnough = line.split(' ').length < 7;
   const endsWithColon = line.endsWith(':');
@@ -84,4 +94,38 @@ export const parseMultipleTextPages = (input: string) => {
       };
     }),
   };
+};
+
+interface CONSTANTS {
+  JOURNAL_ENTRY_PAGE_FORMATS: {
+    HTML: 'html';
+  };
+}
+
+export const parseHTMLIntoMultiplePages = (input: string, constants: CONSTANTS = CONST as unknown as CONSTANTS) => {
+  const sections = input.split(/(?=<h1>)/);
+
+  const pages = sections.map((section) => {
+    const h1Regex = /<h1>(.*?)<\/h1>/g;
+
+    const title = h1Regex.exec(section)?.[1] ?? 'Parsed Page';
+    const content = section.replace(h1Regex, '').trim();
+
+    if (title && content) {
+      return {
+        title: { show: true },
+        name: title,
+        type: 'text',
+        text: {
+          content,
+          format: constants.JOURNAL_ENTRY_PAGE_FORMATS.HTML,
+        },
+      };
+    }
+    return undefined;
+  });
+
+  const filteredPages = pages.filter((page) => page !== undefined) as Page[];
+
+  return { pages: filteredPages };
 };

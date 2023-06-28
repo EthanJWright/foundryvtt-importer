@@ -2,13 +2,28 @@ import { supportsJournalPages } from '../../game';
 import { UserData } from '../../importForm';
 import { buildTextBlock } from '../builder/textBlock';
 import { getRootName, journalFromJson, JournalNode, parseTextBlock } from '../parsers';
-import { parseMultipleTextBlocks, parseMultipleTextPages } from '../parsers/multipleTextBlocks';
+import {
+  parseMultipleTextBlocks,
+  parseMultipleTextPages,
+  parseHTMLIntoMultiplePages,
+} from '../parsers/multipleTextBlocks';
+
+function isHTML(str: string) {
+  const a = document.createElement('div');
+  a.innerHTML = str;
+
+  for (let c = a.childNodes, i = c.length; i--; ) {
+    if (c[i].nodeType == 1) return true;
+  }
+
+  return false;
+}
 
 async function multipleRoutePages(input: string): Promise<void> {
-  const { pages } = parseMultipleTextPages(input);
+  const data = isHTML(input) ? parseHTMLIntoMultiplePages(input) : parseMultipleTextPages(input);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (JournalEntry as unknown as any).implementation.create({
-    pages,
+    pages: data.pages,
     name: 'Parsed Journal Entries',
   });
 }

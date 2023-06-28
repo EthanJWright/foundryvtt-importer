@@ -88,6 +88,10 @@ and generate an item based on the elements.
 Copy and paste text from anywhere, toggle if you want this to convert to one or
 multiple journal entries.
 
+Paste HTML to get formatted journals, each h1 tag is treated as a new page.
+
+I'm playing around with using [Open AI](https://github.com/EthanJWright/ai_format) to parse PDFs (that I convert to text with pdftotext) into HTML.
+
 or
 
 Import journals from a structured JSON created by some other tool, such as my [PDF Parse](https://github.com/EthanJWright/pdfparse)
@@ -596,7 +600,7 @@ validate any logic that is added.
 
 The actor parsers are populated in the `src/module/actor/parsers/available.ts`
 list. Each element of an actor will have a list of availble parsers to attempt
-to parse that elment. 
+to parse that elment.
 
 Each parser is well typed and must either return the particular element, or
 throw an error. When the module recieves input, it will hand that input to each
