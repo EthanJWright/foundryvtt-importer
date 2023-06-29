@@ -47,14 +47,8 @@ async function txtRoute(stringData: string) {
 
   await Promise.all(
     preparedItems.map(async (item: FifthItem) => {
-      return await Item.create(
-        {
-          ...item,
-        },
-        {
-          parent: foundryActor,
-        },
-      );
+      const foundryItem = new Item(item);
+      await foundryActor.createEmbeddedDocuments('Item', [foundryItem.toObject()]);
     }),
   );
 }
